@@ -15,19 +15,17 @@
  * License along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include <stdio.h>
 
-#ifndef _CMIME_H
-#define _CMIME_H
+#include "../src/cmime_address.h"
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-
-#include <cmime/cmime_address.h>
-
-
-#ifdef __cplusplus
+int main (int argc, char const *argv[]) {
+	CMimeAddress_T *ca = cmime_address_new();
+	cmime_address_set_name(ca, "Axel Steiner");
+	cmime_address_set_email(ca, "ast@treibsand.com");
+	
+	printf("%s\n",cmime_address_to_string(ca));
+	
+	cmime_address_free(ca);
+	return 0;
 }
-#endif
-
-#endif

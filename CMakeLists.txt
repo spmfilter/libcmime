@@ -5,6 +5,8 @@ project(libcmime)
 # check for build.properties
 include("${CMAKE_SOURCE_DIR}/build.properties" OPTIONAL)
 
+ENABLE_TESTING()
+
 # check prefix
 if(PREFIX)
 	SET(CMAKE_INSTALL_PREFIX ${PREFIX})

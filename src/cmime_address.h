@@ -46,8 +46,15 @@ void cmime_address_set_name(CMimeAddress_T *ca, char *name);
  * \param CMimeAddress_T pointer
  * \param email email address
  */
-void cmime_address_set_address(CMimeAddress_T *ca, char *email);
+void cmime_address_set_email(CMimeAddress_T *ca, char *email);
 
+/** Allocates a string containing the contents of the CMimeAddress_T object.
+ *
+ * \param CMimeAddress_T pointer
+ *
+ * \return the CMimeAddress_T object as an allocated string in rfc822 format.
+ */ 
+char *cmime_address_to_string(CMimeAddress_T *ca);
 
 /** Free a CMimeAddress_T object 
  *
