@@ -16,16 +16,28 @@
  */
 
 #include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 
 #include "../src/cmime_address.h"
 
+#define EXPECTED_ADDR_STRING "Axel Steiner <ast@treibsand.com>"
+
 int main (int argc, char const *argv[]) {
+	char *s = NULL;
 	CMimeAddress_T *ca = cmime_address_new();
+	int passed = 0;
+	
 	cmime_address_set_name(ca, "Axel Steiner");
 	cmime_address_set_email(ca, "ast@treibsand.com");
 	
-	printf("%s\n",cmime_address_to_string(ca));
+	s = cmime_address_to_string(ca);
+	if (strcmp(s,EXPECTED_ADDR_STRING) != 0) {
+		printf("Expected '%s', but got '%s'",EXPECTED_ADDR_STRING,s);
+		passed = 1;
+	}
 	
+	free(s);
 	cmime_address_free(ca);
-	return 0;
+	return (passed);
 }

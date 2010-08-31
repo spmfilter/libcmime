@@ -52,9 +52,17 @@ void cmime_address_set_email(CMimeAddress_T *ca, char *email);
  *
  * \param CMimeAddress_T pointer
  *
- * \return the CMimeAddress_T object as an allocated string in rfc822 format.
+ * \returns the CMimeAddress_T object as an allocated string in rfc822 format.
  */ 
 char *cmime_address_to_string(CMimeAddress_T *ca);
+
+/** Parse given string and create CMimeAddress_T object
+ *
+ * \param s string to parse
+ *
+ * \returns a newlly allocated CMimeAddress_T object, or NULL on failure
+ */
+CMimeAddress_T *cmime_address_parse_string(char *s);
 
 /** Free a CMimeAddress_T object 
  *

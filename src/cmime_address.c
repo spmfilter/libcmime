@@ -48,6 +48,13 @@ char *cmime_address_to_string(CMimeAddress_T *ca) {
 	return(s);
 }
 
+/* Parse given string and create CMimeAddress_T object */
+CMimeAddress_T *cmime_address_parse_string(char *s) {
+	CMimeAddress_T *ca = cmime_address_new();
+	
+	return(ca);
+}
+
 /* Free used memory */
 void cmime_address_free(CMimeAddress_T *ca) {
 	if (ca->name != NULL)
