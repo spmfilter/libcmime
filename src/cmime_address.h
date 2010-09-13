@@ -23,9 +23,13 @@
 extern "C" {
 #endif
 
+/**
+ * A structure to represent an email address
+ */
+
 typedef struct {
-	char *name;
-	char *email;
+	char *name; /**< display name */
+	char *email; /**< the email address */
 } CMimeAddress_T;
 
 /** Creates a new CMimeAddress_T object
@@ -36,21 +40,21 @@ CMimeAddress_T *cmime_address_new(void);
 
 /** Set the display name of CMimeAdresse_T object
  *
- * \param CMimeAddress_T pointer
+ * \param ca CMimeAddress_T pointer
  * \param name the display name for the address
  */
 void cmime_address_set_name(CMimeAddress_T *ca, char *name);
 
 /** Set the email address of CMimeAdresse_T object
  *
- * \param CMimeAddress_T pointer
+ * \param ca CMimeAddress_T pointer
  * \param email email address
  */
 void cmime_address_set_email(CMimeAddress_T *ca, char *email);
 
 /** Allocates a string containing the contents of the CMimeAddress_T object.
  *
- * \param CMimeAddress_T pointer
+ * \param ca CMimeAddress_T pointer
  *
  * \returns the CMimeAddress_T object as an allocated string in rfc822 format.
  */ 
@@ -66,7 +70,7 @@ CMimeAddress_T *cmime_address_parse_string(char *s);
 
 /** Free a CMimeAddress_T object 
  *
- * \param CMimeAddress_T pointer
+ * \param ca CMimeAddress_T pointer
  */
 void cmime_address_free(CMimeAddress_T *ca);
 

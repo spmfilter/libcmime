@@ -21,7 +21,9 @@
 
 #include "../src/cmime_address.h"
 
-#define EXPECTED_ADDR_STRING "Axel Steiner <ast@treibsand.com>"
+#define ADDR_STRING "Axel Steiner <ast@treibsand.com>"
+#define EXPTECTED_NAME_STRING "Axel Steiner"
+#define EXPTECTED_EMAIL_STRING "ast@treibsand.com"
 
 int main (int argc, char const *argv[]) {
 	char *s = NULL;
@@ -32,12 +34,24 @@ int main (int argc, char const *argv[]) {
 	cmime_address_set_email(ca, "ast@treibsand.com");
 	
 	s = cmime_address_to_string(ca);
-	if (strcmp(s,EXPECTED_ADDR_STRING) != 0) {
-		printf("Expected '%s', but got '%s'",EXPECTED_ADDR_STRING,s);
+	if (strcmp(s,ADDR_STRING) != 0) {
+		printf("Expected '%s', but got '%s'",ADDR_STRING,s);
 		passed = 1;
 	}
 	
 	free(s);
+	cmime_address_free(ca);
+	
+	ca = cmime_address_parse_string(ADDR_STRING);
+	if (strcmp(ca->name,EXPTECTED_NAME_STRING) != 0) {
+		printf("Exptected '%s', but got '%s'\n",EXPTECTED_NAME_STRING,ca->name);			
+		return -1;
+	}
+	
+	if (strcmp(ca->email,EXPTECTED_EMAIL_STRING) != 0) {
+		printf("Exptected '%s', but got '%s'\n",EXPTECTED_EMAIL_STRING,ca->email);			
+		return -1;
+	}
 	cmime_address_free(ca);
 	return (passed);
 }

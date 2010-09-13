@@ -89,31 +89,31 @@ function toggleVisibility(linkObj) {
 <a name="l00023"></a>00023 <span class="preprocessor"></span><span class="keyword">extern</span> <span class="stringliteral">&quot;C&quot;</span> {
 <a name="l00024"></a>00024 <span class="preprocessor">#endif</span>
 <a name="l00025"></a>00025 <span class="preprocessor"></span>
-<a name="l00026"></a><a class="code" href="structCMimeAddress__T.html">00026</a> <span class="keyword">typedef</span> <span class="keyword">struct </span>{
-<a name="l00027"></a><a class="code" href="structCMimeAddress__T.html#aedf1a89442d81911e9b2d807c8c6e9ae">00027</a>     <span class="keywordtype">char</span> *name;
-<a name="l00028"></a><a class="code" href="structCMimeAddress__T.html#a4449406f0763b8373f02a7e8a4896e66">00028</a>     <span class="keywordtype">char</span> *email;
-<a name="l00029"></a>00029 } <a class="code" href="structCMimeAddress__T.html">CMimeAddress_T</a>;
-<a name="l00030"></a>00030 
-<a name="l00035"></a>00035 <a class="code" href="structCMimeAddress__T.html">CMimeAddress_T</a> *<a class="code" href="cmime__address_8c.html#a81f8d1a69276f029bb7250cd2873f90e">cmime_address_new</a>(<span class="keywordtype">void</span>);
-<a name="l00036"></a>00036 
-<a name="l00042"></a>00042 <span class="keywordtype">void</span> <a class="code" href="cmime__address_8c.html#a1c1b8afec1eceda3066a67b67db572e0">cmime_address_set_name</a>(<a class="code" href="structCMimeAddress__T.html">CMimeAddress_T</a> *ca, <span class="keywordtype">char</span> *name);
-<a name="l00043"></a>00043 
-<a name="l00049"></a>00049 <span class="keywordtype">void</span> <a class="code" href="cmime__address_8c.html#af54951a826530183a64f60079184551a">cmime_address_set_email</a>(<a class="code" href="structCMimeAddress__T.html">CMimeAddress_T</a> *ca, <span class="keywordtype">char</span> *email);
-<a name="l00050"></a>00050 
-<a name="l00057"></a>00057 <span class="keywordtype">char</span> *<a class="code" href="cmime__address_8c.html#a6df30616fcca6473f0fa34ae23670b96">cmime_address_to_string</a>(<a class="code" href="structCMimeAddress__T.html">CMimeAddress_T</a> *ca);
-<a name="l00058"></a>00058 
-<a name="l00065"></a>00065 <a class="code" href="structCMimeAddress__T.html">CMimeAddress_T</a> *<a class="code" href="cmime__address_8c.html#a6bd640cab5e70b12642319af6038120b">cmime_address_parse_string</a>(<span class="keywordtype">char</span> *s);
-<a name="l00066"></a>00066 
-<a name="l00071"></a>00071 <span class="keywordtype">void</span> <a class="code" href="cmime__address_8c.html#a140b036b3cc2ceb47f562a17192ab792">cmime_address_free</a>(<a class="code" href="structCMimeAddress__T.html">CMimeAddress_T</a> *ca);
-<a name="l00072"></a>00072 
-<a name="l00073"></a>00073 <span class="preprocessor">#ifdef __cplusplus</span>
-<a name="l00074"></a>00074 <span class="preprocessor"></span>}
-<a name="l00075"></a>00075 <span class="preprocessor">#endif</span>
-<a name="l00076"></a>00076 <span class="preprocessor"></span>
-<a name="l00077"></a>00077 <span class="preprocessor">#endif</span>
+<a name="l00030"></a><a class="code" href="structCMimeAddress__T.html">00030</a> <span class="keyword">typedef</span> <span class="keyword">struct </span>{
+<a name="l00031"></a><a class="code" href="structCMimeAddress__T.html#aedf1a89442d81911e9b2d807c8c6e9ae">00031</a>     <span class="keywordtype">char</span> *name; 
+<a name="l00032"></a><a class="code" href="structCMimeAddress__T.html#a4449406f0763b8373f02a7e8a4896e66">00032</a>     <span class="keywordtype">char</span> *email; 
+<a name="l00033"></a>00033 } <a class="code" href="structCMimeAddress__T.html">CMimeAddress_T</a>;
+<a name="l00034"></a>00034 
+<a name="l00039"></a>00039 <a class="code" href="structCMimeAddress__T.html">CMimeAddress_T</a> *<a class="code" href="cmime__address_8c.html#a81f8d1a69276f029bb7250cd2873f90e">cmime_address_new</a>(<span class="keywordtype">void</span>);
+<a name="l00040"></a>00040 
+<a name="l00046"></a>00046 <span class="keywordtype">void</span> <a class="code" href="cmime__address_8c.html#a1c1b8afec1eceda3066a67b67db572e0">cmime_address_set_name</a>(<a class="code" href="structCMimeAddress__T.html">CMimeAddress_T</a> *ca, <span class="keywordtype">char</span> *name);
+<a name="l00047"></a>00047 
+<a name="l00053"></a>00053 <span class="keywordtype">void</span> <a class="code" href="cmime__address_8c.html#af54951a826530183a64f60079184551a">cmime_address_set_email</a>(<a class="code" href="structCMimeAddress__T.html">CMimeAddress_T</a> *ca, <span class="keywordtype">char</span> *email);
+<a name="l00054"></a>00054 
+<a name="l00061"></a>00061 <span class="keywordtype">char</span> *<a class="code" href="cmime__address_8c.html#a6df30616fcca6473f0fa34ae23670b96">cmime_address_to_string</a>(<a class="code" href="structCMimeAddress__T.html">CMimeAddress_T</a> *ca);
+<a name="l00062"></a>00062 
+<a name="l00069"></a>00069 <a class="code" href="structCMimeAddress__T.html">CMimeAddress_T</a> *<a class="code" href="cmime__address_8c.html#a6bd640cab5e70b12642319af6038120b">cmime_address_parse_string</a>(<span class="keywordtype">char</span> *s);
+<a name="l00070"></a>00070 
+<a name="l00075"></a>00075 <span class="keywordtype">void</span> <a class="code" href="cmime__address_8c.html#a140b036b3cc2ceb47f562a17192ab792">cmime_address_free</a>(<a class="code" href="structCMimeAddress__T.html">CMimeAddress_T</a> *ca);
+<a name="l00076"></a>00076 
+<a name="l00077"></a>00077 <span class="preprocessor">#ifdef __cplusplus</span>
+<a name="l00078"></a>00078 <span class="preprocessor"></span>}
+<a name="l00079"></a>00079 <span class="preprocessor">#endif</span>
+<a name="l00080"></a>00080 <span class="preprocessor"></span>
+<a name="l00081"></a>00081 <span class="preprocessor">#endif</span>
 </pre></div></div>
 </div>
-<hr class="footer"/><address class="footer"><small>Generated on Tue Aug 31 2010 11:23:50 for libcmime by&nbsp;
+<hr class="footer"/><address class="footer"><small>Generated on Tue Aug 31 2010 14:33:20 for libcmime by&nbsp;
 <a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.7.1 </small></address>
 </body>

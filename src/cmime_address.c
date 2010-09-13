@@ -51,6 +51,36 @@ char *cmime_address_to_string(CMimeAddress_T *ca) {
 /* Parse given string and create CMimeAddress_T object */
 CMimeAddress_T *cmime_address_parse_string(char *s) {
 	CMimeAddress_T *ca = cmime_address_new();
+	char *t1 = NULL;
+	char *t2 = NULL;
+	int i,size_in;
+	
+	size_in = strlen(s);
+	t1 = strrchr(s,'<');
+	if (t1 != NULL) {
+		i = size_in - strlen(t1);
+		if (*(s + i - 1) == ' ')
+			i--;
+		ca->name = (char *)malloc(i + 1);
+		memcpy(ca->name,s,i);
+		
+		t2 = strrchr(t1,'>');
+		if (t2 != NULL) {
+			i = strlen(++t1) - strlen(t2);
+		} else {
+			i = strlen(++t1);
+		}
+		ca->email = (char *)malloc(i + 1);
+		memcpy(ca->email,t1,i);
+	} 	else {
+		ca->email = (char *)malloc(size_in + 1);
+		memcpy(t->email,s,size_in);
+	}
+	
+	if (t1 != NULL)
+		free(t1);
+	if (t2 != NULL)
+		free(t2);
 	
 	return(ca);
 }
