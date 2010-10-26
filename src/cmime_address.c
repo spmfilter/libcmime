@@ -74,13 +74,8 @@ CMimeAddress_T *cmime_address_parse_string(char *s) {
 		memcpy(ca->email,t1,i);
 	} 	else {
 		ca->email = (char *)malloc(size_in + 1);
-		memcpy(t->email,s,size_in);
+		memcpy(ca->email,s,size_in);
 	}
-	
-	if (t1 != NULL)
-		free(t1);
-	if (t2 != NULL)
-		free(t2);
 	
 	return(ca);
 }

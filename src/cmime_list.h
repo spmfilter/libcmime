@@ -23,6 +23,58 @@ extern "C" {
 #endif
 
 
+/** structure for creating a simple linked list implementation */
+struct _CMimeList {
+	void *data;
+	struct _CMimeList *next;
+};
+
+/* typedef for linked list */
+typedef struct _CMimeList CMimeList_T;
+
+/** Create a new list
+  *
+  * \returns CMimeList_T Pointer to beginning of new list on success, NULL on failure
+  */
+CMimeList_T *cmime_list_new(void);
+
+/** Append a new element to the list
+  *
+  * \param list pointer to list head
+  * \param data pointer to data segment to add to the list
+  *
+  * \returns 0 on success, -1 on error
+  */
+int cmime_list_append(CMimeList_T *list, void *data);
+
+/** Prepend a new element to the list
+  *
+  * \param list pointer to pointer of list head, required due new memory
+  *             allocation
+  * \param data pointer to data segment to add to the list
+  *
+  * \returns 0 on success, -1 on error
+  */
+int cmime_list_prepend(CMimeList_T **list, void *data);
+
+/** Dump the contents of a list (debugging purposes)
+  *
+  * \param list pointer to list head
+  * \param printme function pointer for function to use when printing data
+  *
+  * \returns Nothing
+  */
+void cmime_list_dump(CMimeList_T *list, void (*printme)(void *data));
+
+/** Cleanup all resources allocated with a list
+  *
+  * \param list pointer to list head
+  * \param deleteme function pointer pointing to function responsible for
+  *                 cleaning resources
+  *
+  * \returns Nothing
+  */
+void cmime_list_free(CMimeList_T *list, void (*deleteme)(void *data));
 
 #ifdef __cplusplus
 }
