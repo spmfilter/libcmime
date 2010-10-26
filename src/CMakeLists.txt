@@ -1,6 +1,7 @@
 set(LIBCMIME_SRC 
 	cmime_address.c
 	cmime_list.c
+	cmime_message.c
 )
 
 add_library(cmime SHARED ${LIBCMIME_SRC})

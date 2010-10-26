@@ -16,15 +16,36 @@
  */
 
 
-#ifndef _CMIME_H
-#define _CMIME_H
+#ifndef _CMIME_MESSAGE_H
+#define _CMIME_MESSAGE_H
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-#include <cmime/cmime_address.h>
-#include <cmime/cmime_message.h>
+#include <time.h>
+
+#include "cmime_list.h"
+#include "cmime_address.h"
+
+typedef enum _CMimeRecipientType {
+	CMIME_RECIPIENT_TYPE_TO,
+	CMIME_RECIPIENT_TYPE_CC,
+	CMIME_RECIPIENT_TYPE_BCC,
+} CMimeRecipientType;
+
+/** A structure to represent an email message */
+typedef struct {
+	CMimeAddress_T *sender;
+	CMimeList_T **recipients;
+	char *subject;
+	char *message_id;
+	
+	time_t date;
+	int tz_offset;
+} CMimeMessage_T;
+
+CMimeMessage_T *cmime_message_new(void);
 
 #ifdef __cplusplus
 }

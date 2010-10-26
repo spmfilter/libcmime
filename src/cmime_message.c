@@ -15,19 +15,42 @@
  * License along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include <stdlib.h>
 
-#ifndef _CMIME_H
-#define _CMIME_H
+#include "cmime_message.h"
+#include "cmime_list.h"
 
-#ifdef __cplusplus
-extern "C" {
-#endif
+static char *rfc822_headers[] = {
+	"Return-Path",
+	"Received",
+	"Date",
+	"From",
+	"Reply-To",
+	"Subject",
+	"Sender",
+	"To",
+	"Cc",
+};
 
-#include <cmime/cmime_address.h>
-#include <cmime/cmime_message.h>
+#define N_RECIPIENT_TYPES 3
 
-#ifdef __cplusplus
+CMimeMessage_T *cmime_message_new(void) {
+	CMimeMessage_T *message;
+	int i;
+	
+	message = (CMimeMessage_T *)calloc((size_t)1, sizeof(CMimeMessage_T));
+	
+	message->sender = NULL;
+	message->recipients = calloc((size_t)N_RECIPIENT_TYPES, sizeof(CMimeList_T));
+	message->subject = NULL;
+	message->date = 0;
+	message->tz_offset = 0;
+	message->message_id = NULL;
+
+	/* initialize recipient lists */
+	for (i = 0; i < N_RECIPIENT_TYPES; i++) {
+		message->recipients[i] = cmime_list_new();
+	}
+
+	return(message);
 }
-#endif
-
-#endif
