@@ -47,6 +47,12 @@ typedef struct {
 
 CMimeMessage_T *cmime_message_new(void);
 
+/** Free a CMimeMessage_T object 
+ *
+ * \param ca CMimeMessage_T pointer
+ */
+void cmime_message_free(CMimeMessage_T *message);
+
 #ifdef __cplusplus
 }
 #endif

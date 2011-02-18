@@ -49,8 +49,26 @@ CMimeMessage_T *cmime_message_new(void) {
 
 	/* initialize recipient lists */
 	for (i = 0; i < N_RECIPIENT_TYPES; i++) {
-		message->recipients[i] = cmime_list_new();
+//		message->recipients[i] = cmime_list_new();
 	}
 
 	return(message);
+}
+
+/* cleanup a cmime_list whith CMimeAddress_T pointers */
+void cmime_message_clear_recipients(void *data) {
+	CMimeAddress_T *ca = (CMimeAddress_T *)data;
+
+	if(ca != NULL)
+		cmime_address_free(ca);
+}
+
+/** Free a CMimeMessage_T object  */
+void cmime_message_free(CMimeMessage_T *message) {
+	int i;
+	for (i = 0; i < N_RECIPIENT_TYPES; i++) {
+	//	cmime_list_free(message->recipients[i], cmime_message_clear_recipients);
+	}
+	
+	free(message);
 }

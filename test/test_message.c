@@ -18,26 +18,11 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#include "../src/cmime_list.h"
-
-void list_char_printer(void *data) {
-	printf("elem is %s\n", (char *)data);
-}
+#include "../src/cmime_message.h"
 
 int main (int argc, char const *argv[]) {
-	CMimeList_T *head;
-/*
-	head = cmime_list_new();
-
-	cmime_list_append(head, "this is test 1");
-	cmime_list_append(head, "this is test 2");
-	cmime_list_append(head, "this is test 3");
-	cmime_list_append(head, "this is test 4");
-	cmime_list_prepend(&head, "this is test 5");
-	cmime_list_prepend(&head, "this is test 6");
-	cmime_list_append(head, "this is test 7");
-
-	cmime_list_dump(head, list_char_printer);
-	*/
+	CMimeMessage_T *msg = cmime_message_new();
+	
+	cmime_message_free(msg);
 	return(0);
 }

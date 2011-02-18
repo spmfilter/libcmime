@@ -30,8 +30,8 @@ int main (int argc, char const *argv[]) {
 	CMimeAddress_T *ca = cmime_address_new();
 	int passed = 0;
 	
-	cmime_address_set_name(ca, "Axel Steiner");
-	cmime_address_set_email(ca, "ast@treibsand.com");
+	cmime_address_set_name(ca, EXPTECTED_NAME_STRING);
+	cmime_address_set_email(ca, EXPTECTED_EMAIL_STRING);
 	
 	s = cmime_address_to_string(ca);
 	if (strcmp(s,ADDR_STRING) != 0) {
@@ -45,13 +45,13 @@ int main (int argc, char const *argv[]) {
 	ca = cmime_address_parse_string(ADDR_STRING);
 	if (strcmp(ca->name,EXPTECTED_NAME_STRING) != 0) {
 		printf("Exptected '%s', but got '%s'\n",EXPTECTED_NAME_STRING,ca->name);			
-		return -1;
+		return(-1);
 	}
 	
 	if (strcmp(ca->email,EXPTECTED_EMAIL_STRING) != 0) {
 		printf("Exptected '%s', but got '%s'\n",EXPTECTED_EMAIL_STRING,ca->email);			
-		return -1;
+		return(-1);
 	}
 	cmime_address_free(ca);
-	return (passed);
+	return(passed);
 }

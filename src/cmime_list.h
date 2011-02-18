@@ -23,58 +23,66 @@ extern "C" {
 #endif
 
 
-/** structure for creating a simple linked list implementation */
-struct _CMimeList {
+struct _CMimeListElem {
 	void *data;
-	struct _CMimeList *next;
+ 
+	struct _CMimeListElem *prev;
+	struct _CMimeListElem *next;
 };
 
-/* typedef for linked list */
+typedef struct _CMimeListElem CMimeListElem_T;
+
+struct _CMimeList {
+	int size;
+	void (*destroy)(void *data);
+	CMimeListElem_T *head;
+	CMimeListElem_T *tail;
+};
+
 typedef struct _CMimeList CMimeList_T;
 
-/** Create a new list
-  *
-  * \returns CMimeList_T Pointer to beginning of new list on success, NULL on failure
-  */
-CMimeList_T *cmime_list_new(void);
+int cmime_list_new(CMimeList_T **list, void (*destroy)(void *data));
 
-/** Append a new element to the list
-  *
-  * \param list pointer to list head
-  * \param data pointer to data segment to add to the list
-  *
-  * \returns 0 on success, -1 on error
-  */
+int cmime_list_free(CMimeList_T *list);
+
+/** remove an element  */
+int cmime_list_remove(CMimeList_T *list, CMimeListElem_T *elem, void **data);
+
+/** append to list */
 int cmime_list_append(CMimeList_T *list, void *data);
 
-/** Prepend a new element to the list
-  *
-  * \param list pointer to pointer of list head, required due new memory
-  *             allocation
-  * \param data pointer to data segment to add to the list
-  *
-  * \returns 0 on success, -1 on error
-  */
-int cmime_list_prepend(CMimeList_T **list, void *data);
+/** prepend to list */
+int cmime_list_prepend(CMimeList_T *list, void *data);
 
-/** Dump the contents of a list (debugging purposes)
-  *
-  * \param list pointer to list head
-  * \param printme function pointer for function to use when printing data
-  *
-  * \returns Nothing
-  */
-void cmime_list_dump(CMimeList_T *list, void (*printme)(void *data));
+/** remove from tail */
+void *cmime_list_remove_tail(CMimeList_T *list);
 
-/** Cleanup all resources allocated with a list
-  *
-  * \param list pointer to list head
-  * \param deleteme function pointer pointing to function responsible for
-  *                 cleaning resources
-  *
-  * \returns Nothing
-  */
-void cmime_list_free(CMimeList_T *list, void (*deleteme)(void *data));
+/** remove from head   */
+void *cmime_list_remove_head(CMimeList_T *list);
+
+/** insert new element next to elem */
+int cmime_list_insert_next(CMimeList_T *list, CMimeListElem_T *elem, void *data);
+
+/** insert new element previous to elem */
+int cmime_list_insert_prev(CMimeList_T *list, CMimeListElem_T *elem, void *data);
+
+/** iterates over list and calls function for every element with the current element */
+void cmime_list_map(CMimeList_T *list, void(*func)(CMimeListElem_T *elem,void *args), void *args);
+
+/** iterates over list and calls function func with every element, return value
+ *  of func will be saved in new list **new
+ */
+int cmime_list_map_new(CMimeList_T *list, CMimeList_T **new, void *(*func)(CMimeListElem_T *elem, void *args), void *args);
+
+/* * * MACROS * * */
+#define cmime_list_size(list) ((list)->size)
+#define cmime_list_head(list) ((list)->head)
+#define cmime_list_tail(list) ((list)->tail)
+#define cmime_list_is_head(elem) ((elem)->prev == NULL ? 1 : 0)
+#define cmime_list_is_tail(elem) ((elem)->next == NULL ? 1 : 0)
+#define cmime_list_data(elem) ((elem)->data)
+#define cmime_list_next(elem) ((elem)->next)
+#define cmime_list_prev(elem) ((elem)->prev)
 
 #ifdef __cplusplus
 }

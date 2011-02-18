@@ -16,130 +16,215 @@
  */
 
 #include <stdlib.h>
+#include <string.h>
+#include <stdlib.h>
 
 #include "cmime_list.h"
 
-/* create  a new list */
-CMimeList_T *cmime_list_new(void) {
-	CMimeList_T *list;
-	list = (CMimeList_T *)calloc((size_t)1, sizeof(CMimeList_T));
-	list->next = NULL;
-	list->data = NULL;
-	return(list);
-}
-
-/* append an element */
-int cmime_list_append(CMimeList_T *list, void *data) {
-	CMimeList_T *elem;
-	CMimeList_T *it;
-
-	/* its the first element */
-	if(list->data == NULL) {
-		list->data = data;
-		list->next = NULL;
-		return(0);
-	}
-
-	/* create new element */
-	elem = (CMimeList_T *)malloc(sizeof(CMimeList_T));
-	if(elem == NULL) {
-		/* malloc failed */
+/* initializes a new empty doubly linked list */
+int cmime_list_new(CMimeList_T **list, void (*destroy)(void *data)) {
+	(*list) = (CMimeList_T *)calloc(1,sizeof(CMimeList_T));
+	
+	if(*list == NULL) {
 		return(-1);
 	}
 
-	elem->data = data;
-	elem->next = NULL;
-
-	/* walk list up to the end */
-	it = list;	
-	
-	while(1) {
-		if(it->next == NULL) {
-			break;
-		}
-
-		it = it->next;
-	}
-	
-	it->next = elem;
+	(*list)->size = 0;
+	(*list)->head = NULL;
+	(*list)->tail = NULL;
+	(*list)->destroy = destroy;
 
 	return(0);
 }
 
-/* prepend an item */
-int cmime_list_prepend(CMimeList_T **list, void *data) {
-	CMimeList_T *elem;
+/* destroy a complete list */
+int cmime_list_free(CMimeList_T *list) {
+	void *data;
+ 
+	while(cmime_list_size(list) > 0) {
+		if(cmime_list_remove(list, cmime_list_tail(list), (void **)&data) == 0 &&
+			list->destroy != NULL) {
+				list->destroy(data);
+			}
+		}
+ 
+	/* no more operations please... */
+	memset(list,0,sizeof(CMimeList_T));
+ 
+	return(0);
+}
 
-	/* its the first element */
-	if((*list)->data == NULL) {
-		(*list)->data = data;
-		(*list)->next = NULL;
-		return(0);
+/* remove an element from the list */
+int cmime_list_remove(CMimeList_T *list, CMimeListElem_T *elem, void **data) {
+	/* no null element and no empty list */
+	if(elem == NULL || cmime_list_size(list) == 0) {
+		return(-1);
 	}
-
-	/* its a new element */
-	elem = (CMimeList_T *)malloc(sizeof(CMimeList_T));
-	elem->data = data;
-	elem->next = *list;
-	*list = elem;
+ 
+	*data = elem->data;
+ 
+	/* handle removal of first element */
+	if(elem == cmime_list_head(list)) {
+		list->head = elem->next;
+ 
+		if(list->head == NULL) {
+			list->tail = NULL;
+		} else {
+			list->head->prev = NULL;
+		}
+	} else {
+		elem->prev->next = elem->next;
+ 
+		if(elem->next == NULL) {
+			list->tail = elem->prev;
+		} else {
+			elem->next->prev = elem->prev;
+		}
+	}
+ 
+	free(elem);
+	list->size--;
 
 	return(0);
 }
 
-/* dump a list */
-void cmime_list_dump(CMimeList_T *list, void (*printme)(void *data)) {
-	CMimeList_T *it;
-
-	it = list;
-
-	if(it == NULL || it->data == NULL) {
-		return;
-	}
-
-	while(1) {
-		printme(it->data);
-		if(it->next == NULL) {
-			break;
-		}
-
-		it = it->next;
+/* remove tail element and return data pointer */
+void* cmime_list_remove_tail(CMimeList_T *list) {
+	void *data;
+	int ret;
+ 
+	ret = cmime_list_remove(list,cmime_list_tail(list),&data);
+ 
+	if(ret == 0) {
+		return(data);
+	} else {
+		return(NULL);
 	}
 }
 
-/* free used memory */
-void cmime_list_free(CMimeList_T *list, void (*deleteme)(void *data)) {
-	CMimeList_T *it;
-	CMimeList_T *prev;
-
-	it = list;
-	
-	/* the list itself is not allocated, do nothing */
-	if(it == NULL) {
-		return;
+void *cmime_list_remove_head(CMimeList_T *list) {
+	void *data;
+	int ret;
+ 
+	ret = cmime_list_remove(list,cmime_list_head(list),&data);
+ 
+	if(ret == 0) {
+		return(data);
+	} else {
+		return(NULL);
 	}
+}
 
-	/* the list is allocated but contains no items so free up
-	 * only the head item
-	 */
-	if(it != NULL && it->data == NULL && it->next == NULL) {
-		free(it);
-		return;
+/* insert new elem next to given element elem */
+int cmime_list_insert_next(CMimeList_T *list, CMimeListElem_T *elem, void *data) {
+	CMimeListElem_T *new = (CMimeListElem_T *)calloc(1,sizeof(CMimeListElem_T));
+	if(new == NULL) {
+		return(-1);
 	}
+ 	
+	/* no null element if list not empty */
+	if(elem == NULL && cmime_list_size(list) != 0) {
+		return(-1);
+	}
+ 
+	new->data = data;
+ 
+	if(cmime_list_size(list) == 0) {
+		list->head = new;
+		list->tail = new;
+		new->next = NULL;
+		new->prev = NULL;
+	} else {
+		new->next = elem->next;
+		new->prev = elem;
 
-	/* walk the list and call given funtion deleteme onto the data item,
-	 * after freeing the data item free the list item itself and go on
-	 * to the next one
-	 **/
-	while(1) {
-		deleteme(it->data);
-		
-		if(it->next == NULL) {
-			free(it);
-			break;
+		if(elem->next == NULL) {
+			list->tail = new;
+		} else {
+			elem->next->prev = new;
 		}
 
-		prev = it; /* save pointer for freeing afterwards */
-		it = it->next;
-		free(prev);
+		elem->next = new;
 	}
+ 
+	list->size++;
+ 
+	return(0);
+}
+
+/* insert new element previous to given element elem */
+int cmime_list_insert_prev(CMimeList_T *list, CMimeListElem_T *elem, void *data) {
+	CMimeListElem_T *new = (CMimeListElem_T *)calloc(1,sizeof(CMimeListElem_T));
+	if(new == NULL) {
+		return(-1);
+	}
+ 
+	/* no null element if list not empty */
+	if(elem == NULL && cmime_list_size(list) != 0) {
+		return(-1);
+	}
+ 
+	new->data = data;
+ 
+	if(cmime_list_size(list) == 0) {
+		list->head = new;
+		list->tail = new;
+		new->next = NULL;
+		new->prev = NULL;
+	} else {
+		new->next = elem;
+		new->prev = elem->prev;
+ 
+		if(elem->prev == NULL) {
+			list->head = new;
+		} else {
+			elem->prev->next = new;
+		}
+ 
+		elem->prev = new;
+	}
+ 
+	list->size++;
+ 
+	return(0);
+}
+
+/* append to the end of a list */
+int cmime_list_append(CMimeList_T *list, void *data) {
+	return cmime_list_insert_next(list,cmime_list_tail(list),data);
+}
+ 
+/* prepend an element to the list */
+int cmime_list_prepend(CMimeList_T *list, void *data) {
+	return cmime_list_insert_prev(list,cmime_list_head(list),data);
+}
+
+/* apply function func to every element in the list */
+void cmime_list_map(CMimeList_T *list, void(*func)(CMimeListElem_T *elem,void *args), void *args) {
+	CMimeListElem_T *elem;
+ 
+	elem = cmime_list_head(list);
+	while(elem != NULL) {
+		func(elem,args);
+		elem = elem->next;
+	}
+}
+
+int cmime_list_map_new(CMimeList_T *list, CMimeList_T **new, void *(*func)(CMimeListElem_T *elem,
+		void *args), void *args) {
+	CMimeListElem_T *elem;
+	int ret;
+ 
+	ret = cmime_list_new(new, NULL);
+	if(ret != 0) {
+		return(-1);
+	}
+ 
+	elem = cmime_list_head(list);
+	while(elem != NULL) {
+		cmime_list_append(*new,func(elem,args));
+		elem = elem->next;
+	}
+ 
+	return(0);
 }
