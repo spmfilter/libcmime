@@ -55,10 +55,10 @@ int cmime_list_append(CMimeList_T *list, void *data);
 int cmime_list_prepend(CMimeList_T *list, void *data);
 
 /** remove from tail */
-void *cmime_list_remove_tail(CMimeList_T *list);
+void *cmime_list_pop_tail(CMimeList_T *list);
 
 /** remove from head   */
-void *cmime_list_remove_head(CMimeList_T *list);
+void *cmime_list_pop_head(CMimeList_T *list);
 
 /** insert new element next to elem */
 int cmime_list_insert_next(CMimeList_T *list, CMimeListElem_T *elem, void *data);

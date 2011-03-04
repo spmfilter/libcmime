@@ -74,6 +74,11 @@ CMimeAddress_T *cmime_address_parse_string(char *s);
  */
 void cmime_address_free(CMimeAddress_T *ca);
 
+
+/** Macros */
+#define cmime_address_get_name(ca) (ca->name)
+#define cmime_address_get_email(ca) (ca->email)
+
 #ifdef __cplusplus
 }
 #endif

@@ -17,27 +17,128 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 
 #include "../src/cmime_list.h"
 
-void list_char_printer(void *data) {
-	printf("elem is %s\n", (char *)data);
+#define TEST_STRING1 "This is test 1"
+#define TEST_STRING2 "This is test 2"
+#define TEST_STRING3 "This is test 3"
+
+void list_char_printer(CMimeListElem_T *elem,void *args) {
+	printf("%s\n", (char *)elem->data);
+}
+
+void list_destroy(void *data) {
+	char *s = (char *)data;
+	if (s!=NULL) free(s);
 }
 
 int main (int argc, char const *argv[]) {
-	CMimeList_T *head;
-/*
-	head = cmime_list_new();
+	CMimeList_T *l;
+	char *s, *s2, *s3 = NULL;
+	char *out;
+	char *pop;
+	CMimeListElem_T *e;
+	
+	if (cmime_list_new(&l,list_destroy)!=0) {
+		printf("Failed to create new CMimeList_T\n");			
+		return(-1);
+	}
 
-	cmime_list_append(head, "this is test 1");
-	cmime_list_append(head, "this is test 2");
-	cmime_list_append(head, "this is test 3");
-	cmime_list_append(head, "this is test 4");
-	cmime_list_prepend(&head, "this is test 5");
-	cmime_list_prepend(&head, "this is test 6");
-	cmime_list_append(head, "this is test 7");
+	s = malloc(strlen(TEST_STRING1) + 1);
+	strcpy(s,TEST_STRING1);
+	if (cmime_list_append(l,s)!=0) {
+		printf("Failed to append data to CMimeList_T\n");
+		return(-1);
+	}
+	
+	out = (char *)cmime_list_data(cmime_list_head(l));
+	if (strcmp(s,out)!=0) {
+		printf("Expected '%s', but got '%s'\n",s,out);	
+		return(-1);
+	}
+	
+	if (cmime_list_size(l)!=1) {
+		printf("Expected list size 1, but got %d",cmime_list_size(l));
+		return(-1);
+	}
+	
+	s2 = malloc(strlen(TEST_STRING2) + 1);
+	strcpy(s2,TEST_STRING2);
+	e = cmime_list_head(l);
 
-	cmime_list_dump(head, list_char_printer);
-	*/
+	if (cmime_list_is_head(e)!=1) {
+		printf("List element is not head\n");
+		return(-1);
+	}
+
+	if (cmime_list_insert_next(l,e,s2)!=0) {
+		printf("Failed to insert data to CMimeList_T\n");
+		return(-1);
+	}
+	
+	if (cmime_list_size(l)!=2) {
+		printf("Expected list size 2, but got %d",cmime_list_size(l));
+		return(-1);
+	}
+	
+	e = cmime_list_tail(l);
+	out = (char *)cmime_list_data(e);
+	if (strcmp(s2,out)!=0) {
+		printf("Expected '%s', but got '%s'\n",s2,out);
+		return(-1);
+	}
+	
+	if (cmime_list_is_tail(e)!=1) {
+		printf("List element is not tail\n");
+		return(-1);
+	}
+	
+	s3 = malloc(strlen(TEST_STRING3) + 1);
+	strcpy(s3,TEST_STRING3);
+	
+	if (cmime_list_insert_prev(l,e,s3)!=0) {
+		printf("Failed to insert data to CMimeList_T\n");
+		return(-1);
+	}
+	
+	out = (char *)cmime_list_data(cmime_list_prev(e));
+	if (strcmp(s3,out)!=0) {
+		printf("Expected '%s', but got '%s'\n",s3,out);
+		return(-1);
+	}
+	
+	cmime_list_map(l,list_char_printer,NULL);
+
+	pop = cmime_list_pop_head(l);
+	if (pop==NULL) {
+		printf("Failed to pop head from CMimeList_T\n");
+		return(-1);
+	} else {
+		if (strcmp(pop,TEST_STRING1)!=0) {
+			printf("Expected '%s', but got '%s'\n",TEST_STRING1,pop);
+			return(-1);
+		}
+		free(pop);
+	}
+	
+	pop = cmime_list_pop_tail(l);
+	if(pop==NULL) {
+		printf("Failed to pop tail from CMimeList_T\n");
+		return(-1);
+	} else {
+		if (strcmp(pop,TEST_STRING2)!=0) {
+			printf("Expected '%s', but got '%s'\n",TEST_STRING2,pop);
+			return(-1);
+		}
+		free(pop);
+	}
+	
+	if (cmime_list_free(l)!=0) {
+		printf("Failed to free CMimeList_T\n");
+		return(-1);
+	}
+
 	return(0);
 }

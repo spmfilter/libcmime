@@ -44,12 +44,12 @@ int main (int argc, char const *argv[]) {
 	
 	ca = cmime_address_parse_string(ADDR_STRING);
 	if (strcmp(ca->name,EXPTECTED_NAME_STRING) != 0) {
-		printf("Exptected '%s', but got '%s'\n",EXPTECTED_NAME_STRING,ca->name);			
+		printf("Exptected '%s', but got '%s'\n",EXPTECTED_NAME_STRING,cmime_address_get_name(ca));			
 		return(-1);
 	}
 	
 	if (strcmp(ca->email,EXPTECTED_EMAIL_STRING) != 0) {
-		printf("Exptected '%s', but got '%s'\n",EXPTECTED_EMAIL_STRING,ca->email);			
+		printf("Exptected '%s', but got '%s'\n",EXPTECTED_EMAIL_STRING,cmime_address_get_email(ca));			
 		return(-1);
 	}
 	cmime_address_free(ca);

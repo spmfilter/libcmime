@@ -49,8 +49,7 @@ int cmime_list_free(CMimeList_T *list) {
 		}
  
 	/* no more operations please... */
-	memset(list,0,sizeof(CMimeList_T));
- 
+	free(list);
 	return(0);
 }
 
@@ -89,7 +88,7 @@ int cmime_list_remove(CMimeList_T *list, CMimeListElem_T *elem, void **data) {
 }
 
 /* remove tail element and return data pointer */
-void* cmime_list_remove_tail(CMimeList_T *list) {
+void* cmime_list_pop_tail(CMimeList_T *list) {
 	void *data;
 	int ret;
  
@@ -102,7 +101,7 @@ void* cmime_list_remove_tail(CMimeList_T *list) {
 	}
 }
 
-void *cmime_list_remove_head(CMimeList_T *list) {
+void *cmime_list_pop_head(CMimeList_T *list) {
 	void *data;
 	int ret;
  
@@ -144,7 +143,7 @@ int cmime_list_insert_next(CMimeList_T *list, CMimeListElem_T *elem, void *data)
 			elem->next->prev = new;
 		}
 
-		elem->next = new;
+		elem->next = new; 
 	}
  
 	list->size++;
