@@ -1,5 +1,5 @@
 /* libcmime - A C mime library
- * Copyright (C) 2010 Axel Steiner
+ * Copyright (C) 2010 Axel Steiner <ast@treibsand.com>
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -111,9 +111,9 @@ int main (int argc, char const *argv[]) {
 	
 	cmime_list_map(l,list_char_printer,NULL);
 
-	pop = cmime_list_pop_head(l);
+	pop = cmime_list_remove_head(l);
 	if (pop==NULL) {
-		printf("Failed to pop head from CMimeList_T\n");
+		printf("Failed to remove head from CMimeList_T\n");
 		return(-1);
 	} else {
 		if (strcmp(pop,TEST_STRING1)!=0) {
@@ -123,9 +123,9 @@ int main (int argc, char const *argv[]) {
 		free(pop);
 	}
 	
-	pop = cmime_list_pop_tail(l);
+	pop = cmime_list_remove_tail(l);
 	if(pop==NULL) {
-		printf("Failed to pop tail from CMimeList_T\n");
+		printf("Failed to remove tail from CMimeList_T\n");
 		return(-1);
 	} else {
 		if (strcmp(pop,TEST_STRING2)!=0) {

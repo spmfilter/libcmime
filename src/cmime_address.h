@@ -1,5 +1,5 @@
 /* libcmime - A C mime library
- * Copyright (C) 2010 Axel Steiner
+ * Copyright (C) 2010 Axel Steiner <ast@treibsand.com>
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -16,6 +16,15 @@
  */
 
 
+/*!
+ * @file cmime_address.h
+ * @brief Defines functions and structs for email address handling
+ *
+ * This header is intended for use by any library or application, not only libcmime.
+ *
+ * @example test_address.c
+ */
+
 #ifndef _CMIME_ADDRESS_H
 #define _CMIME_ADDRESS_H
 
@@ -23,60 +32,71 @@
 extern "C" {
 #endif
 
-/**
- * A structure to represent an email address
+/*!
+ * @struct CMimeAddress_T cmime_address.h
+ * @brief Represents an email address
  */
-
 typedef struct {
 	char *name; /**< display name */
 	char *email; /**< the email address */
 } CMimeAddress_T;
 
-/** Creates a new CMimeAddress_T object
- *
- * \returns CMimeAdress_T pointer, or NULL on failure
+/*!
+ * @fn CMimeAddress_T *cmime_address_new(void)
+ * @brief Creates a new CMimeAddress_T object
+ * @returns CMimeAdress_T pointer, or NULL on failure
  */
 CMimeAddress_T *cmime_address_new(void);
 
-/** Set the display name of CMimeAdresse_T object
- *
- * \param ca CMimeAddress_T pointer
- * \param name the display name for the address
+/*! 
+ * @fn void cmime_address_set_name(CMimeAddress_T *ca, char *name)
+ * @brief Set the display name of CMimeAdresse_T object
+ * @param ca CMimeAddress_T pointer
+ * @param name the display name for the address
  */
 void cmime_address_set_name(CMimeAddress_T *ca, char *name);
 
-/** Set the email address of CMimeAdresse_T object
- *
- * \param ca CMimeAddress_T pointer
- * \param email email address
+/*! 
+ * @fn void cmime_address_set_email(CMimeAddress_T *ca, char *email)
+ * @brief Set the email address of CMimeAdresse_T object
+ * @param ca CMimeAddress_T pointer
+ * @param email email address
  */
 void cmime_address_set_email(CMimeAddress_T *ca, char *email);
 
-/** Allocates a string containing the contents of the CMimeAddress_T object.
- *
- * \param ca CMimeAddress_T pointer
- *
- * \returns the CMimeAddress_T object as an allocated string in rfc822 format.
+/*! 
+ * @fn char *cmime_address_to_string(CMimeAddress_T *ca)
+ * @brief Allocates a string containing the contents of the CMimeAddress_T object.
+ * @param ca CMimeAddress_T pointer
+ * @returns the CMimeAddress_T object as an allocated string in rfc822 format.
  */ 
 char *cmime_address_to_string(CMimeAddress_T *ca);
 
-/** Parse given string and create CMimeAddress_T object
- *
- * \param s string to parse
- *
- * \returns a newlly allocated CMimeAddress_T object, or NULL on failure
+/*! 
+ * @fn CMimeAddress_T *cmime_address_parse_string(char *s)
+ * @brief Parse given string and create CMimeAddress_T object
+ * @param s string to parse
+ * @returns a newlly allocated CMimeAddress_T object, or NULL on failure
  */
 CMimeAddress_T *cmime_address_parse_string(char *s);
 
-/** Free a CMimeAddress_T object 
- *
- * \param ca CMimeAddress_T pointer
+/*! 
+ * @fn void cmime_address_free(CMimeAddress_T *ca)
+ * @brief Free a CMimeAddress_T object 
+ * @param ca CMimeAddress_T pointer
  */
 void cmime_address_free(CMimeAddress_T *ca);
 
-
-/** Macros */
+/*!
+ * @def cmime_address_get_name(ca)
+ * @returns name of CMimeAddress_T object
+ */
 #define cmime_address_get_name(ca) (ca->name)
+
+/*!
+ * @def cmime_address_get_email(ca)
+ * @returns email address of CMimeAddress_T object
+ */
 #define cmime_address_get_email(ca) (ca->email)
 
 #ifdef __cplusplus

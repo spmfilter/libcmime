@@ -1,5 +1,5 @@
 /* libcmime - A C mime library
- * Copyright (C) 2010 Axel Steiner
+ * Copyright (C) 2010 Axel Steiner <ast@treibsand.com>
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
