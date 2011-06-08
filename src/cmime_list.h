@@ -99,20 +99,20 @@ int cmime_list_append(CMimeList_T *list, void *data);
 int cmime_list_prepend(CMimeList_T *list, void *data);
 
 /*! 
- * @fn cmime_list_remove_tail(CMimeList_T *list)
+ * @fn cmime_list_pop_tail(CMimeList_T *list)
  * @brief Remove tail element from list and return data pointer
  * @param list a CMimeList_T list
  * @returns data pointer of removed list element
  */
-void *cmime_list_remove_tail(CMimeList_T *list);
+void *cmime_list_pop_tail(CMimeList_T *list);
 
 /*! 
- * @fn cmime_list_remove_head(CMimeList_T *list)
+ * @fn cmime_list_pop_head(CMimeList_T *list)
  * @brief Remove head element from list an return data pointer
  * @param list a CMimeList_T list
  * @returns data pointer of removed list element   
  */
-void *cmime_list_remove_head(CMimeList_T *list);
+void *cmime_list_pop_head(CMimeList_T *list);
 
 /*! 
  * @fn cmime_list_insert_next(CMimeList_T *list, CMimeListElem_T *elem, void *data)

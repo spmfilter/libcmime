@@ -24,6 +24,7 @@
 #define TEST_STRING1 "This is test 1"
 #define TEST_STRING2 "This is test 2"
 #define TEST_STRING3 "This is test 3"
+#define TEST_STRING4 "This is test 4"
 
 void list_char_printer(CMimeListElem_T *elem,void *args) {
 	printf("%s\n", (char *)elem->data);
@@ -36,8 +37,12 @@ void list_destroy(void *data) {
 
 int main (int argc, char const *argv[]) {
 	CMimeList_T *l;
-	char *s, *s2, *s3 = NULL;
+	char *s = NULL;
+	char *s2 = NULL;
+	char *s3 = NULL;
+	char *s4 = NULL;
 	char *out;
+	char *data;
 	char *pop;
 	CMimeListElem_T *e;
 	
@@ -109,11 +114,24 @@ int main (int argc, char const *argv[]) {
 		return(-1);
 	}
 	
+	s4 = malloc(strlen(TEST_STRING4) + 1);
+	strcpy(s4,TEST_STRING4);
+	if (cmime_list_prepend(l,s4)!=0) {
+		printf("Failed to prepend data to CMimeList_T\n");
+		return(-1);
+	}
 	cmime_list_map(l,list_char_printer,NULL);
 
-	pop = cmime_list_remove_head(l);
+	e = cmime_list_head(l);
+	if (cmime_list_remove(l,e,&data)!=0) {
+		printf("Failed to remove element from CMimeList_T\n");
+		return(-1);
+	}
+	free(data);
+
+	pop = cmime_list_pop_head(l);
 	if (pop==NULL) {
-		printf("Failed to remove head from CMimeList_T\n");
+		printf("Failed to pop head from CMimeList_T\n");
 		return(-1);
 	} else {
 		if (strcmp(pop,TEST_STRING1)!=0) {
@@ -123,9 +141,9 @@ int main (int argc, char const *argv[]) {
 		free(pop);
 	}
 	
-	pop = cmime_list_remove_tail(l);
+	pop = cmime_list_pop_tail(l);
 	if(pop==NULL) {
-		printf("Failed to remove tail from CMimeList_T\n");
+		printf("Failed to pop tail from CMimeList_T\n");
 		return(-1);
 	} else {
 		if (strcmp(pop,TEST_STRING2)!=0) {
