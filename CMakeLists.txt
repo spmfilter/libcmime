@@ -16,11 +16,30 @@ endif(PREFIX)
 set(THREE_PART_VERSION_REGEX "[0-9]+\\.[0-9]+\\.[0-9]+")
 file(READ ${CMAKE_CURRENT_SOURCE_DIR}/VERSION CMIME_VERSION)
 
+if(${CMIME_VERSION} MATCHES ${THREE_PART_VERSION_REGEX})
+	string(REGEX REPLACE "^([0-9]+)\\.[0-9]+\\.[0-9]+" "\\1" CMIME_MAJOR_VERSION ${CMIME_VERSION})
+	string(REGEX REPLACE "^[0-9]+\\.([0-9])+\\.[0-9]+" "\\1" CMIME_MINOR_VERSION ${CMIME_VERSION})
+	string(REGEX REPLACE "^[0-9]+\\.[0-9]+\\.([0-9]+)" "\\1" CMIME_MICRO_VERSION ${CMIME_VERSION})
+else(${CMIME_VERSION} MATCHES ${THREE_PART_VERSION_REGEX})
+	message(FATAL_ERROR "Problem parsing version string, I can't parse it properly.")
+endif(${CMIME_VERSION} MATCHES ${THREE_PART_VERSION_REGEX})
+
+math(EXPR version_number "${CMIME_MAJOR_VERSION} * 1000000 + ${CMIME_MINOR_VERSION} * 1000 + ${CMIME_MICRO_VERSION}" )
+set(CMIME_VERSION_NUMBER ${version_number})
+
+
 # check for enabled debugging
 if(ENABLE_DEBUG)
-        set(CMAKE_VERBOSE_MAKEFILE TRUE)
-    add_definitions(-DDEBUG -g -O0 -Wall)
+	set(CMAKE_VERBOSE_MAKEFILE TRUE)
+	add_definitions(-DDEBUG -g -O0 -Wall)
+else()
+	set(CMIME_NDEBUG TRUE)
 endif(ENABLE_DEBUG)
+
+CONFIGURE_FILE(
+	${CMAKE_CURRENT_SOURCE_DIR}/src/cmime_config.h.cmake
+	${CMAKE_CURRENT_SOURCE_DIR}/src/cmime_config.h
+)
 
 add_subdirectory(src)
 add_subdirectory(test)

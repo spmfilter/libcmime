@@ -44,7 +44,7 @@ typedef struct _CMimeListElem {
 
 /*!
  * @struct CMimeList_T cmime_list.h
- * @brief Double linked list
+ * @brief Double linked list implementation
  */
 typedef struct _CMimeList {
 	int size;  /**< list size */
@@ -205,4 +205,4 @@ int cmime_list_map_new(CMimeList_T *list, CMimeList_T **new, void *(*func)(CMime
 }
 #endif
 
-#endif
+#endif /* _CMIME_LIST_H */

@@ -30,4 +30,4 @@ extern "C" {
 }
 #endif
 
-#endif
+#endif /* _CMIME_CONFIG_H */

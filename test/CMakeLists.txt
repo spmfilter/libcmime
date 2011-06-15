@@ -8,6 +8,11 @@ target_link_libraries(test_list cmime)
 
 ADD_TEST(ListTest ${EXECUTABLE_OUTPUT_PATH}/test_list)
 
+add_executable(test_table test_table.c)
+target_link_libraries(test_table cmime)
+
+ADD_TEST(TableTest ${EXECUTABLE_OUTPUT_PATH}/test_table)
+
 add_executable(test_message test_message.c)
 target_link_libraries(test_message cmime)
 

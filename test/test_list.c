@@ -123,7 +123,7 @@ int main (int argc, char const *argv[]) {
 	cmime_list_map(l,list_char_printer,NULL);
 
 	e = cmime_list_head(l);
-	if (cmime_list_remove(l,e,&data)!=0) {
+	if (cmime_list_remove(l,e,(void *)&data)!=0) {
 		printf("Failed to remove element from CMimeList_T\n");
 		return(-1);
 	}

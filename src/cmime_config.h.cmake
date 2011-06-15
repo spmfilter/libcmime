@@ -15,46 +15,24 @@
  * License along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-
-#ifndef _CMIME_MESSAGE_H
-#define _CMIME_MESSAGE_H
+#ifndef _CMIME_CONFIG_H
+#define _CMIME_CONFIG_H
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-#include <time.h>
+/* cmime version */
+#define CMIME_VERSION ${CMIME_VERSION_NUMBER}
+#define CMIME_MAJOR_VERSION ${CMIME_MAJOR_VERSION}
+#define CMIME_MINOR_VERSION ${CMIME_MINOR_VERSION}
+#define CMIME_MICRO_VERSION ${CMIME_MICRO_VERSION}
 
-#include "cmime_list.h"
-#include "cmime_address.h"
-
-typedef enum _CMimeRecipientType {
-	CMIME_RECIPIENT_TYPE_TO,
-	CMIME_RECIPIENT_TYPE_CC,
-	CMIME_RECIPIENT_TYPE_BCC,
-} CMimeRecipientType;
-
-/** A structure to represent an email message */
-typedef struct {
-	CMimeAddress_T *sender;
-	CMimeList_T **recipients;
-	char *subject;
-	char *message_id;
-	
-	time_t date;
-	int tz_offset;
-} CMimeMessage_T;
-
-CMimeMessage_T *cmime_message_new(void);
-
-/** Free a CMimeMessage_T object 
- *
- * \param ca CMimeMessage_T pointer
- */
-void cmime_message_free(CMimeMessage_T *message);
+/* debug */
+#define NDEBUG ${CMIME_NDEBUG}
 
 #ifdef __cplusplus
 }
 #endif
 
-#endif /* _CMIME_MESSAGE_H */
+#endif /* _CMIME_CONFIG_H */

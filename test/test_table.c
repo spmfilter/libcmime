@@ -15,46 +15,21 @@
  * License along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 
-#ifndef _CMIME_MESSAGE_H
-#define _CMIME_MESSAGE_H
+#include "../src/cmime_table.h"
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-
-#include <time.h>
-
-#include "cmime_list.h"
-#include "cmime_address.h"
-
-typedef enum _CMimeRecipientType {
-	CMIME_RECIPIENT_TYPE_TO,
-	CMIME_RECIPIENT_TYPE_CC,
-	CMIME_RECIPIENT_TYPE_BCC,
-} CMimeRecipientType;
-
-/** A structure to represent an email message */
-typedef struct {
-	CMimeAddress_T *sender;
-	CMimeList_T **recipients;
-	char *subject;
-	char *message_id;
+int main (int argc, char const *argv[]) {
+	CMimeTable_T *t = NULL;
 	
-	time_t date;
-	int tz_offset;
-} CMimeMessage_T;
-
-CMimeMessage_T *cmime_message_new(void);
-
-/** Free a CMimeMessage_T object 
- *
- * \param ca CMimeMessage_T pointer
- */
-void cmime_message_free(CMimeMessage_T *message);
-
-#ifdef __cplusplus
+	if (cmime_table_new(&t,1,NULL,NULL)!=0) {
+		printf("Failed to create new CMimeTable_T\n");			
+		return(-1);
+	}
+	
+	cmime_table_free(t);
+	
+	return(0);
 }
-#endif
-
-#endif /* _CMIME_MESSAGE_H */

@@ -2,3 +2,4 @@ syntax:glob
 build/*
 doc/*
 .DS_Store
+src/cmime_config.h

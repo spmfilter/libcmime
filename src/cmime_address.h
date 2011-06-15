@@ -103,4 +103,4 @@ void cmime_address_free(CMimeAddress_T *ca);
 }
 #endif
 
-#endif
+#endif /* _CMIME_ADDRESS_H */
