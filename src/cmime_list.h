@@ -75,7 +75,7 @@ int cmime_list_free(CMimeList_T *list);
  * @brief Remove an element from list
  * @param list a CMimeList_T list
  * @param elem the CMimeListElem_T element which should be removed
- * @param data 
+ * @param data out param to return element data
  * @returns 0 on success or -1 in case of error  
  */
 int cmime_list_remove(CMimeList_T *list, CMimeListElem_T *elem, void **data);

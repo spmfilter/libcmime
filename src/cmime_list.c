@@ -18,6 +18,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <stdlib.h>
+#include <assert.h>
 
 #include "cmime_list.h"
 
@@ -40,7 +41,8 @@ int cmime_list_new(CMimeList_T **list, void (*destroy)(void *data)) {
 /* destroy a complete list */
 int cmime_list_free(CMimeList_T *list) {
 	void *data;
- 
+	assert(list);
+
 	while(cmime_list_size(list) > 0) {
 		if(cmime_list_remove(list, cmime_list_tail(list), (void **)&data) == 0 &&
 			list->destroy != NULL) {
@@ -57,6 +59,8 @@ int cmime_list_free(CMimeList_T *list) {
 int cmime_list_remove(CMimeList_T *list, CMimeListElem_T *elem, void **data) {
 	/* no null element and no empty list */
 	if(elem == NULL || cmime_list_size(list) == 0) {
+		assert(list);
+		assert(elem);
 		return(-1);
 	}
  
@@ -91,7 +95,9 @@ int cmime_list_remove(CMimeList_T *list, CMimeListElem_T *elem, void **data) {
 void* cmime_list_pop_tail(CMimeList_T *list) {
 	void *data;
 	int ret;
- 
+	
+	assert(list);
+	
 	ret = cmime_list_remove(list,cmime_list_tail(list),&data);
  
 	if(ret == 0) {
@@ -105,6 +111,8 @@ void *cmime_list_pop_head(CMimeList_T *list) {
 	void *data;
 	int ret;
  
+	assert(list);
+	
 	ret = cmime_list_remove(list,cmime_list_head(list),&data);
  
 	if(ret == 0) {
@@ -117,6 +125,9 @@ void *cmime_list_pop_head(CMimeList_T *list) {
 /* insert new elem next to given element elem */
 int cmime_list_insert_next(CMimeList_T *list, CMimeListElem_T *elem, void *data) {
 	CMimeListElem_T *new = (CMimeListElem_T *)calloc(1,sizeof(CMimeListElem_T));
+	
+	assert(list);
+		
 	if(new == NULL) {
 		return(-1);
 	}
@@ -154,6 +165,10 @@ int cmime_list_insert_next(CMimeList_T *list, CMimeListElem_T *elem, void *data)
 /* insert new element previous to given element elem */
 int cmime_list_insert_prev(CMimeList_T *list, CMimeListElem_T *elem, void *data) {
 	CMimeListElem_T *new = (CMimeListElem_T *)calloc(1,sizeof(CMimeListElem_T));
+	
+	assert(list);
+	assert(elem);
+	
 	if(new == NULL) {
 		return(-1);
 	}
@@ -190,18 +205,24 @@ int cmime_list_insert_prev(CMimeList_T *list, CMimeListElem_T *elem, void *data)
 
 /* append to the end of a list */
 int cmime_list_append(CMimeList_T *list, void *data) {
+	assert(list);
+	assert(data);
 	return cmime_list_insert_next(list,cmime_list_tail(list),data);
 }
  
 /* prepend an element to the list */
 int cmime_list_prepend(CMimeList_T *list, void *data) {
+	assert(list);
+	assert(data);
 	return cmime_list_insert_prev(list,cmime_list_head(list),data);
 }
 
 /* apply function func to every element in the list */
 void cmime_list_map(CMimeList_T *list, void(*func)(CMimeListElem_T *elem,void *args), void *args) {
 	CMimeListElem_T *elem;
- 
+	
+	assert(list);
+	
 	elem = cmime_list_head(list);
 	while(elem != NULL) {
 		func(elem,args);
@@ -214,6 +235,8 @@ int cmime_list_map_new(CMimeList_T *list, CMimeList_T **new, void *(*func)(CMime
 	CMimeListElem_T *elem;
 	int ret;
  
+	assert(list);
+
 	ret = cmime_list_new(new, NULL);
 	if(ret != 0) {
 		return(-1);

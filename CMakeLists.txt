@@ -32,8 +32,6 @@ set(CMIME_VERSION_NUMBER ${version_number})
 if(ENABLE_DEBUG)
 	set(CMAKE_VERBOSE_MAKEFILE TRUE)
 	add_definitions(-DDEBUG -g -O0 -Wall)
-else()
-	set(CMIME_NDEBUG TRUE)
 endif(ENABLE_DEBUG)
 
 CONFIGURE_FILE(

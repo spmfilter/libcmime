@@ -28,9 +28,6 @@ extern "C" {
 #define CMIME_MINOR_VERSION ${CMIME_MINOR_VERSION}
 #define CMIME_MICRO_VERSION ${CMIME_MICRO_VERSION}
 
-/* debug */
-#define NDEBUG ${CMIME_NDEBUG}
-
 #ifdef __cplusplus
 }
 #endif

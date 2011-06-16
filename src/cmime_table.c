@@ -16,17 +16,23 @@
  */
 
 #include <stdlib.h>
+#include <string.h>
 #include <limits.h>
+#include <assert.h>
 
-#include "cmime_assert.h"
 #include "cmime_table.h"
 
-static int cmpatom(const void *x, const void *y) {
-	return x != y;
+static int str_cmp(const void *x, const void *y) {
+	return strcmp((char *)x,(char *)y);
 }
 
-static unsigned hashatom(const void *key) {
-	return (unsigned long)key>>2;
+static unsigned str_hash(const void *x) {
+	const char *str = x;
+	unsigned h = 0;
+
+	while (*str)
+		h = (h<<1) + *str++;
+	return h;
 }
 
 int cmime_table_new(CMimeTable_T **table, int hint, 
@@ -47,8 +53,8 @@ int cmime_table_new(CMimeTable_T **table, int hint,
 		return(-1);
 		
 	(*table)->size = primes[i-1];
-	(*table)->cmp  = cmp ? cmp : cmpatom;
-	(*table)->hash = hash ? hash : hashatom;
+	(*table)->cmp = cmp ? cmp : str_cmp;
+	(*table)->hash = hash ? hash : str_hash;
 	(*table)->buckets = (struct binding **)((*table) + 1);
 	for (i = 0; i < (*table)->size; i++)
 		(*table)->buckets[i] = NULL;
@@ -74,13 +80,16 @@ void *cmime_table_get(CMimeTable_T *table, const void *key) {
 	return(p ? p->value : NULL);
 }
 
-void *cmime_table_insert(CMimeTable_T *table, const void *key, void *value) {
+int cmime_table_insert(CMimeTable_T *table, const void *key, void *value) {
 	int i;
 	struct binding *p;
-	void *prev;
 	
-	assert(table);
-	assert(key);
+	if (table == NULL || key == NULL) {
+		assert(table);
+		assert(key);	
+		return(-1);
+	}
+	
 	
 	i = (*table->hash)(key)%table->size;
 	for (p = table->buckets[i]; p; p = p->link) {
@@ -94,19 +103,15 @@ void *cmime_table_insert(CMimeTable_T *table, const void *key, void *value) {
 		p->link = table->buckets[i];
 		table->buckets[i] = p;
 		table->length++;
-		prev = NULL;
-	} else {
-		prev = p->value;
 	}
 	p->value = value;
 	table->timestamp++;
 
-	return(prev);
+	return(0);
 }
 
 void cmime_table_map(CMimeTable_T *table,
-		void apply(const void *key, void **value, void *cl),
-		void *cl) {
+		void apply(const void *key, void **value, void *cl),	void *args) {
 	int i;
 	unsigned stamp;
 	struct binding *p;
@@ -117,33 +122,36 @@ void cmime_table_map(CMimeTable_T *table,
 	stamp = table->timestamp;
 	for (i = 0; i < table->size; i++) {
 		for (p = table->buckets[i]; p; p = p->link) {
-			apply(p->key, &p->value, cl);
+			apply(p->key, &p->value, args);
 			assert(table->timestamp == stamp);
 		}
 	}
 }
 
-void *cmime_table_remove(CMimeTable_T *table, const void *key) {
+int cmime_table_remove(CMimeTable_T *table, const void *key, void **data) {
 	int i;
 	struct binding **pp;
 	
-	assert(table);
-	assert(key);
+	if (table == NULL || key == NULL) {
+		assert(table);
+		assert(key);
+		return(-1);
+	}
 	
 	table->timestamp++;
 	i = (*table->hash)(key)%table->size;
 	for (pp = &table->buckets[i]; *pp; pp = &(*pp)->link) {
 		if ((*table->cmp)(key, (*pp)->key) == 0) {
 			struct binding *p = *pp;
-			void *value = p->value;
+			if (data != NULL)
+				*data = p->value;
 			*pp = p->link;
-			if (p != NULL)
-				free(p);
+			free(p);
 			table->length--;
-			return value;
+			break;
 		}
 	}
-	return(NULL);
+	return(0);
 }
 
 void cmime_table_free(CMimeTable_T *table) {

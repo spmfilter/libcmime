@@ -79,15 +79,53 @@ int cmime_table_new(CMimeTable_T **table, int hint,
  * @param table table to free
  */
 void cmime_table_free(CMimeTable_T *table);
-void *cmime_table_insert(CMimeTable_T *table, const void *key, void *value);
+
+/*! 
+ * @fn cmime_table_insert(CMimeTable_T *table, const void *key, void *value)
+ * @brief Inserts new key/value pair into table. If key already exists, the
+ *   new value will be stored.
+ * @param table a CMimeTable_T table
+ * @param key lookup key
+ * @param value value to store in table
+ * @returns 0 on success or -1 in case of error
+ */
+int cmime_table_insert(CMimeTable_T *table, const void *key, void *value);
+
+/*!
+ * @fn cmime_table_get(CMimeTable_T *table, const void *key)
+ * @brief Searching the table for a key
+ * @param table a CMimeTable_T table
+ * @param key search key
+ * @returns value for key
+ */
 void *cmime_table_get(CMimeTable_T *table, const void *key);
-void *cmime_table_remove(CMimeTable_T *table, const void *key);
+
+/*!
+ * @fn int cmime_table_remove(CMimeTable_T *table, const void *key, void **data)
+ * @brief Searches for key and removes binding from table.
+ * @param table a CMimeTable_T table
+ * @param key key which binding should be removed
+ * @param data out param to return old value
+ * @returns 0 on success or -1 in case of error
+ *
+ */
+int cmime_table_remove(CMimeTable_T *table, const void *key, void **data);
+
+/*!
+ * @fn cmime_table_map(CMimeTable_T *table, void apply(const void *key, void **value, void *cl), void *cl)
+ * @brief Calls the function pointed to by apply for every key-value pair in table in an unspecified order.
+ * @param table a CMimeTable_T table
+ * @param apply function to call for every element
+ * @param args optional arguments for function pointer
+ */
 void cmime_table_map(CMimeTable_T *table,
-	void apply(const void *key, void **value, void *cl),
-	void *cl);
-/*void **cmime_table_to_array(CMimeTable_T *table, void *end);*/
+	void apply(const void *key, void **value, void *args),
+	void *args);
 
-
+/*!
+ * @def cmime_table_length(table)
+ * @returns length of CMimeTable_T table
+ */
 #define cmime_table_length(table) ((table)->length)
 
 #ifdef __cplusplus
