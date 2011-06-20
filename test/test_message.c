@@ -32,7 +32,11 @@ int main (int argc, char const *argv[]) {
 	assert(strcmp(s,test_sender1)==0);
 	free(s);
 	
-	
+	// check if sender will be overwritten
+	cmime_message_set_sender(msg,test_sender2);
+	s = cmime_message_get_sender(msg);
+	assert(strcmp(s,test_sender2)==0);
+	free(s);
 	
 	cmime_message_free(msg);
 	return(0);

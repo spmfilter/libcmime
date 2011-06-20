@@ -19,8 +19,6 @@
  * @file cmime_message.h
  * @brief Defines functions and structs for message handling
  *
- * This header is intended for use by any library or application, not only libcmime.
- *
  * @example test_message.c
  */
 
