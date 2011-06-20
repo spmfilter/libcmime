@@ -24,11 +24,10 @@
 
 void list_char_printer(CMimeListElem_T *elem,void *args) {
 	assert(elem);
-	printf("%s\n", (char *)elem->data);
 }
 
 void list_destroy(void *data) {
-	char *s = (char *)data;
+	assert(data);
 }
 
 int main (int argc, char const *argv[]) {
@@ -41,7 +40,7 @@ int main (int argc, char const *argv[]) {
 	char *data;
 	char *pop;
 	CMimeListElem_T *e;
-	
+
 	if (cmime_list_new(&l,list_destroy)!=0) {
 		printf("Failed to create new CMimeList_T\n");			
 		return(-1);
@@ -53,10 +52,7 @@ int main (int argc, char const *argv[]) {
 	}
 	
 	out = (char *)cmime_list_data(cmime_list_head(l));
-	if (strcmp(test_string1,out)!=0) {
-		printf("Expected '%s', but got '%s'\n",test_string1,out);	
-		return(-1);
-	}
+	assert(strcmp(test_string1,out)==0);
 	
 	if (cmime_list_size(l)!=1) {
 		printf("Expected list size 1, but got %d",cmime_list_size(l));
@@ -82,10 +78,7 @@ int main (int argc, char const *argv[]) {
 	
 	e = cmime_list_tail(l);
 	out = (char *)cmime_list_data(e);
-	if (strcmp(test_string2,out)!=0) {
-		printf("Expected '%s', but got '%s'\n",test_string2,out);
-		return(-1);
-	}
+	assert(strcmp(test_string2,out)==0);
 	
 	if (cmime_list_is_tail(e)!=1) {
 		printf("List element is not tail\n");
@@ -98,10 +91,7 @@ int main (int argc, char const *argv[]) {
 	}
 	
 	out = (char *)cmime_list_data(cmime_list_prev(e));
-	if (strcmp(test_string3,out)!=0) {
-		printf("Expected '%s', but got '%s'\n",test_string3,out);
-		return(-1);
-	}
+	assert(strcmp(test_string3,out)==0);
 	
 	if (cmime_list_prepend(l,test_string4)!=0) {
 		printf("Failed to prepend data to CMimeList_T\n");
@@ -116,26 +106,12 @@ int main (int argc, char const *argv[]) {
 	}
 
 	pop = cmime_list_pop_head(l);
-	if (pop==NULL) {
-		printf("Failed to pop head from CMimeList_T\n");
-		return(-1);
-	} else {
-		if (strcmp(pop,test_string1)!=0) {
-			printf("Expected '%s', but got '%s'\n",test_string1,pop);
-			return(-1);
-		}
-	}
+	assert(pop);
+	assert(strcmp(pop,test_string1)==0);
 	
 	pop = cmime_list_pop_tail(l);
-	if(pop==NULL) {
-		printf("Failed to pop tail from CMimeList_T\n");
-		return(-1);
-	} else {
-		if (strcmp(pop,test_string2)!=0) {
-			printf("Expected '%s', but got '%s'\n",test_string2,pop);
-			return(-1);
-		}
-	}
+	assert(pop);
+	assert(strcmp(pop,test_string2)==0);
 	
 	if (cmime_list_free(l)!=0) {
 		printf("Failed to free CMimeList_T\n");

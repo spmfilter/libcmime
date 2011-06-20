@@ -18,40 +18,33 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <assert.h>
 
 #include "../src/cmime_address.h"
 
-#define ADDR_STRING "Axel Steiner <ast@treibsand.com>"
-#define EXPTECTED_NAME_STRING "Axel Steiner"
-#define EXPTECTED_EMAIL_STRING "ast@treibsand.com"
-
 int main (int argc, char const *argv[]) {
 	char *s = NULL;
+	char addr_string[] = "Axel Steiner <ast@treibsand.com>";
+	char expected_name_string[] = "Axel Steiner";
+	char expected_email_string[] = "ast@treibsand.com";
 	CMimeAddress_T *ca = cmime_address_new();
-	int passed = 0;
 	
-	cmime_address_set_name(ca, EXPTECTED_NAME_STRING);
-	cmime_address_set_email(ca, EXPTECTED_EMAIL_STRING);
+	cmime_address_set_name(ca, expected_name_string);
+	cmime_address_set_email(ca, expected_email_string);
+	
 	
 	s = cmime_address_to_string(ca);
-	if (strcmp(s,ADDR_STRING) != 0) {
-		printf("Expected '%s', but got '%s'",ADDR_STRING,s);
-		passed = 1;
-	}
-	
+	assert(strcmp(s,addr_string) == 0);
 	free(s);
 	cmime_address_free(ca);
 	
-	ca = cmime_address_parse_string(ADDR_STRING);
-	if (strcmp(ca->name,EXPTECTED_NAME_STRING) != 0) {
-		printf("Exptected '%s', but got '%s'\n",EXPTECTED_NAME_STRING,cmime_address_get_name(ca));			
-		return(-1);
-	}
+	ca = cmime_address_parse_string(addr_string);
+	assert(strcmp(ca->name,expected_name_string) == 0);
+	assert(strcmp(ca->email,expected_email_string) == 0);
+
+	cmime_address_set_type(ca, CMIME_ADDRESS_TYPE_FROM);
+	assert(cmime_address_get_type(ca) == CMIME_ADDRESS_TYPE_FROM);
 	
-	if (strcmp(ca->email,EXPTECTED_EMAIL_STRING) != 0) {
-		printf("Exptected '%s', but got '%s'\n",EXPTECTED_EMAIL_STRING,cmime_address_get_email(ca));			
-		return(-1);
-	}
 	cmime_address_free(ca);
-	return(passed);
+	return(0);
 }

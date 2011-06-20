@@ -31,6 +31,16 @@
 #ifdef __cplusplus
 extern "C" {
 #endif
+/*!
+ * @enum CMimeAddressType_T 
+ * @brief Possible types of email addresses
+ */
+typedef enum _CMimeAddressType {
+	CMIME_ADDRESS_TYPE_TO, 
+	CMIME_ADDRESS_TYPE_CC,
+	CMIME_ADDRESS_TYPE_BCC,
+	CMIME_ADDRESS_TYPE_FROM,
+} CMimeAddressType_T;
 
 /*!
  * @struct CMimeAddress_T cmime_address.h
@@ -39,6 +49,7 @@ extern "C" {
 typedef struct {
 	char *name; /**< display name */
 	char *email; /**< the email address */
+	CMimeAddressType_T type; /**< type of address */
 } CMimeAddress_T;
 
 /*!
@@ -58,11 +69,19 @@ void cmime_address_set_name(CMimeAddress_T *ca, char *name);
 
 /*! 
  * @fn void cmime_address_set_email(CMimeAddress_T *ca, char *email)
- * @brief Set the email address of CMimeAdresse_T object
+ * @brief Set the email address of CMimeAdress_T object
  * @param ca CMimeAddress_T pointer
  * @param email email address
  */
 void cmime_address_set_email(CMimeAddress_T *ca, char *email);
+
+/*!
+ * @fn void cmime_address_set_type(CMimeAddress_T *ca, CMimeAddressType_T t)
+ * @brief Set the address type of CMimeAdress_T object
+ * @param ca CMimeAddress_T object
+ * @param t CMimeAddressType_T type
+ */
+void cmime_address_set_type(CMimeAddress_T *ca, CMimeAddressType_T t);
 
 /*! 
  * @fn char *cmime_address_to_string(CMimeAddress_T *ca)
@@ -98,6 +117,12 @@ void cmime_address_free(CMimeAddress_T *ca);
  * @returns email address of CMimeAddress_T object
  */
 #define cmime_address_get_email(ca) (ca->email)
+
+/*!
+ * @def cmime_address_get_type(ca)
+ * @returns address type
+ */
+#define cmime_address_get_type(ca) (ca->type)
 
 #ifdef __cplusplus
 }

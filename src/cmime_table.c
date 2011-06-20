@@ -55,7 +55,7 @@ int cmime_table_new(CMimeTable_T **table, int hint,
 	(*table)->size = primes[i-1];
 	(*table)->cmp = cmp ? cmp : str_cmp;
 	(*table)->hash = hash ? hash : str_hash;
-	(*table)->buckets = (struct binding **)((*table) + 1);
+	(*table)->buckets = (struct CMimeTableBinding_T **)((*table) + 1);
 	for (i = 0; i < (*table)->size; i++)
 		(*table)->buckets[i] = NULL;
 	(*table)->length = 0;
@@ -67,7 +67,7 @@ int cmime_table_new(CMimeTable_T **table, int hint,
 
 void *cmime_table_get(CMimeTable_T *table, const void *key) {
 	int i;
-	struct binding *p;
+	struct CMimeTableBinding_T *p;
 	
 	assert(table);
 	assert(key);
@@ -82,7 +82,7 @@ void *cmime_table_get(CMimeTable_T *table, const void *key) {
 
 int cmime_table_insert(CMimeTable_T *table, const void *key, void *value) {
 	int i;
-	struct binding *p;
+	struct CMimeTableBinding_T *p;
 	
 	if (table == NULL || key == NULL) {
 		assert(table);
@@ -114,7 +114,7 @@ void cmime_table_map(CMimeTable_T *table,
 		void apply(const void *key, void **value, void *cl),	void *args) {
 	int i;
 	unsigned stamp;
-	struct binding *p;
+	struct CMimeTableBinding_T *p;
 	
 	assert(table);
 	assert(apply);
@@ -130,7 +130,7 @@ void cmime_table_map(CMimeTable_T *table,
 
 int cmime_table_remove(CMimeTable_T *table, const void *key, void **data) {
 	int i;
-	struct binding **pp;
+	struct CMimeTableBinding_T **pp;
 	
 	if (table == NULL || key == NULL) {
 		assert(table);
@@ -142,7 +142,7 @@ int cmime_table_remove(CMimeTable_T *table, const void *key, void **data) {
 	i = (*table->hash)(key)%table->size;
 	for (pp = &table->buckets[i]; *pp; pp = &(*pp)->link) {
 		if ((*table->cmp)(key, (*pp)->key) == 0) {
-			struct binding *p = *pp;
+			struct CMimeTableBinding_T *p = *pp;
 			if (data != NULL)
 				*data = p->value;
 			*pp = p->link;
@@ -159,7 +159,7 @@ void cmime_table_free(CMimeTable_T *table) {
 	
 	if (table->length > 0) {
 		int i;
-		struct binding *p, *q;
+		struct CMimeTableBinding_T *p, *q;
 		for (i = 0; i < table->size; i++) {
 			for (p = table->buckets[i]; p; p = q) {
 				q = p->link;

@@ -18,6 +18,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <assert.h>
 
 #include "cmime_address.h"
 
@@ -30,12 +31,17 @@ CMimeAddress_T *cmime_address_new(void) {
 
 /* Set the display name of CMimeAdresse_T object */
 void cmime_address_set_name(CMimeAddress_T *ca, char *name) {
+	assert(ca);
+	assert(name);
+	
 	ca->name = (char *)malloc(strlen(name) + 1);
 	strcpy(ca->name,name);
 }
 
 /* Set the email address of CMimeAdresse_T object */
 void cmime_address_set_email(CMimeAddress_T *ca, char *email) {
+	assert(ca);
+	assert(email);
 	ca->email = (char *)malloc(strlen(email) + 1);
 	strcpy(ca->email, email);
 }
@@ -43,9 +49,17 @@ void cmime_address_set_email(CMimeAddress_T *ca, char *email) {
 /* Allocates a string containing the contents of the CMimeAddress_T object. */ 
 char *cmime_address_to_string(CMimeAddress_T *ca) {
 	char *s = NULL;
+	
+	assert(ca);
 	asprintf(&s,"%s <%s>",ca->name,ca->email);
 	
 	return(s);
+}
+
+void cmime_address_set_type(CMimeAddress_T *ca, CMimeAddressType_T t) {
+	assert(ca);
+	assert(t);
+	ca->type = t;
 }
 
 /* Parse given string and create CMimeAddress_T object */

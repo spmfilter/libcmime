@@ -46,8 +46,8 @@ typedef struct {
 	unsigned (*hash)(const void *key); /**< hash function */
 	int length; /**< number of hash table entries */
 	unsigned timestamp; /**< table's timestamp, incremented every time the table is changed */
-	struct binding {
-		struct binding *link; /**< pointer to next entry */
+	struct CMimeTableBinding_T {
+		struct CMimeTableBinding_T *link; /**< pointer to next entry */
 		const void *key; /**< hash table key */
 		void *value; /**< hash table value */
 	} **buckets;

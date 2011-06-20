@@ -28,12 +28,6 @@ extern "C" {
 #include "cmime_list.h"
 #include "cmime_address.h"
 
-typedef enum _CMimeRecipientType {
-	CMIME_RECIPIENT_TYPE_TO,
-	CMIME_RECIPIENT_TYPE_CC,
-	CMIME_RECIPIENT_TYPE_BCC,
-} CMimeRecipientType;
-
 /** A structure to represent an email message */
 typedef struct {
 	CMimeAddress_T *sender;

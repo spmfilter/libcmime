@@ -24,7 +24,6 @@
 
 void tmap(const void *key, void **count, void *args) {
 	assert(key);
-	printf("Key: '%s'\n",(char *)key);
 }
 
 int main (int argc, char const *argv[]) {
@@ -46,10 +45,7 @@ int main (int argc, char const *argv[]) {
 	}
 	
 	out = cmime_table_get(t,test_key1);
-	if (strcmp(out,test_value1)!=0) {
-		printf("Expected '%s', but got '%s'\n",test_value1,out);	
-		return(-1);
-	}
+	assert(strcmp(out,test_value1)==0);
 	
 	if (cmime_table_insert(t,test_key2,test_value2)!=0) {
 		printf("Failed to insert data to CMimeTable_T\n");
