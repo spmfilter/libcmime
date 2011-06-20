@@ -42,6 +42,10 @@ int main (int argc, char const *argv[]) {
 	assert(strcmp(ca->name,expected_name_string) == 0);
 	assert(strcmp(ca->email,expected_email_string) == 0);
 
+	s = cmime_address_to_string(ca);
+	assert(strcmp(s,addr_string)==0);
+	free(s);
+	
 	cmime_address_set_type(ca, CMIME_ADDRESS_TYPE_FROM);
 	assert(cmime_address_get_type(ca) == CMIME_ADDRESS_TYPE_FROM);
 	

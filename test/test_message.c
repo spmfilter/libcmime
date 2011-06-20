@@ -15,13 +15,24 @@
  * License along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
+#include <assert.h>
 
 #include "../src/cmime_message.h"
 
 int main (int argc, char const *argv[]) {
 	CMimeMessage_T *msg = cmime_message_new();
+	char test_sender1[] = "Axel Steiner <ast@treibsand.com>";
+	char test_sender2[] = "Foo Bar <foo@foo.bar>";
+	char *s = NULL;
+	
+	cmime_message_set_sender(msg,test_sender1);
+	s = cmime_message_get_sender(msg);
+	assert(strcmp(s,test_sender1)==0);
+	free(s);
+	
+	
 	
 	cmime_message_free(msg);
 	return(0);

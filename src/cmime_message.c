@@ -16,10 +16,12 @@
  */
 
 #include <stdlib.h>
+#include <assert.h>
 
+#include "cmime_address.h"
 #include "cmime_message.h"
 #include "cmime_list.h"
-
+/*
 static char *rfc822_headers[] = {
 	"Return-Path",
 	"Received",
@@ -31,44 +33,54 @@ static char *rfc822_headers[] = {
 	"To",
 	"Cc",
 };
+*/
+//#define N_RECIPIENT_TYPES 3
 
-#define N_RECIPIENT_TYPES 3
+void recipients_destroy(void *data) {
+	assert(data);
+	CMimeAddress_T *ca = (CMimeAddress_T *)data;
+	cmime_address_free(ca);
+}
 
 CMimeMessage_T *cmime_message_new(void) {
-	CMimeMessage_T *message;
-	int i;
+	CMimeMessage_T *message = NULL;
 	
 	message = (CMimeMessage_T *)calloc((size_t)1, sizeof(CMimeMessage_T));
+	assert(message);
 	
 	message->sender = NULL;
-	message->recipients = calloc((size_t)N_RECIPIENT_TYPES, sizeof(CMimeList_T));
-	message->subject = NULL;
+	if (cmime_list_new(&message->recipients,recipients_destroy)!=0) 
+			return(NULL);
+
 	message->date = 0;
 	message->tz_offset = 0;
 	message->message_id = NULL;
 
-	/* initialize recipient lists */
-	for (i = 0; i < N_RECIPIENT_TYPES; i++) {
-//		message->recipients[i] = cmime_list_new();
-	}
-
 	return(message);
-}
-
-/* cleanup a cmime_list whith CMimeAddress_T pointers */
-void cmime_message_clear_recipients(void *data) {
-	CMimeAddress_T *ca = (CMimeAddress_T *)data;
-
-	if(ca != NULL)
-		cmime_address_free(ca);
 }
 
 /** Free a CMimeMessage_T object  */
 void cmime_message_free(CMimeMessage_T *message) {
-	int i;
-	for (i = 0; i < N_RECIPIENT_TYPES; i++) {
-	//	cmime_list_free(message->recipients[i], cmime_message_clear_recipients);
-	}
+	assert(message);
+	if (message->message_id != NULL)
+		free(message->message_id);
+
+	if (message->sender != NULL)
+		cmime_address_free(message->sender);
+	
+	if (message->recipients != NULL)
+		cmime_list_free(message->recipients);
 	
 	free(message);
+}
+
+/* Set sender of message */
+void cmime_message_set_sender(CMimeMessage_T *message, char *sender) {
+	CMimeAddress_T *ca = NULL;
+	assert(message);
+	
+	ca = cmime_address_parse_string(sender);
+	if (message->sender != NULL)
+		cmime_address_free(message->sender);
+	message->sender = ca;
 }
