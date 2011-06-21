@@ -45,8 +45,7 @@ int main (int argc, char const *argv[]) {
 	// fetch first value
 	s = cmime_header_get_value(h,0);
 	assert(strcmp(s,test_value1)==0);
-	free(s);
-	
+		
 	// add another header value
 	cmime_header_set_value(h,test_value2);
 	count = cmime_header_get_count(h);
@@ -55,15 +54,11 @@ int main (int argc, char const *argv[]) {
 	// check first value again
 	s = cmime_header_get_value(h,0);
 	assert(strcmp(s,test_value1)==0);
-	free(s);
 		
 	// check second value
 	s = cmime_header_get_value(h,1);
 	assert(strcmp(s,test_value2)==0);
-	free(s);
 	
-	printf("0: %s\n",h->value[0]);
-	printf("1: %s\n",h->value[1]);
 	cmime_header_free(h);
 	return(0);
 }	

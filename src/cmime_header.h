@@ -36,7 +36,7 @@ extern "C" {
 typedef struct {
 	char *name; /**< name of the header */
 	char **value; /**< list with header values */
-	int count; /**< count of header appearance */
+	size_t count; /**< count of header appearance */
 } CMimeHeader_T;
 
 
@@ -90,7 +90,7 @@ char *cmime_header_get_value(CMimeHeader_T *header,int pos);
  * @def cmime_header_get_count(header)
  * @returns header value count
  */
-#define cmime_header_get_count(header) (header->count);
+#define cmime_header_get_count(header) ((int)header->count);
 
 #ifdef __cplusplus
 }

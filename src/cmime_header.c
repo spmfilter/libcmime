@@ -15,6 +15,7 @@
  * License along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <assert.h>
@@ -26,22 +27,20 @@ CMimeHeader_T *cmime_header_new(void) {
 	h = (CMimeHeader_T *)calloc((size_t)1,sizeof(CMimeHeader_T));
 	h->count = 0;
 	h->name =  NULL;
-	h->value=(char **)calloc(h->count, sizeof(char *));
-	
+	h->value = NULL;
 	return(h);
 }
 
 void cmime_header_free(CMimeHeader_T *header) {
-	int i;
+	size_t i;
 	assert(header);
-	
-	if (header->value != NULL) {
-		for (i=0; i < header->count; i++) {
-			printf("I: %d - %s \n",i,header->value[i]);
-		//	free(header->value[i]);
-		}
-	}
-	free(header);
+
+	for(i = 0; i < header->count; i++) {
+		free(header->value[i]);
+	} 
+	free(header->value);
+	header->value = NULL;
+	free(header); 
 }
 
 void cmime_header_set_name(CMimeHeader_T *header, char *name) {
@@ -56,19 +55,20 @@ void cmime_header_set_name(CMimeHeader_T *header, char *name) {
 }
 
 void cmime_header_set_value(CMimeHeader_T *header, char *value) {
+	char **tmp = NULL;
 	assert(header);
 	assert(value);
-	
+
+	tmp = realloc(header->value, (sizeof( *tmp) * (header->count+1)));
+	tmp[header->count] = malloc(strlen(value)+1);
+	strcpy(tmp[header->count],value);
+	header->value = tmp;
 	header->count++;
-	header->value = (char **)realloc(header->value,sizeof(char *) * header->count);
-	header->value[header->count-1] = (char *)malloc(strlen(value) + 1);
-	strcpy(header->value[header->count-1],value);
-	printf("I: %d SET: %s\n",header->count-1,header->value[header->count-1]);
 }
 
 char *cmime_header_get_value(CMimeHeader_T *header,int pos) {
 	assert(header);
 	assert(pos <= header->count);
 	
-	return header->value[pos];
+	return(header->value[pos]);
 }
