@@ -1,5 +1,5 @@
 /* libcmime - A C mime library
- * Copyright (C) 2010 Axel Steiner <ast@treibsand.com>
+ * Copyright (C) 2011 Axel Steiner <ast@treibsand.com>
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -42,6 +42,7 @@ extern "C" {
 typedef struct {
 	CMimeAddress_T *sender; /**< sender of email */
 	CMimeList_T *recipients; /**< double linked list with recipients */
+	CMimeTable_T *headers; /**< message header hash table */
 	char *message_id; /**< message id of email */
 	
 	time_t date; /**< date of email */
@@ -69,8 +70,7 @@ void cmime_message_free(CMimeMessage_T *message);
  * @param message a CMimeMessate_T obect
  * @param sender sender string
  */
-void cmime_message_set_sender(CMimeMessage_T *message, char *sender);
-
+void cmime_message_set_sender(CMimeMessage_T *message, const char *sender);
 
 /*!
  * @def cmime_message_get_sender(message)
@@ -78,6 +78,23 @@ void cmime_message_set_sender(CMimeMessage_T *message, char *sender);
  */
 #define cmime_message_get_sender(message) (cmime_address_to_string(message->sender))
 
+/*!
+ *
+ * @fn void cmime_message_set_message_id(CMimeMessage_T *message, const char *mid)
+ * @brief Set message id to CMimeMessage_T object, if alreay exists, value will 
+ *   be overwritten.
+ * @param message a CMimeMessage_T object
+ * @param mid message id string
+ */
+void cmime_message_set_message_id(CMimeMessage_T *message, const char *mid);
+
+/*!
+ * @def cmime_message_get_message_id(message)
+ * @returns message id of CMimeMessage_T object
+ */
+#define cmime_message_get_message_id(message) (message->message_id);
+
+int cmime_message_set_header(CMimeMessage_T *message, const char *header);
 
 #ifdef __cplusplus
 }

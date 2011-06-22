@@ -1,5 +1,5 @@
 /* libcmime - A C mime library
- * Copyright (C) 2010 Axel Steiner <ast@treibsand.com>
+ * Copyright (C) 2011 Axel Steiner <ast@treibsand.com>
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -30,18 +30,25 @@ CMimeAddress_T *cmime_address_new(void) {
 }
 
 /* Set the display name of CMimeAdresse_T object */
-void cmime_address_set_name(CMimeAddress_T *ca, char *name) {
+void cmime_address_set_name(CMimeAddress_T *ca, const char *name) {
 	assert(ca);
 	assert(name);
 	
+	if (ca->name != NULL)
+		free(ca->name);
+		
 	ca->name = (char *)malloc(strlen(name) + 1);
 	strcpy(ca->name,name);
 }
 
 /* Set the email address of CMimeAdresse_T object */
-void cmime_address_set_email(CMimeAddress_T *ca, char *email) {
+void cmime_address_set_email(CMimeAddress_T *ca, const char *email) {
 	assert(ca);
 	assert(email);
+	
+	if (ca->email != NULL)
+		free(ca->email);
+		
 	ca->email = (char *)malloc(strlen(email) + 1);
 	strcpy(ca->email, email);
 }
@@ -63,7 +70,7 @@ void cmime_address_set_type(CMimeAddress_T *ca, CMimeAddressType_T t) {
 }
 
 /* Parse given string and create CMimeAddress_T object */
-CMimeAddress_T *cmime_address_parse_string(char *s) {
+CMimeAddress_T *cmime_address_parse_string(const char *s) {
 	CMimeAddress_T *ca = cmime_address_new();
 	char *t1 = NULL;
 	char *t2 = NULL;

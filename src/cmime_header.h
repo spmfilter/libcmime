@@ -1,5 +1,5 @@
 /* libcmime - A C mime library
- * Copyright (C) 2010 Axel Steiner <ast@treibsand.com>
+ * Copyright (C) 2011 Axel Steiner <ast@treibsand.com>
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -60,13 +60,13 @@ void cmime_header_free(CMimeHeader_T *header);
  * @param header CMimeHeader_T pointer
  * @param name name of header
  */
-void cmime_header_set_name(CMimeHeader_T *header, char *name);
+void cmime_header_set_name(CMimeHeader_T *header, const char *name);
 
 /*!
  * @def cmime_header_get_name(header)
  * @returns header name
  */
-#define cmime_header_get_name(header) (header->name);
+#define cmime_header_get_name(header) (header->name)
 
 
 /*!
@@ -75,7 +75,7 @@ void cmime_header_set_name(CMimeHeader_T *header, char *name);
  * @param header CMimeHeader_T pointer
  * @param value header value
  */
-void cmime_header_set_value(CMimeHeader_T *header, char *value);
+void cmime_header_set_value(CMimeHeader_T *header, const char *value);
 
 /*!
  * @fn char *cmime_header_get_value(CMimeHeader_T *header, int pos)
@@ -90,7 +90,7 @@ char *cmime_header_get_value(CMimeHeader_T *header,int pos);
  * @def cmime_header_get_count(header)
  * @returns header value count
  */
-#define cmime_header_get_count(header) ((int)header->count);
+#define cmime_header_get_count(header) ((int)header->count)
 
 #ifdef __cplusplus
 }

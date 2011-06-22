@@ -1,5 +1,5 @@
 /* libcmime - A C mime library
- * Copyright (C) 2010 Axel Steiner <ast@treibsand.com>
+ * Copyright (C) 2011 Axel Steiner <ast@treibsand.com>
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -16,11 +16,14 @@
  */
 
 #include <stdlib.h>
+#include <string.h>
 #include <assert.h>
 
 #include "cmime_address.h"
 #include "cmime_message.h"
 #include "cmime_list.h"
+#include "cmime_table.h"
+
 /*
 static char *rfc822_headers[] = {
 	"Return-Path",
@@ -46,7 +49,9 @@ CMimeMessage_T *cmime_message_new(void) {
 	CMimeMessage_T *message = NULL;
 	
 	message = (CMimeMessage_T *)calloc((size_t)1, sizeof(CMimeMessage_T));
-	assert(message);
+	
+	if (cmime_table_new(&message->headers,0,NULL,NULL)!=0) 
+		return(NULL);
 	
 	message->sender = NULL;
 	if (cmime_list_new(&message->recipients,recipients_destroy)!=0) 
@@ -65,17 +70,15 @@ void cmime_message_free(CMimeMessage_T *message) {
 	if (message->message_id != NULL)
 		free(message->message_id);
 
-	if (message->sender != NULL)
-		cmime_address_free(message->sender);
-	
-	if (message->recipients != NULL)
-		cmime_list_free(message->recipients);
+	cmime_address_free(message->sender);	
+	cmime_list_free(message->recipients);
+	cmime_table_free(message->headers);
 	
 	free(message);
 }
 
 /* Set sender of message */
-void cmime_message_set_sender(CMimeMessage_T *message, char *sender) {
+void cmime_message_set_sender(CMimeMessage_T *message, const char *sender) {
 	CMimeAddress_T *ca = NULL;
 	assert(message);
 	
@@ -83,4 +86,24 @@ void cmime_message_set_sender(CMimeMessage_T *message, char *sender) {
 	if (message->sender != NULL)
 		cmime_address_free(message->sender);
 	message->sender = ca;
+}
+
+void cmime_message_set_message_id(CMimeMessage_T *message, const char *mid) {
+	assert(message);
+	assert(mid);
+	
+	if (message->message_id != NULL) 
+		free(message->message_id);
+		
+	message->message_id = (char *)malloc(strlen(mid) + 1);
+	strcpy(message->message_id,mid);
+}
+
+int cmime_message_set_header(CMimeMessage_T *message, const char *header) {
+	assert(message);
+	assert(header);
+	
+	
+	
+	return(0);
 }

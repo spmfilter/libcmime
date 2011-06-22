@@ -1,5 +1,5 @@
 /* libcmime - A C mime library
- * Copyright (C) 2010 Axel Steiner <ast@treibsand.com>
+ * Copyright (C) 2011 Axel Steiner <ast@treibsand.com>
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -14,7 +14,6 @@
  * You should have received a copy of the GNU Lesser General Public
  * License along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 
 /*!
  * @file cmime_address.h
@@ -65,7 +64,7 @@ CMimeAddress_T *cmime_address_new(void);
  * @param ca CMimeAddress_T pointer
  * @param name the display name for the address
  */
-void cmime_address_set_name(CMimeAddress_T *ca, char *name);
+void cmime_address_set_name(CMimeAddress_T *ca, const char *name);
 
 /*! 
  * @fn void cmime_address_set_email(CMimeAddress_T *ca, char *email)
@@ -73,7 +72,7 @@ void cmime_address_set_name(CMimeAddress_T *ca, char *name);
  * @param ca CMimeAddress_T pointer
  * @param email email address
  */
-void cmime_address_set_email(CMimeAddress_T *ca, char *email);
+void cmime_address_set_email(CMimeAddress_T *ca, const char *email);
 
 /*!
  * @fn void cmime_address_set_type(CMimeAddress_T *ca, CMimeAddressType_T t)
@@ -87,7 +86,7 @@ void cmime_address_set_type(CMimeAddress_T *ca, CMimeAddressType_T t);
  * @fn char *cmime_address_to_string(CMimeAddress_T *ca)
  * @brief Allocates a string containing the contents of the CMimeAddress_T object.
  * @param ca CMimeAddress_T pointer
- * @returns the CMimeAddress_T object as an allocated string in rfc822 format.
+ * @returns the CMimeAddress_T object as an newly allocated string in rfc822 format.
  */ 
 char *cmime_address_to_string(CMimeAddress_T *ca);
 
@@ -95,9 +94,9 @@ char *cmime_address_to_string(CMimeAddress_T *ca);
  * @fn CMimeAddress_T *cmime_address_parse_string(char *s)
  * @brief Parse given string and create CMimeAddress_T object
  * @param s string to parse
- * @returns a newlly allocated CMimeAddress_T object, or NULL on failure
+ * @returns a newly allocated CMimeAddress_T object, or NULL on failure
  */
-CMimeAddress_T *cmime_address_parse_string(char *s);
+CMimeAddress_T *cmime_address_parse_string(const char *s);
 
 /*! 
  * @fn void cmime_address_free(CMimeAddress_T *ca)

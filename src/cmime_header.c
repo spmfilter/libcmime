@@ -1,5 +1,5 @@
 /* libcmime - A C mime library
- * Copyright (C) 2010 Axel Steiner <ast@treibsand.com>
+ * Copyright (C) 2011 Axel Steiner <ast@treibsand.com>
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -15,7 +15,6 @@
  * License along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <assert.h>
@@ -43,7 +42,7 @@ void cmime_header_free(CMimeHeader_T *header) {
 	free(header); 
 }
 
-void cmime_header_set_name(CMimeHeader_T *header, char *name) {
+void cmime_header_set_name(CMimeHeader_T *header, const char *name) {
 	assert(header);
 	assert(name);
 	
@@ -54,7 +53,7 @@ void cmime_header_set_name(CMimeHeader_T *header, char *name) {
 	strcpy(header->name, name);
 }
 
-void cmime_header_set_value(CMimeHeader_T *header, char *value) {
+void cmime_header_set_value(CMimeHeader_T *header, const char *value) {
 	char **tmp = NULL;
 	assert(header);
 	assert(value);
