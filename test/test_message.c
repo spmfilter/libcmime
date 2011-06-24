@@ -20,13 +20,14 @@
 #include <string.h>
 #include <assert.h>
 
+#include "../src/cmime_address.h"
 #include "../src/cmime_message.h"
 #include "../src/cmime_header.h"
 
 int main (int argc, char const *argv[]) {
 	CMimeMessage_T *msg = cmime_message_new();
-	char test_sender1[] = "Axel Steiner <ast@treibsand.com>";
-	char test_sender2[] = "Foo Bar <foo@foo.bar>";
+	char test_addr1[] = "Axel Steiner <ast@treibsand.com>";
+	char test_addr2[] = "Foo Bar <foo@foo.bar>";
 	char test_message_id[] = "4DF9E5EB.6080300@foo.bar";
 	char test_header[] = "X-Foo: foobar";
 	char test_header_name[] = "X-Foo";
@@ -36,15 +37,15 @@ int main (int argc, char const *argv[]) {
 	char *s = NULL;
 	CMimeHeader_T *h = NULL;
 	
-	cmime_message_set_sender(msg,test_sender1);
+	cmime_message_set_sender(msg,test_addr1);
 	s = cmime_message_get_sender(msg);
-	assert(strcmp(s,test_sender1)==0);
+	assert(strcmp(s,test_addr1)==0);
 	free(s);
 	
 	// check if sender will be overwritten
-	cmime_message_set_sender(msg,test_sender2);
+	cmime_message_set_sender(msg,test_addr2);
 	s = cmime_message_get_sender(msg);
-	assert(strcmp(s,test_sender2)==0);
+	assert(strcmp(s,test_addr2)==0);
 	free(s);
 	
 	// set message id
@@ -65,6 +66,9 @@ int main (int argc, char const *argv[]) {
 		
 	h = cmime_message_get_header(msg,test_header_name);
 	assert(strcmp(cmime_header_get_value(h,0),test_header_value2)==0);
+
+	if (cmime_message_add_recipient(msg,test_addr1,CMIME_ADDRESS_TYPE_TO)!=0)
+		return(-1);
 			
 	cmime_message_free(msg);
 	return(0);

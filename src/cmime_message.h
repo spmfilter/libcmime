@@ -95,9 +95,27 @@ void cmime_message_set_message_id(CMimeMessage_T *message, const char *mid);
  */
 #define cmime_message_get_message_id(message) (message->message_id);
 
+/*!
+ * @fn int cmime_message_set_header(CMimeMessage_T *message, const char *header)
+ * @brief Set a header to message object. If header already exists, it will be overwritten
+ * @param message a CMimeMessage_T object
+ * @param header full header string
+ * @returns 0 on success or -1 in case of error
+ */
 int cmime_message_set_header(CMimeMessage_T *message, const char *header);
 
+/*!
+ * @fn CMimeHeader_T *cmime_message_get_header(CMimeMessage_T *message, const char *header)
+ * @brief Get header for given key
+ * @param message a CMimeMessage_T object
+ * @param key key to search for
+ * @returns a CMImeHeader_T object, or NULL in case of error
+ */
 CMimeHeader_T *cmime_message_get_header(CMimeMessage_T *message, const char *header);
+
+int cmime_message_add_recipient(CMimeMessage_T *message, const char *recipient, CMimeAddressType_T t);
+
+#define cmime_message_get_recipients(message) (message->recipients)
 
 #ifdef __cplusplus
 }

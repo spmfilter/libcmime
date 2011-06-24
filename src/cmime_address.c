@@ -65,7 +65,7 @@ char *cmime_address_to_string(CMimeAddress_T *ca) {
 
 void cmime_address_set_type(CMimeAddress_T *ca, CMimeAddressType_T t) {
 	assert(ca);
-	assert(t);
+
 	ca->type = t;
 }
 
