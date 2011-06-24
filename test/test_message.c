@@ -31,7 +31,8 @@ int main (int argc, char const *argv[]) {
 	char test_header[] = "X-Foo: foobar";
 	char test_header_name[] = "X-Foo";
 	char test_header_value[] = "foobar";
-	int i;
+	char test_header2[] = "X-Foo: raboof";
+	char test_header_value2[] = "raboof";
 	char *s = NULL;
 	CMimeHeader_T *h = NULL;
 	
@@ -52,11 +53,19 @@ int main (int argc, char const *argv[]) {
 	assert(strcmp(s,test_message_id)==0);
 	
 	// set a test header
-	i = cmime_message_set_header(msg, test_header);
+	if (cmime_message_set_header(msg, test_header)!=0) 
+		return(-1);
 	h = cmime_message_get_header(msg,test_header_name);
 	assert(strcmp(cmime_header_get_value(h,0),test_header_value)==0);
-	//cmime_header_free(h);
 	
+	
+	// overwrite header
+	if (cmime_message_set_header(msg, test_header2)!=0)
+		return(-1);
+		
+	h = cmime_message_get_header(msg,test_header_name);
+	assert(strcmp(cmime_header_get_value(h,0),test_header_value2)==0);
+			
 	cmime_message_free(msg);
 	return(0);
 }

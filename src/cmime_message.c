@@ -114,10 +114,17 @@ int cmime_message_set_header(CMimeMessage_T *message, const char *header) {
 	cmime_header_set_name(h,k);
 	cmime_header_set_value(h,v);
 	
+	// check if header already exists
+	if (cmime_table_get(message->headers,k) != NULL) {
+		// header already exists, we'll overwrite it...
+		if (cmime_table_remove(message->headers,k,NULL) != 0)
+			return(-1);
+	} 
+	
 	// insert new header object in hash table
 	if (cmime_table_insert(message->headers, cmime_header_get_name(h), h)!=0)
 		return(-1);
-
+	
 	cmime_string_list_free(sl);
 
 	return(0);
