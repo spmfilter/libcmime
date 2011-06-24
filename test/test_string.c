@@ -22,13 +22,12 @@
 
 #include "../src/cmime_string.h"
 
+#include "test_data.h"
+
 int main (int argc, char const *argv[]) {
 	CMimeStringList_T *sl;
 	CMimeStringList_T *sl2;
-	char test_string1[] = "Test string 1";
-	char test_string2[] = "Test string 2";
-	char test_string3[] = "Test string 3";
-	char test_string4[] = "  Test string 3   ";
+	
 	char *s = NULL;
 	
 	sl = cmime_string_list_new();

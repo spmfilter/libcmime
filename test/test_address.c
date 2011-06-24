@@ -22,28 +22,27 @@
 
 #include "../src/cmime_address.h"
 
+#include "test_data.h"
+
 int main (int argc, char const *argv[]) {
 	char *s = NULL;
-	char addr_string[] = "Axel Steiner <ast@treibsand.com>";
-	char expected_name_string[] = "Axel Steiner";
-	char expected_email_string[] = "ast@treibsand.com";
 	CMimeAddress_T *ca = cmime_address_new();
 	
-	cmime_address_set_name(ca, expected_name_string);
-	cmime_address_set_email(ca, expected_email_string);
+	cmime_address_set_name(ca, addr_string1_name_part);
+	cmime_address_set_email(ca, addr_string1_email_part);
 	
 	
 	s = cmime_address_to_string(ca);
-	assert(strcmp(s,addr_string) == 0);
+	assert(strcmp(s,addr_string1) == 0);
 	free(s);
 	cmime_address_free(ca);
 	
-	ca = cmime_address_parse_string(addr_string);
-	assert(strcmp(ca->name,expected_name_string) == 0);
-	assert(strcmp(ca->email,expected_email_string) == 0);
+	ca = cmime_address_parse_string(addr_string1);
+	assert(strcmp(ca->name,addr_string1_name_part) == 0);
+	assert(strcmp(ca->email,addr_string1_email_part) == 0);
 
 	s = cmime_address_to_string(ca);
-	assert(strcmp(s,addr_string)==0);
+	assert(strcmp(s,addr_string1)==0);
 	free(s);
 	
 	cmime_address_set_type(ca, CMIME_ADDRESS_TYPE_FROM);

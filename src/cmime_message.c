@@ -121,7 +121,7 @@ int cmime_message_set_header(CMimeMessage_T *message, const char *header) {
 		if (cmime_table_remove(message->headers,k,&oh) != 0)
 			return(-1);
 		else 
-			cmime_header_free(oh);
+			cmime_header_free(oh); 
 	} 
 	
 	// insert new header object in hash table

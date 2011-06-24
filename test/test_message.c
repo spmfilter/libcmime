@@ -24,6 +24,8 @@
 #include "../src/cmime_message.h"
 #include "../src/cmime_header.h"
 
+#include "test_data.h"
+
 int main (int argc, char const *argv[]) {
 	CMimeMessage_T *msg = cmime_message_new();
 	char test_addr1[] = "Axel Steiner <ast@treibsand.com>";
@@ -36,6 +38,7 @@ int main (int argc, char const *argv[]) {
 	char test_header_value2[] = "raboof";
 	char *s = NULL;
 	CMimeHeader_T *h = NULL;
+	CMimeList_T *recipient_list = NULL;
 	
 	cmime_message_set_sender(msg,test_addr1);
 	s = cmime_message_get_sender(msg);
