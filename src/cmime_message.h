@@ -34,6 +34,7 @@ extern "C" {
 #include "cmime_address.h"
 #include "cmime_list.h"
 #include "cmime_table.h"
+#include "cmime_header.h"
 
 /*!
  * @struct CMimeMessage_T cmime_message.h
@@ -95,6 +96,8 @@ void cmime_message_set_message_id(CMimeMessage_T *message, const char *mid);
 #define cmime_message_get_message_id(message) (message->message_id);
 
 int cmime_message_set_header(CMimeMessage_T *message, const char *header);
+
+CMimeHeader_T *cmime_message_get_header(CMimeMessage_T *message, const char *header);
 
 #ifdef __cplusplus
 }

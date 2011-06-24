@@ -34,8 +34,13 @@ void cmime_header_free(CMimeHeader_T *header) {
 	size_t i;
 	assert(header);
 
+
+	if (header->name != NULL)
+		free(header->name);
+		
 	for(i = 0; i < header->count; i++) {
-		free(header->value[i]);
+		if (header->value[i] != NULL) 
+			free(header->value[i]);
 	} 
 	free(header->value);
 	header->value = NULL;

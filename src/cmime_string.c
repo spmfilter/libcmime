@@ -17,6 +17,7 @@
 
 #include <stdlib.h>
 #include <string.h>
+#include <ctype.h>
 #include <assert.h>
 
 #include "cmime_string.h"
@@ -83,3 +84,14 @@ CMimeStringList_T *cmime_string_split(const char *s, const char *sep) {
 	
 	return(sl);
 }
+
+char *cmime_string_strip(char *s) {
+	assert(s);
+
+	char * e = s + strlen(s) - 1;
+	while(*s && isspace(*s)) s++;
+	while(e > s && isspace(*e)) *e-- = '\0';
+
+	return(s);
+}
+

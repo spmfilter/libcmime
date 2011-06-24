@@ -60,7 +60,7 @@ int cmime_table_new(CMimeTable_T **table, int hint,
 		(*table)->buckets[i] = NULL;
 	(*table)->length = 0;
 	(*table)->timestamp = 0;
-	
+
 	return(0);
 }
 
@@ -163,7 +163,7 @@ void cmime_table_free(CMimeTable_T *table) {
 		for (i = 0; i < table->size; i++) {
 			for (p = table->buckets[i]; p; p = q) {
 				q = p->link;
-				if (p != NULL)
+				if (p != NULL) 
 					free(p);
 			}
 		}

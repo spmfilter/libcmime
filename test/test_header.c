@@ -35,7 +35,6 @@ int main (int argc, char const *argv[]) {
 	cmime_header_set_name(h,test_name1);
 	s = cmime_header_get_name(h);
 	assert(strcmp(s,test_name1)==0);
-	free(s);
 	
 	cmime_header_set_value(h,test_value1);
 	count = cmime_header_get_count(h);

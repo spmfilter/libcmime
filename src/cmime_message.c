@@ -15,6 +15,7 @@
  * License along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <assert.h>
@@ -23,21 +24,13 @@
 #include "cmime_message.h"
 #include "cmime_list.h"
 #include "cmime_table.h"
+#include "cmime_string.h"
+#include "cmime_header.h"
 
-/*
-static char *rfc822_headers[] = {
-	"Return-Path",
-	"Received",
-	"Date",
-	"From",
-	"Reply-To",
-	"Subject",
-	"Sender",
-	"To",
-	"Cc",
-};
-*/
-//#define N_RECIPIENT_TYPES 3
+static void headers_destroy(const void *key, void **value, void *args) {
+	CMimeHeader_T *header = (CMimeHeader_T *)*value;
+	cmime_header_free(header);
+}
 
 void recipients_destroy(void *data) {
 	assert(data);
@@ -72,6 +65,9 @@ void cmime_message_free(CMimeMessage_T *message) {
 
 	cmime_address_free(message->sender);	
 	cmime_list_free(message->recipients);
+	
+	cmime_table_map(message->headers,headers_destroy,NULL);
+	
 	cmime_table_free(message->headers);
 	
 	free(message);
@@ -100,10 +96,40 @@ void cmime_message_set_message_id(CMimeMessage_T *message, const char *mid) {
 }
 
 int cmime_message_set_header(CMimeMessage_T *message, const char *header) {
+	CMimeStringList_T *sl;
+	CMimeHeader_T *h;
+	char *k;
+	char *v;
 	assert(message);
 	assert(header);
 	
+	sl = cmime_string_split(header,":");
+	k = cmime_string_list_get(sl,0);
+	k = cmime_string_strip(k);
 	
+	v = cmime_string_list_get(sl,1);
+	v = cmime_string_strip(v);
 	
+	h = cmime_header_new();
+	cmime_header_set_name(h,k);
+	cmime_header_set_value(h,v);
+	
+	// insert new header object in hash table
+	if (cmime_table_insert(message->headers, cmime_header_get_name(h), h)!=0)
+		return(-1);
+
+	cmime_string_list_free(sl);
+
 	return(0);
+}
+
+CMimeHeader_T *cmime_message_get_header(CMimeMessage_T *message, const char *header) {
+	CMimeHeader_T *h = NULL;
+	
+	assert(message);
+	assert(header);
+	
+	h = (CMimeHeader_T *)cmime_table_get(message->headers,header);
+	
+	return(h);
 }

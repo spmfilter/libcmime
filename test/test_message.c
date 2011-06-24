@@ -21,6 +21,7 @@
 #include <assert.h>
 
 #include "../src/cmime_message.h"
+#include "../src/cmime_header.h"
 
 int main (int argc, char const *argv[]) {
 	CMimeMessage_T *msg = cmime_message_new();
@@ -28,8 +29,11 @@ int main (int argc, char const *argv[]) {
 	char test_sender2[] = "Foo Bar <foo@foo.bar>";
 	char test_message_id[] = "4DF9E5EB.6080300@foo.bar";
 	char test_header[] = "X-Foo: foobar";
+	char test_header_name[] = "X-Foo";
+	char test_header_value[] = "foobar";
 	int i;
 	char *s = NULL;
+	CMimeHeader_T *h = NULL;
 	
 	cmime_message_set_sender(msg,test_sender1);
 	s = cmime_message_get_sender(msg);
@@ -48,7 +52,10 @@ int main (int argc, char const *argv[]) {
 	assert(strcmp(s,test_message_id)==0);
 	
 	// set a test header
-//	i = cmime_message_set_header(msg, test_header);
+	i = cmime_message_set_header(msg, test_header);
+	h = cmime_message_get_header(msg,test_header_name);
+	assert(strcmp(cmime_header_get_value(h,0),test_header_value)==0);
+	//cmime_header_free(h);
 	
 	cmime_message_free(msg);
 	return(0);

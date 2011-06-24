@@ -88,6 +88,16 @@ char *cmime_string_list_get(CMimeStringList_T *sl, int pos);
  */
 CMimeStringList_T *cmime_string_split(const char *s, const char *sep);
 
+/*!
+ * @fn char *cmime_string_strip(char *s)
+ * @brief Strip leading/trailing spaces from string. 
+ *   This function doesn't allocate or reallocate any memory; 
+ *   it modifies string in place. 
+ * @param s string with spaces
+ * @returns string with removed spaces
+ */
+char *cmime_string_strip(char *s);
+
 #ifdef __cplusplus
 }
 #endif

@@ -28,6 +28,7 @@ int main (int argc, char const *argv[]) {
 	char test_string1[] = "Test string 1";
 	char test_string2[] = "Test string 2";
 	char test_string3[] = "Test string 3";
+	char test_string4[] = "  Test string 3   ";
 	char *s = NULL;
 	
 	sl = cmime_string_list_new();
@@ -63,6 +64,10 @@ int main (int argc, char const *argv[]) {
 	assert(strcmp(s,"1")==0);
 	
 	cmime_string_list_free(sl2);
+	
+	// check string strip
+	s = cmime_string_strip(test_string4);
+	assert(strcmp(s,test_string3)==0);
 	
 	return(0);
 }
