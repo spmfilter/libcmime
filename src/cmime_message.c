@@ -66,8 +66,6 @@ void cmime_message_free(CMimeMessage_T *message) {
 	cmime_address_free(message->sender);	
 	cmime_list_free(message->recipients);
 	
-//	cmime_table_map(message->headers,headers_destroy,NULL);
-	
 	cmime_table_free(message->headers);
 	
 	free(message);

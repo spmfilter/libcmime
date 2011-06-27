@@ -64,6 +64,12 @@ int main (int argc, char const *argv[]) {
 
 	if (cmime_message_add_recipient(msg,addr_string1,CMIME_ADDRESS_TYPE_TO)!=0)
 		return(-1);
+	
+	if (cmime_message_add_recipient(msg,addr_string2,CMIME_ADDRESS_TYPE_CC)!=0)
+		return(-1);
+		
+	recipient_list = cmime_message_get_recipients(msg);
+	assert(recipient_list);
 			
 	cmime_message_free(msg);
 	return(0);

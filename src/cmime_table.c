@@ -157,6 +157,7 @@ int cmime_table_remove(CMimeTable_T *table, const void *key, void **data) {
 }
 
 void cmime_table_free(CMimeTable_T *table) {
+	void *data;
 	assert(table);
 	
 	if (table->length > 0) {
@@ -166,10 +167,10 @@ void cmime_table_free(CMimeTable_T *table) {
 			for (p = table->buckets[i]; p; p = q) {
 				q = p->link;
 				if (p != NULL) {
-					if (table->destroy!=NULL) 
-						table->destroy(p);
-					else 
-						free(p);
+					if(cmime_table_remove(table, p->key , (void **)&data) == 0 &&
+							table->destroy != NULL) {
+						table->destroy(data);
+					}
 				}				
 			}
 		}

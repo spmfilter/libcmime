@@ -25,7 +25,7 @@
 #include "test_data.h"
 
 void tdestroy(void *data) {
-	free(data);
+	assert(data);
 }
 
 void tmap(const void *key, void **count, void *args) {
