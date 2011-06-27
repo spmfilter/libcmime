@@ -26,12 +26,17 @@ char addr_string1[] = "Foo Bar <foobar@example.com>";
 char addr_string1_name_part[] = "Foo Bar";
 char addr_string1_email_part[] = "foobar@example.com";
 
+char addr_string2[] = "Example User <user@example.com>";
+char addr_string2_name_part[] = "Example User";
+char addr_string2_email_part[] = "user@example.com";
+
 char test_string1[] = "Test string 1";
 char test_string2[] = "Test string 2";
 char test_string3[] = "Test string 3";
 char test_string4[] = "  Test string 3   ";
 
 char header_string1[] = "X-Foo: foobar";
+char header_string1_2[] = "X-Foo: raboof";
 char header_string1_key[] = "X-Foo";
 char header_string1_value[] = "foobar";
 
@@ -39,16 +44,7 @@ char header_string2[] = "X-Test: raboof";
 char header_string2_key[] = "X-Test";
 char header_string2_value[] = "raboof";
 
-
-
-char test_addr1[] = "Axel Steiner <ast@treibsand.com>";
-char test_addr2[] = "Foo Bar <foo@foo.bar>";
-char test_message_id[] = "4DF9E5EB.6080300@foo.bar";
-char test_header[] = "X-Foo: foobar";
-char test_header_name[] = "X-Foo";
-char test_header_value[] = "foobar";
-char test_header2[] = "X-Foo: raboof";
-char test_header_value2[] = "raboof";
+char message_id_string[] = "4DF9E5EB.6080300@foo.bar";
 
 #ifdef __cplusplus
 }

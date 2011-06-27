@@ -22,40 +22,42 @@
 
 #include "../src/cmime_table.h"
 
+#include "test_data.h"
+
+void tdestroy(void *data) {
+	free(data);
+}
+
 void tmap(const void *key, void **count, void *args) {
 	assert(key);
 }
 
 int main (int argc, char const *argv[]) {
 	CMimeTable_T *t = NULL;
-	char test_key1[] = "subject";
-	char test_value1[] = "This is a test subject";
-	char test_key2[] = "X-Foo";
-	char test_value2[] = "bar";
 	char *out = NULL;
 	
-	if (cmime_table_new(&t,0,NULL,NULL)!=0) {
+	if (cmime_table_new(&t,0,NULL,NULL,tdestroy)!=0) {
 		printf("Failed to create new CMimeTable_T\n");			
 		return(-1);
 	}
 	
-	if (cmime_table_insert(t,test_key1,test_value1)!=0) {
+	if (cmime_table_insert(t,header_string1_key,header_string1_value)!=0) {
 		printf("Failed to insert data to CMimeTable_T\n");
 		return(-1);
 	}
 	
-	out = cmime_table_get(t,test_key1);
-	assert(strcmp(out,test_value1)==0);
+	out = cmime_table_get(t,header_string1_key);
+	assert(strcmp(out,header_string1_value)==0);
 	
-	if (cmime_table_insert(t,test_key2,test_value2)!=0) {
+	if (cmime_table_insert(t,header_string2_key,header_string2_value)!=0) {
 		printf("Failed to insert data to CMimeTable_T\n");
 		return(-1);
 	}
 	
 	cmime_table_map(t,tmap,NULL);
 	
-	if (cmime_table_remove(t,test_key1,NULL)!=0) {
-		printf("Failed to remove key '%s' from CMimeTable_T\n",test_key1);
+	if (cmime_table_remove(t,header_string1_key,NULL)!=0) {
+		printf("Failed to remove key '%s' from CMimeTable_T\n",header_string1_key);
 		return(-1);
 	}
 	

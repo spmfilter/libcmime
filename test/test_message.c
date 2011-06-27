@@ -28,49 +28,41 @@
 
 int main (int argc, char const *argv[]) {
 	CMimeMessage_T *msg = cmime_message_new();
-	char test_addr1[] = "Axel Steiner <ast@treibsand.com>";
-	char test_addr2[] = "Foo Bar <foo@foo.bar>";
-	char test_message_id[] = "4DF9E5EB.6080300@foo.bar";
-	char test_header[] = "X-Foo: foobar";
-	char test_header_name[] = "X-Foo";
-	char test_header_value[] = "foobar";
-	char test_header2[] = "X-Foo: raboof";
-	char test_header_value2[] = "raboof";
 	char *s = NULL;
 	CMimeHeader_T *h = NULL;
 	CMimeList_T *recipient_list = NULL;
 	
-	cmime_message_set_sender(msg,test_addr1);
+	cmime_message_set_sender(msg,addr_string1);
 	s = cmime_message_get_sender(msg);
-	assert(strcmp(s,test_addr1)==0);
+	assert(strcmp(s,addr_string1)==0);
 	free(s);
 	
 	// check if sender will be overwritten
-	cmime_message_set_sender(msg,test_addr2);
+	cmime_message_set_sender(msg,addr_string2);
 	s = cmime_message_get_sender(msg);
-	assert(strcmp(s,test_addr2)==0);
+	assert(strcmp(s,addr_string2)==0);
 	free(s);
 	
 	// set message id
-	cmime_message_set_message_id(msg,test_message_id);
+	cmime_message_set_message_id(msg,message_id_string);
 	s = cmime_message_get_message_id(msg);
-	assert(strcmp(s,test_message_id)==0);
+	assert(strcmp(s,message_id_string)==0);
 	
 	// set a test header
-	if (cmime_message_set_header(msg, test_header)!=0) 
+	if (cmime_message_set_header(msg, header_string1)!=0) 
 		return(-1);
-	h = cmime_message_get_header(msg,test_header_name);
-	assert(strcmp(cmime_header_get_value(h,0),test_header_value)==0);
+	h = cmime_message_get_header(msg,header_string1_key);
+	assert(strcmp(cmime_header_get_value(h,0),header_string1_value)==0);
 	
 	
 	// overwrite header
-	if (cmime_message_set_header(msg, test_header2)!=0)
+	if (cmime_message_set_header(msg, header_string1_2)!=0)
 		return(-1);
 		
-	h = cmime_message_get_header(msg,test_header_name);
-	assert(strcmp(cmime_header_get_value(h,0),test_header_value2)==0);
+	h = cmime_message_get_header(msg,header_string1_key);
+	assert(strcmp(cmime_header_get_value(h,0),header_string2_value)==0);
 
-	if (cmime_message_add_recipient(msg,test_addr1,CMIME_ADDRESS_TYPE_TO)!=0)
+	if (cmime_message_add_recipient(msg,addr_string1,CMIME_ADDRESS_TYPE_TO)!=0)
 		return(-1);
 			
 	cmime_message_free(msg);

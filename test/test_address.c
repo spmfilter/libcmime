@@ -31,7 +31,6 @@ int main (int argc, char const *argv[]) {
 	cmime_address_set_name(ca, addr_string1_name_part);
 	cmime_address_set_email(ca, addr_string1_email_part);
 	
-	
 	s = cmime_address_to_string(ca);
 	assert(strcmp(s,addr_string1) == 0);
 	free(s);

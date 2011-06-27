@@ -22,6 +22,8 @@
 
 #include "../src/cmime_list.h"
 
+#include "test_data.h"
+
 void list_char_printer(CMimeListElem_T *elem,void *args) {
 	assert(elem);
 }
@@ -32,10 +34,6 @@ void list_destroy(void *data) {
 
 int main (int argc, char const *argv[]) {
 	CMimeList_T *l;
-	char test_string1[] = "This is test 1";
-	char test_string2[] = "This is test 2";
-	char test_string3[] = "This is test 3";
-	char test_string4[] = "This is test 4";
 	char *out;
 	char *data;
 	char *pop;

@@ -37,7 +37,8 @@ static unsigned str_hash(const void *x) {
 
 int cmime_table_new(CMimeTable_T **table, int hint, 
 		int cmp(const void *x, const void *y), 
-		unsigned hash(const void *key)) {
+		unsigned hash(const void *key),
+		void (*destroy)(void *data)) {
 
 	int i;
 	static int primes[] = { 509, 509, 1021, 2053, 4093,
@@ -55,6 +56,7 @@ int cmime_table_new(CMimeTable_T **table, int hint,
 	(*table)->size = primes[i-1];
 	(*table)->cmp = cmp ? cmp : str_cmp;
 	(*table)->hash = hash ? hash : str_hash;
+	(*table)->destroy = destroy ? destroy : NULL;
 	(*table)->buckets = (struct CMimeTableBinding_T **)((*table) + 1);
 	for (i = 0; i < (*table)->size; i++)
 		(*table)->buckets[i] = NULL;
@@ -163,8 +165,12 @@ void cmime_table_free(CMimeTable_T *table) {
 		for (i = 0; i < table->size; i++) {
 			for (p = table->buckets[i]; p; p = q) {
 				q = p->link;
-				if (p != NULL) 
-					free(p);
+				if (p != NULL) {
+					if (table->destroy!=NULL) 
+						table->destroy(p);
+					else 
+						free(p);
+				}				
 			}
 		}
 	}

@@ -44,6 +44,7 @@ typedef struct {
 	int size; /**< prime chosen from size hint */
 	int (*cmp)(const void *x, const void *y); /**< compare function */
 	unsigned (*hash)(const void *key); /**< hash function */
+	void (*destroy)(void *data);
 	int length; /**< number of hash table entries */
 	unsigned timestamp; /**< table's timestamp, incremented every time the table is changed */
 	struct CMimeTableBinding_T {
@@ -71,7 +72,8 @@ typedef struct {
  */
 int cmime_table_new(CMimeTable_T **table, int hint,
 	int cmp(const void *x, const void *y),
-	unsigned hash(const void *key));
+	unsigned hash(const void *key),
+	void (*destroy)(void *data));
 
 /*!
  * @fn cmime_table_free(CMimeTable_T *table)

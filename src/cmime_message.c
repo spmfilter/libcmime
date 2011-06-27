@@ -27,8 +27,8 @@
 #include "cmime_string.h"
 #include "cmime_header.h"
 
-static void headers_destroy(const void *key, void **value, void *args) {
-	CMimeHeader_T *header = (CMimeHeader_T *)*value;
+void header_destroy(void *data) {
+	CMimeHeader_T *header = (CMimeHeader_T *)data;
 	cmime_header_free(header);
 }
 
@@ -43,7 +43,7 @@ CMimeMessage_T *cmime_message_new(void) {
 	
 	message = (CMimeMessage_T *)calloc((size_t)1, sizeof(CMimeMessage_T));
 	
-	if (cmime_table_new(&message->headers,0,NULL,NULL)!=0) 
+	if (cmime_table_new(&message->headers,0,NULL,NULL,header_destroy)!=0) 
 		return(NULL);
 	
 	message->sender = NULL;
@@ -66,7 +66,7 @@ void cmime_message_free(CMimeMessage_T *message) {
 	cmime_address_free(message->sender);	
 	cmime_list_free(message->recipients);
 	
-	cmime_table_map(message->headers,headers_destroy,NULL);
+//	cmime_table_map(message->headers,headers_destroy,NULL);
 	
 	cmime_table_free(message->headers);
 	
