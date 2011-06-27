@@ -74,8 +74,9 @@ void cmime_header_set_name(CMimeHeader_T *header, const char *name);
  * @brief Set/append a header value
  * @param header CMimeHeader_T pointer
  * @param value header value
+ * @param overwrite 1 will overwrite value, 0 append
  */
-void cmime_header_set_value(CMimeHeader_T *header, const char *value);
+void cmime_header_set_value(CMimeHeader_T *header, const char *value, int overwrite);
 
 /*!
  * @fn char *cmime_header_get_value(CMimeHeader_T *header, int pos)

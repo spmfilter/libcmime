@@ -44,8 +44,10 @@ typedef struct {
 	CMimeAddress_T *sender; /**< sender of email */
 	CMimeList_T *recipients; /**< double linked list with recipients */
 	CMimeTable_T *headers; /**< message header hash table */
-	char *message_id; /**< message id of email */
-	
+
+/*	
+	char *message_id; 
+*/
 	time_t date; /**< date of email */
 	int tz_offset; /**< timezone offset */
 } CMimeMessage_T;
@@ -93,7 +95,7 @@ void cmime_message_set_message_id(CMimeMessage_T *message, const char *mid);
  * @def cmime_message_get_message_id(message)
  * @returns message id of CMimeMessage_T object
  */
-#define cmime_message_get_message_id(message) (message->message_id);
+char *cmime_message_get_message_id(CMimeMessage_T *message);
 
 /*!
  * @fn int cmime_message_set_header(CMimeMessage_T *message, const char *header)
@@ -113,9 +115,30 @@ int cmime_message_set_header(CMimeMessage_T *message, const char *header);
  */
 CMimeHeader_T *cmime_message_get_header(CMimeMessage_T *message, const char *header);
 
+/*!
+ * @fn int cmime_message_add_recipient(CMimeMessage_T *message, const char *recipient, CMimeAddressType_T t)
+ * @brief Add recipient to message
+ * @param message a CMimeMessage_T object
+ * @param recipient a recipient string
+ * @param t CMimeAddressType_T recipient type
+ * @returns 0 on success or -1 in case of error
+ */
 int cmime_message_add_recipient(CMimeMessage_T *message, const char *recipient, CMimeAddressType_T t);
 
+/*! 
+ * @def cmime_message_get_recipients(message)
+ * @returns CMimeList_T with recipients
+ */
 #define cmime_message_get_recipients(message) (message->recipients)
+
+void cmime_message_set_content_type(CMimeMessage_T *message, const char *t);
+char *cmime_message_get_content_type(CMimeMessage_T *message);
+
+void cmime_message_set_content_transfer_encoding(CMimeMessage_T *message, const char *e);
+char *cmime_message_get_content_transfer_encoding(CMimeMessage_T *message);
+
+void cmime_message_set_mime_version(CMimeMessage_T *message, const char *v);
+char *cmime_message_get_mime_version(CMimeMessage_T *message);
 
 #ifdef __cplusplus
 }

@@ -35,7 +35,7 @@ int main (int argc, char const *argv[]) {
 	s = cmime_header_get_name(h);
 	assert(strcmp(s,header_string1_key)==0);
 	
-	cmime_header_set_value(h,header_string1_value);
+	cmime_header_set_value(h,header_string1_value,0);
 	count = cmime_header_get_count(h);
 	assert(count == 1);
 
@@ -44,7 +44,7 @@ int main (int argc, char const *argv[]) {
 	assert(strcmp(s,header_string1_value)==0);
 		
 	// add another header value
-	cmime_header_set_value(h,header_string2_value);
+	cmime_header_set_value(h,header_string2_value,0);
 	count = cmime_header_get_count(h);
 	assert(count == 2);
 		
@@ -55,6 +55,14 @@ int main (int argc, char const *argv[]) {
 	// check second value
 	s = cmime_header_get_value(h,1);
 	assert(strcmp(s,header_string2_value)==0);
+	
+	// now overwrite header values
+	cmime_header_set_value(h,test_string1,1);
+	s = cmime_header_get_value(h,0);
+	assert(strcmp(s,test_string1)==0);
+	
+	count = cmime_header_get_count(h);
+	assert(count == 1);
 	
 	cmime_header_free(h);
 	return(0);

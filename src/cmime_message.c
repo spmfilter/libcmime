@@ -27,12 +27,40 @@
 #include "cmime_string.h"
 #include "cmime_header.h"
 
-void header_destroy(void *data) {
+void _set_core_header_value(CMimeMessage_T *msg, const char *key, const char *value) {
+	CMimeHeader_T *h = NULL;
+	assert(msg);
+	assert(key);
+	assert(value);
+	
+	h = cmime_table_get(msg->headers,key);
+	if (h != NULL) {
+		cmime_header_set_value(h,value,1);
+	} else {
+		h = cmime_header_new();
+		cmime_header_set_name(h,key);
+		cmime_header_set_value(h,value,1);
+		cmime_table_insert(msg->headers,cmime_header_get_name(h),h);
+	}
+}
+
+char *_get_core_header_value(CMimeMessage_T *msg, const char *key) {
+	CMimeHeader_T *h;
+	char *v = NULL;
+	h = cmime_table_get(msg->headers,key);
+	if (h != NULL) {
+		v = cmime_header_get_value(h,0);
+		return(v);
+	} else
+		return(NULL);
+}
+
+void _header_destroy(void *data) {
 	CMimeHeader_T *header = (CMimeHeader_T *)data;
 	cmime_header_free(header);
 }
 
-void recipients_destroy(void *data) {
+void _recipients_destroy(void *data) {
 	assert(data);
 	CMimeAddress_T *ca = (CMimeAddress_T *)data;
 	cmime_address_free(ca);
@@ -43,16 +71,15 @@ CMimeMessage_T *cmime_message_new(void) {
 	
 	message = (CMimeMessage_T *)calloc((size_t)1, sizeof(CMimeMessage_T));
 	
-	if (cmime_table_new(&message->headers,0,NULL,NULL,header_destroy)!=0) 
+	if (cmime_table_new(&message->headers,0,NULL,NULL,_header_destroy)!=0) 
 		return(NULL);
 	
 	message->sender = NULL;
-	if (cmime_list_new(&message->recipients,recipients_destroy)!=0) 
+	if (cmime_list_new(&message->recipients,_recipients_destroy)!=0) 
 			return(NULL);
 
 	message->date = 0;
 	message->tz_offset = 0;
-	message->message_id = NULL;
 
 	return(message);
 }
@@ -60,8 +87,6 @@ CMimeMessage_T *cmime_message_new(void) {
 /** Free a CMimeMessage_T object  */
 void cmime_message_free(CMimeMessage_T *message) {
 	assert(message);
-	if (message->message_id != NULL)
-		free(message->message_id);
 
 	cmime_address_free(message->sender);	
 	cmime_list_free(message->recipients);
@@ -83,14 +108,11 @@ void cmime_message_set_sender(CMimeMessage_T *message, const char *sender) {
 }
 
 void cmime_message_set_message_id(CMimeMessage_T *message, const char *mid) {
-	assert(message);
-	assert(mid);
-	
-	if (message->message_id != NULL) 
-		free(message->message_id);
-		
-	message->message_id = (char *)malloc(strlen(mid) + 1);
-	strcpy(message->message_id,mid);
+	_set_core_header_value(message,"Message-ID",mid);
+}
+
+char *cmime_message_get_message_id(CMimeMessage_T *message) {
+	return(_get_core_header_value(message,"Message-ID"));
 }
 
 int cmime_message_set_header(CMimeMessage_T *message, const char *header) {
@@ -111,12 +133,12 @@ int cmime_message_set_header(CMimeMessage_T *message, const char *header) {
 	
 	h = cmime_header_new();
 	cmime_header_set_name(h,k);
-	cmime_header_set_value(h,v);
+	cmime_header_set_value(h,v,0);
 	
 	// check if header already exists
 	if (cmime_table_get(message->headers,k) != NULL) {
 		// header already exists, we'll overwrite it...
-		if (cmime_table_remove(message->headers,k,&oh) != 0)
+		if (cmime_table_remove(message->headers,k,(void **)&oh) != 0)
 			return(-1);
 		else 
 			cmime_header_free(oh); 
@@ -156,7 +178,7 @@ int cmime_message_add_recipient(CMimeMessage_T *message, const char *recipient, 
 	ca = cmime_address_parse_string(recipient);
 	cmime_address_set_type(ca,t);
 	if (message->recipients == NULL) {
-		if (cmime_list_new(&message->recipients,recipients_destroy)!=0) 
+		if (cmime_list_new(&message->recipients,_recipients_destroy)!=0) 
 				return(-1);
 	}	
 	
@@ -182,4 +204,28 @@ int cmime_message_add_recipient(CMimeMessage_T *message, const char *recipient, 
 		return(-1);
 
 	return(0);
+}
+
+void cmime_message_set_content_type(CMimeMessage_T *message, const char *t) {
+	_set_core_header_value(message,"Content-Type",t);
+}
+
+char *cmime_message_get_content_type(CMimeMessage_T *message) {
+	return(_get_core_header_value(message,"Content-Type"));
+}
+
+void cmime_message_set_content_transfer_encoding(CMimeMessage_T *message, const char *e) {
+	_set_core_header_value(message,"Content-Transfer-Encoding",e);
+}
+
+char *cmime_message_get_content_transfer_encoding(CMimeMessage_T *message) {
+	return(_get_core_header_value(message,"Content-Transfer-Encoding"));
+}
+
+void cmime_message_set_mime_version(CMimeMessage_T *message, const char *v) {
+	_set_core_header_value(message,"Mime-Version",v);
+}
+
+char *cmime_message_get_mime_version(CMimeMessage_T *message) {
+	return(_get_core_header_value(message,"Mime-Version"));
 }

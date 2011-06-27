@@ -58,10 +58,19 @@ void cmime_header_set_name(CMimeHeader_T *header, const char *name) {
 	strcpy(header->name, name);
 }
 
-void cmime_header_set_value(CMimeHeader_T *header, const char *value) {
+void cmime_header_set_value(CMimeHeader_T *header, const char *value, int overwrite) {
 	char **tmp = NULL;
+	size_t i;
 	assert(header);
 	assert(value);
+
+	if (overwrite==1) {
+		for(i = 0; i < header->count; i++) {
+			if (header->value[i] != NULL) 
+				free(header->value[i]);
+		}
+		header->count = 0;
+	}
 
 	tmp = realloc(header->value, (sizeof( *tmp) * (header->count+1)));
 	tmp[header->count] = malloc(strlen(value)+1);
