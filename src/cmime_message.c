@@ -177,7 +177,7 @@ int cmime_message_add_recipient(CMimeMessage_T *message, const char *recipient, 
 		}
 		elem = elem->next;
 	}
-		
+
 	if (cmime_list_append(message->recipients,ca)!=0)
 		return(-1);
 

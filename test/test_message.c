@@ -23,6 +23,7 @@
 #include "../src/cmime_address.h"
 #include "../src/cmime_message.h"
 #include "../src/cmime_header.h"
+#include "../src/cmime_list.h"
 
 #include "test_data.h"
 
@@ -31,6 +32,7 @@ int main (int argc, char const *argv[]) {
 	char *s = NULL;
 	CMimeHeader_T *h = NULL;
 	CMimeList_T *recipient_list = NULL;
+	CMimeListElem_T *elem;
 	
 	cmime_message_set_sender(msg,addr_string1);
 	s = cmime_message_get_sender(msg);
@@ -62,6 +64,7 @@ int main (int argc, char const *argv[]) {
 	h = cmime_message_get_header(msg,header_string1_key);
 	assert(strcmp(cmime_header_get_value(h,0),header_string2_value)==0);
 
+	// check recipients
 	if (cmime_message_add_recipient(msg,addr_string1,CMIME_ADDRESS_TYPE_TO)!=0)
 		return(-1);
 	
@@ -70,6 +73,17 @@ int main (int argc, char const *argv[]) {
 		
 	recipient_list = cmime_message_get_recipients(msg);
 	assert(recipient_list);
+
+	elem = cmime_list_head(recipient_list);
+	while(elem != NULL) {
+		s = cmime_address_to_string((CMimeAddress_T *)cmime_list_data(elem));
+		assert(s);
+		printf("got recipient: '%s'\n",s);
+		free(s);
+		elem = elem->next;
+	}
+	
+	
 			
 	cmime_message_free(msg);
 	return(0);
