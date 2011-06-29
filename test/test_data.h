@@ -47,6 +47,23 @@ char header_string2_value[] = "raboof";
 
 char message_id_string[] = "4DF9E5EB.6080300@foo.bar";
 
+char mime_type_string1[] = "text/plain; charset=us-ascii";
+char mime_type_string2[] = "multipart/mixed";
+
+char mime_disposition_string1[] = "attachment; filename=\"attachment.zip\"";
+char mime_disposition_string2[] = "inline";
+
+char mime_encoding_string1[] = "base64";
+
+char test_content_string1[] = "\
+Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo \
+ligula eget dolor. Aenean massa. Cum sociis natoque penatibus et magnis \
+dis parturient montes, nascetur ridiculus mus. Donec quam felis, \
+ultricies nec, pellentesque eu, pretium quis, sem. Nulla consequat massa \
+quis enim. Donec pede justo, fringilla vel, aliquet nec, vulputate eget, \
+arcu. In enim justo, rhoncus ut, imperdiet a, venenatis vitae, justo. \
+Nullam dictum felis eu pede mollis pretium.";
+
 #ifdef __cplusplus
 }
 #endif

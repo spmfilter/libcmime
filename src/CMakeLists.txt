@@ -5,6 +5,7 @@ set(LIBCMIME_SRC
 	cmime_table.c
 	cmime_header.c
 	cmime_string.c
+	cmime_part.c
 )
 
 add_library(cmime SHARED ${LIBCMIME_SRC})

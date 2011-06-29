@@ -31,12 +31,37 @@
 extern "C" {
 #endif
 
+#define HEADER_CONTENT_TYPE "Content-Type"
+#define HEADER_CONTENT_DISPOSITION "Content-Disposition"
+#define HEADER_CONTENT_TRANSFER_ENCODING "Content-Transfer-Encoding"
+
+#define DEFAULT_CONTENT_TYPE "text/plain"
+#define DEFAULT_CONTENT_DISPOSITION "inline"
+
 typedef struct {
-	char *content_description;
 	char *content_type;
+	char *content_disposition;
+	char *content_transfer_encoding;
 	char *content;
 	
-}
+} CMimePart_T;
+
+CMimePart_T *cmime_part_new(void);
+void cmime_part_free(CMimePart_T *part);
+
+void cmime_part_set_content_type(CMimePart_T *part, const char *s);
+#define cmime_part_get_content_type(part) (part->content_type);
+
+void cmime_part_set_content_disposition(CMimePart_T *part, const char *s);
+#define cmime_part_get_content_disposition(part) (part->content_disposition);
+
+void cmime_part_set_content_transfer_encoding(CMimePart_T *part, const char *s);
+#define cmime_part_get_content_transfer_encoding(part) (part->content_transfer_encoding)
+
+void cmime_part_set_content(CMimePart_T *part, const char *s);
+#define cmime_part_get_content(part) (part->content);
+
+char *cmime_part_as_string(CMimePart_T *part);
 
 #ifdef __cplusplus
 }

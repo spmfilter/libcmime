@@ -21,3 +21,7 @@ ADD_TEST(MessageTest ${EXECUTABLE_OUTPUT_PATH}/test_message)
 add_executable(test_header test_header.c)
 target_link_libraries(test_header cmime)
 ADD_TEST(HeaderTest ${EXECUTABLE_OUTPUT_PATH}/test_header)
+
+add_executable(test_part test_part.c)
+target_link_libraries(test_part cmime)
+ADD_TEST(PartTest ${EXECUTABLE_OUTPUT_PATH}/test_part)
