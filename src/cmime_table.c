@@ -79,6 +79,7 @@ void *cmime_table_get(CMimeTable_T *table, const void *key) {
 		if ((*table->cmp)(key, p->key) == 0)
 			break;
 	}
+	
 	return(p ? p->value : NULL);
 }
 

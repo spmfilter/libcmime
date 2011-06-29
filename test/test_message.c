@@ -56,12 +56,15 @@ int main (int argc, char const *argv[]) {
 	h = cmime_message_get_header(msg,header_string1_key);
 	assert(strcmp(cmime_header_get_value(h,0),header_string1_value)==0);
 	
-	
 	// overwrite header
 	if (cmime_message_set_header(msg, header_string1_2)!=0)
 		return(-1);
 		
 	h = cmime_message_get_header(msg,header_string1_key);
+	assert(strcmp(cmime_header_get_value(h,0),header_string2_value)==0);
+
+	// check with lower case key
+	h = cmime_message_get_header(msg,header_string1_key_lower);
 	assert(strcmp(cmime_header_get_value(h,0),header_string2_value)==0);
 
 	// check recipients

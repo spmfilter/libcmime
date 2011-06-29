@@ -19,6 +19,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <assert.h>
+#include <ctype.h>
 
 #include "cmime_address.h"
 #include "cmime_message.h"
@@ -26,6 +27,19 @@
 #include "cmime_table.h"
 #include "cmime_string.h"
 #include "cmime_header.h"
+
+static int _case_key_cmp(const void *x, const void *y) {
+	return(strcasecmp((char *)x,(char *)y));
+}
+
+static unsigned _lower_str_hash(const void *x) {
+	const char *str = x;
+	unsigned h = 0;
+
+	while (*str)
+		h = (h<<1) + tolower(*str++);
+	return h;
+}
 
 void _set_core_header_value(CMimeMessage_T *msg, const char *key, const char *value) {
 	CMimeHeader_T *h = NULL;
@@ -71,7 +85,7 @@ CMimeMessage_T *cmime_message_new(void) {
 	
 	message = (CMimeMessage_T *)calloc((size_t)1, sizeof(CMimeMessage_T));
 	
-	if (cmime_table_new(&message->headers,0,NULL,NULL,_header_destroy)!=0) 
+	if (cmime_table_new(&message->headers,0,_case_key_cmp,_lower_str_hash,_header_destroy)!=0) 
 		return(NULL);
 	
 	message->sender = NULL;
@@ -206,26 +220,43 @@ int cmime_message_add_recipient(CMimeMessage_T *message, const char *recipient, 
 	return(0);
 }
 
-void cmime_message_set_content_type(CMimeMessage_T *message, const char *t) {
-	_set_core_header_value(message,"Content-Type",t);
+void cmime_message_set_content_type(CMimeMessage_T *message, const char *s) {
+	_set_core_header_value(message,"Content-Type",s);
 }
 
 char *cmime_message_get_content_type(CMimeMessage_T *message) {
 	return(_get_core_header_value(message,"Content-Type"));
 }
 
-void cmime_message_set_content_transfer_encoding(CMimeMessage_T *message, const char *e) {
-	_set_core_header_value(message,"Content-Transfer-Encoding",e);
+void cmime_message_set_content_transfer_encoding(CMimeMessage_T *message, const char *s) {
+	_set_core_header_value(message,"Content-Transfer-Encoding",s);
 }
 
 char *cmime_message_get_content_transfer_encoding(CMimeMessage_T *message) {
 	return(_get_core_header_value(message,"Content-Transfer-Encoding"));
 }
 
-void cmime_message_set_mime_version(CMimeMessage_T *message, const char *v) {
-	_set_core_header_value(message,"Mime-Version",v);
+void cmime_message_set_mime_version(CMimeMessage_T *message, const char *s) {
+	_set_core_header_value(message,"Mime-Version",s);
 }
 
+/* Return the full mime-version header, with possible comments */
 char *cmime_message_get_mime_version(CMimeMessage_T *message) {
 	return(_get_core_header_value(message,"Mime-Version"));
+}
+
+void cmime_message_set_content_id(CMimeMessage_T *message, const char *s) { 
+	_set_core_header_value(message,"Content-ID",s);
+}
+
+char *cmime_message_get_content_id(CMimeMessage_T *message) {
+	return(_get_core_header_value(message,"Content-ID"));
+}
+
+void cmime_message_set_content_description(CMimeMessage_T *message, const char *s) {
+	_set_core_header_value(message,"Content-Description",s);
+}
+
+char *cmime_message_get_content_description(CMimeMessage_T *message) {
+	return(_get_core_header_value(message,"Content-Description"));
 }

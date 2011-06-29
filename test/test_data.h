@@ -38,6 +38,7 @@ char test_string4[] = "  Test string 3   ";
 char header_string1[] = "X-Foo: foobar";
 char header_string1_2[] = "X-Foo: raboof";
 char header_string1_key[] = "X-Foo";
+char header_string1_key_lower[] = "x-foo";
 char header_string1_value[] = "foobar";
 
 char header_string2[] = "X-Test: raboof";

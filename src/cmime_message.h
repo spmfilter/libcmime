@@ -131,13 +131,87 @@ int cmime_message_add_recipient(CMimeMessage_T *message, const char *recipient, 
  */
 #define cmime_message_get_recipients(message) (message->recipients)
 
-void cmime_message_set_content_type(CMimeMessage_T *message, const char *t);
+/*!
+ * @fn void cmime_message_set_content_type(CMimeMessage_T *message, const char *t)
+ * @brief Set Content-Type header
+ * @param message a CMimeMessage_T object
+ * @param s Content-Type string
+ */
+void cmime_message_set_content_type(CMimeMessage_T *message, const char *s);
+
+/*!
+ * @fn char *cmime_message_get_content_type(CMimeMessage_T *message)
+ * @brief Get Content-Type header value
+ * @param message a CMimeMessage_T object
+ * @returns Content-Type header value
+ */
 char *cmime_message_get_content_type(CMimeMessage_T *message);
 
-void cmime_message_set_content_transfer_encoding(CMimeMessage_T *message, const char *e);
+/*! 
+ * @fn void cmime_message_set_content_transfer_encoding(CMimeMessage_T *message, const char *s)
+ * @brief set Content-Transfer-Encoding value
+ * @param message a CMimeMessage_T object
+ * @param s Content-Transfer-Encoding value
+ */
+void cmime_message_set_content_transfer_encoding(CMimeMessage_T *message, const char *s);
+
+/*!
+ * @fn char *cmime_message_get_content_transfer_encoding(CMimeMessage_T *message)
+ * @brief Get Content-Transfer-Encoding value
+ * @param message a CMimeMessage_T object
+ * @returns Content-Transfer-Encoding header value
+ */
 char *cmime_message_get_content_transfer_encoding(CMimeMessage_T *message);
 
-void cmime_message_set_mime_version(CMimeMessage_T *message, const char *v);
+/*!
+ * @fn void cmime_message_set_content_id(CMimeMessage_T *message, const char *s)
+ * @brief Set Content-ID header value
+ * @param message a CMimeMessage_T object
+ * @param s Content-ID header value
+ */
+void cmime_message_set_content_id(CMimeMessage_T *message, const char *s);
+
+/*!
+ * @fn char *cmime_message_get_content_id(CMimeMessage_T *message)
+ * @brief Get Content-ID header value
+ * @param message a CMimeMessage_T object
+ * @returns Content-ID header value
+ */
+char *cmime_message_get_content_id(CMimeMessage_T *message);
+
+/*!
+ * @fn cmime_message_set_content_description(CMimeMessage_T *message, const char *s)
+ * @brief Set Content-Description value
+ * @param message a CMimeMessage_T object
+ * @param s Content-Description header value
+ */
+void cmime_message_set_content_description(CMimeMessage_T *message, const char *s);
+
+/*!
+ * @fn char *cmime_message_get_content_description(CMimeMessage_T *message)
+ * @brief Get Content-Description header value
+ * @param message a CMimeMessage_T object
+ */
+char *cmime_message_get_content_description(CMimeMessage_T *message);
+
+/*!
+ * @fn void cmime_message_set_mime_version(CMimeMessage_T *message, const char *v)
+ * @brief Set Mime-Version header value. According to RFC 2045, Mime-Version header 
+ *   is required at the top level of a message. Not required for each body part of 
+ *   a multipart entity. It's required for the embedded headers of a body of type 
+ *   "message/rfc822" or "message/partial" if the embedded message is itself 
+ *   claimed to be MIME.
+ * @param message a CMimeMessage_T object
+ * @param s Mime-Version header value
+ */
+void cmime_message_set_mime_version(CMimeMessage_T *message, const char *s);
+
+/*!
+ * @fn char *cmime_message_get_mime_version(CMimeMessage_T *message)
+ * @brief Get Mime-Version header value
+ * @param message a CMimeMessage_T object
+ * @returns Mime-Version header value
+ */
 char *cmime_message_get_mime_version(CMimeMessage_T *message);
 
 #ifdef __cplusplus
