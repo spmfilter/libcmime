@@ -20,6 +20,7 @@
 #include <string.h>
 #include <assert.h>
 #include <ctype.h>
+#include <time.h>
 
 #include "cmime_address.h"
 #include "cmime_message.h"
@@ -259,4 +260,28 @@ void cmime_message_set_content_description(CMimeMessage_T *message, const char *
 
 char *cmime_message_get_content_description(CMimeMessage_T *message) {
 	return(_get_core_header_value(message,"Content-Description"));
+}
+
+void cmime_message_set_date(CMimeMessage_T *message, const char *s) {
+	_set_core_header_value(message,"Date",s);
+}
+
+char *cmime_message_get_date(CMimeMessage_T *message) {
+	return(_get_core_header_value(message,"Date"));
+}
+
+int cmime_message_set_date_now(CMimeMessage_T *message) {
+	time_t  currtime;                                                    
+	char s[128] = {0};     
+	int i;
+	
+	assert(message);
+	
+	time(&currtime);                                                     
+	i = strftime(s,sizeof(s),"%a, %d %b %Y %H:%M:%S %z",localtime(&currtime));
+	if (i>0) {
+		_set_core_header_value(message,"Date",s);
+		return(0);
+	} else
+		return(-1);
 }

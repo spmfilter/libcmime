@@ -86,7 +86,12 @@ int main (int argc, char const *argv[]) {
 		elem = elem->next;
 	}
 	
-	
+	// checking date
+	if (cmime_message_set_date_now(msg)!=0)
+		return(-1);
+		
+	s = cmime_message_get_date(msg);
+	assert(s);
 			
 	cmime_message_free(msg);
 	return(0);

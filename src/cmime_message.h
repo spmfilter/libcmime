@@ -214,6 +214,30 @@ void cmime_message_set_mime_version(CMimeMessage_T *message, const char *s);
  */
 char *cmime_message_get_mime_version(CMimeMessage_T *message);
 
+/*!
+ * @fn void cmime_message_set_date(CMimeMessage_T *message, const char *s)
+ * @brief Set date string header 
+ * @param message a CMimeMessage_T object
+ * @param s date string
+ */
+void cmime_message_set_date(CMimeMessage_T *message, const char *s);
+
+/*!
+ * @fn char *cmime_message_get_date(CMimeMessage_T *message)
+ * @brief Get date string from CMimeMessage_T object
+ * @param message a CMimeMessage_T object
+ * @returns date string
+ */
+char *cmime_message_get_date(CMimeMessage_T *message);
+
+/*!
+ * @fn int cmime_message_set_date_now(CMimeMessage_T *message)
+ * @brief Get current time and set date header
+ * @param message a CMimeMessage_T object
+ * @returns 0 on success or -1 in case of error
+ */
+int cmime_message_set_date_now(CMimeMessage_T *message);
+
 #ifdef __cplusplus
 }
 #endif
