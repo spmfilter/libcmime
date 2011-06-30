@@ -1,3 +1,7 @@
+add_executable(test_base64 test_base64.c)
+target_link_libraries(test_base64 cmime)
+ADD_TEST(Base64Test ${EXECUTABLE_OUTPUT_PATH}/test_base64)
+
 add_executable(test_address test_address.c)
 target_link_libraries(test_address cmime)
 ADD_TEST(AddressTest ${EXECUTABLE_OUTPUT_PATH}/test_address)
