@@ -15,10 +15,12 @@
  * License along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <assert.h>
 
+#include "cmime_message.h"
 #include "cmime_part.h"
 
 CMimePart_T *cmime_part_new(void) {
@@ -102,26 +104,48 @@ char *cmime_part_as_string(CMimePart_T *part) {
 	char *encoding = NULL;
 	char *content = NULL;
 	char *s = NULL;
-	size_t i = 0;
-	size_t size = 0;
+	
 	assert(part);
 	
 	content = cmime_part_get_content(part);
 	if (content==NULL)
 		return(NULL);
 	
+	out = (char *)malloc(sizeof(char));
+	/* TODO: Check line endings, it should not be used CRLF as default... */
 	type = cmime_part_get_content_type(part);
-	if (type!=NULL)
-		i = strlen(HEADER_CONTENT_TYPE) + strlen(type) + 4;
-	else {
-		i = strlen(HEADER_CONTENT_TYPE) + strlen(DEFAULT_CONTENT_TYPE) + 4;
+	if (type != NULL) {
+		asprintf(&s,HEADER_CONTENT_TYPE_PATTERN,type,CRLF);
+		out = (char *)realloc(out,strlen(out) + strlen(s));
+		strcat(out,s);
+		free(s);
+	}
+
+	encoding = cmime_part_get_content_transfer_encoding(part);
+	if (encoding != NULL) {
+		asprintf(&s,HEADER_CONTENT_TRANSFER_ENCODING_PATTERN,encoding,CRLF);
+		out = (char *)realloc(out,strlen(out) + strlen(s));
+		strcat(out,s);
+		free(s);
 	}
 	
 	disposition = cmime_part_get_content_disposition(part);
-	encoding = cmime_part_get_content_transfer_encoding(part);
+	if (disposition != NULL) {
+		asprintf(&s,HEADER_CONTENT_DISPOSITION_PATTERN,disposition,CRLF);
+		out = (char *)realloc(out,strlen(out) + strlen(s));
+		strcat(out,s);
+		free(s);
+	}
+
+
+	if ((type!=NULL) || (encoding!=NULL) || (disposition!=NULL)) {
+		out = (char *)realloc(out,strlen(out) + strlen(CRLF));
+		strcat(out,CRLF);
+	} 
 	
-	
-	
-	
+	out = (char *)realloc(out,strlen(out) + strlen(content));
+	strcat(out,content);
+
+	return(out);
 }
 

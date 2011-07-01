@@ -36,6 +36,10 @@ extern "C" {
 #include "cmime_table.h"
 #include "cmime_header.h"
 
+/** crlf */
+#define CRLF "\r\n"
+#define DCRLF "\r\n\r\n"
+
 /*!
  * @struct CMimeMessage_T cmime_message.h
  * @brief Represents an email message

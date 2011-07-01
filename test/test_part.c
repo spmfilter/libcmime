@@ -27,7 +27,7 @@
 int main (int argc, char const *argv[]) {
 	CMimePart_T *part;
 	char *s;
-	
+	char *out;
 	part = cmime_part_new();
 	assert(part);
 	
@@ -56,8 +56,8 @@ int main (int argc, char const *argv[]) {
 	s = cmime_part_get_content(part);
 	assert(strcmp(s,test_content_string1) == 0);
 	
-	
-	
+	out = cmime_part_as_string(part);
+	free(out);
 	cmime_part_free(part);
 	return 0;
 }
