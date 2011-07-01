@@ -127,6 +127,8 @@ void cmime_part_set_content(CMimePart_T *part, const char *s);
  */
 char *cmime_part_as_string(CMimePart_T *part);
 
+int cmime_part_from_file(CMimePart_T **part, const char *filename);
+
 #ifdef __cplusplus
 }
 #endif

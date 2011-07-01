@@ -7,6 +7,7 @@ set(LIBCMIME_SRC
 	cmime_string.c
 	cmime_part.c
 	cmime_base64.c
+	cmime_util.c
 )
 
 add_library(cmime SHARED ${LIBCMIME_SRC})

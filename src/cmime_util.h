@@ -15,23 +15,19 @@
  * License along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef _CMIME_CONFIG_H
-#define _CMIME_CONFIG_H
+#ifndef _CMIME_UTIL_H
+#define	_CMIME_UTIL_H
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-/* cmime version */
-#define CMIME_VERSION ${CMIME_VERSION_NUMBER}
-#define CMIME_MAJOR_VERSION ${CMIME_MAJOR_VERSION}
-#define CMIME_MINOR_VERSION ${CMIME_MINOR_VERSION}
-#define CMIME_MICRO_VERSION ${CMIME_MICRO_VERSION}
+#define MIMETYPE_DEFAULT "application/octet-stream"
 
-#define FILE_EXECUTABLE "${FILE_EXECUTABLE} -b --mime"
+char *cmime_util_get_mimetype(const char *filename);
 
 #ifdef __cplusplus
 }
 #endif
 
-#endif /* _CMIME_CONFIG_H */
+#endif	/* _CMIME_UTIL_H */

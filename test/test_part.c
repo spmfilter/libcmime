@@ -24,6 +24,8 @@
 
 #include "test_data.h"
 
+#define EXPECTED_MIME_TYPE "text/x-c; charset=utf-8"
+
 int main (int argc, char const *argv[]) {
 	CMimePart_T *part;
 	char *s;
@@ -58,6 +60,13 @@ int main (int argc, char const *argv[]) {
 	
 	out = cmime_part_as_string(part);
 	free(out);
+	cmime_part_free(part);
+	
+	cmime_part_from_file(&part,"../../test/test_data.h");
+	
+	s = cmime_part_get_content_type(part);
+
+
 	cmime_part_free(part);
 	return 0;
 }

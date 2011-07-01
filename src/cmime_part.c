@@ -18,10 +18,12 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <sys/stat.h>
 #include <assert.h>
 
 #include "cmime_message.h"
 #include "cmime_part.h"
+#include "cmime_util.h"
 
 CMimePart_T *cmime_part_new(void) {
 	CMimePart_T *part = NULL;
@@ -147,5 +149,40 @@ char *cmime_part_as_string(CMimePart_T *part) {
 	strcat(out,content);
 
 	return(out);
+}
+
+int cmime_part_from_file(CMimePart_T **part, const char *filename) {
+	CMimePart_T *part;
+	struct stat fileinfo;
+	char *ptemp1;
+	int retval;
+	char *mimetype;
+	
+	part = cmime_part_new();
+	ptemp1 = filename; /* Important! basename() fucks up pointer */
+	
+	/* only regular files please */
+	retval = stat(filename,&fileinfo);
+	if (retval == 0) {
+		if(S_ISREG(fileinfo.st_mode)) {
+			mimetype = cmime_util_get_mimetype(filename);
+			
+			/* set default mime type if no one found */
+			if(mimetype == NULL) {
+				mimetype = (char *)calloc(strlen(MIMETYPE_DEFAULT) + 1, sizeof(char));
+				strncpy(mimetype, MIMETYPE_DEFAULT, strlen(MIMETYPE_DEFAULT));
+			}
+			
+			cmime_part_set_content_type(part,mimetype);
+			free(mimetype);
+			
+		} else {
+			return(-2); /* not regular file */
+		} 
+	} else {
+		return(-1); /* stat error */
+	}
+	
+	return(0);
 }
 
