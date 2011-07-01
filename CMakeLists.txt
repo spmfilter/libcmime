@@ -27,12 +27,17 @@ endif(${CMIME_VERSION} MATCHES ${THREE_PART_VERSION_REGEX})
 math(EXPR version_number "${CMIME_MAJOR_VERSION} * 1000000 + ${CMIME_MINOR_VERSION} * 1000 + ${CMIME_MICRO_VERSION}" )
 set(CMIME_VERSION_NUMBER ${version_number})
 
-
 # check for enabled debugging
 if(ENABLE_DEBUG)
 	set(CMAKE_VERBOSE_MAKEFILE TRUE)
 	add_definitions(-DDEBUG -g -O0 -Wall)
 endif(ENABLE_DEBUG)
+
+
+find_program(FILE_EXECUTABLE NAME file PATHS ENV PATH)
+if(NOT FILE_EXECUTABLE)
+	message(FATAL_ERROR "Could not find file executable")
+endif(NOT FILE_EXECUTABLE)
 
 CONFIGURE_FILE(
 	${CMAKE_CURRENT_SOURCE_DIR}/src/cmime_config.h.cmake
