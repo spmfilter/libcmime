@@ -60,11 +60,12 @@ char *cmime_string_list_get(CMimeStringList_T *sl,int pos) {
 	return(sl->node[pos]);
 }
 
-CMimeStringList_T *cmime_string_split(const char *s, const char *sep) {
+CMimeStringList_T *cmime_string_split(const char *s, const char *sep, int maxsplit) {
 	CMimeStringList_T *sl;
 	char *copy;
 	char *tmp;
 	int size;
+	int count = 0;
 	
 	size = strlen(s);
 	
@@ -78,7 +79,10 @@ CMimeStringList_T *cmime_string_split(const char *s, const char *sep) {
 	strcpy(copy,s);
 	
 	for (tmp = strtok(copy,sep); tmp; tmp = strtok(NULL,sep)) {
+		count++;
 		cmime_string_list_insert(sl,tmp);
+		if (count == maxsplit)
+			break;
 	}
 	free(copy);
 	

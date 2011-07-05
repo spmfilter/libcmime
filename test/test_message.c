@@ -34,6 +34,7 @@ int main (int argc, char const *argv[]) {
 	CMimeHeader_T *h = NULL;
 	CMimeList_T *recipient_list = NULL;
 	CMimeListElem_T *elem;
+	int retval;
 	
 	cmime_message_set_sender(msg,addr_string1);
 	s = cmime_message_get_sender(msg);
@@ -101,6 +102,10 @@ int main (int argc, char const *argv[]) {
 	assert(strcmp(s,s2)==0);
 	
 	free(s);
+	cmime_message_free(msg);
+	
+	msg = cmime_message_new();
+	retval = cmime_message_from_file(&msg,"/Users/ast/Desktop/Test.eml");
 	cmime_message_free(msg);
 	
 	return(0);

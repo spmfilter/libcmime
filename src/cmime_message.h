@@ -36,9 +36,6 @@ extern "C" {
 #include "cmime_table.h"
 #include "cmime_header.h"
 
-/** crlf */
-#define CRLF "\r\n"
-#define DCRLF "\r\n\r\n"
 
 /*!
  * @struct CMimeMessage_T cmime_message.h
@@ -245,7 +242,7 @@ int cmime_message_set_date_now(CMimeMessage_T *message);
  * @param message a CMimeMessage_T object
  * @param boundary the boundary to set
  */
-void cmime_message_set_boundary(CMimeMessage_T *message, char *boundary);
+void cmime_message_set_boundary(CMimeMessage_T *message, const char *boundary);
 
 /*! 
  * @def cmime_message_get_boundary(message)
@@ -259,6 +256,8 @@ void cmime_message_set_boundary(CMimeMessage_T *message, char *boundary);
  * @returns a newly allocated boundary
  */
 char *cmime_message_generate_boundary(void);
+
+int cmime_message_from_file(CMimeMessage_T **message, const char *filename);
 
 #ifdef __cplusplus
 }

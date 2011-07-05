@@ -31,6 +31,11 @@ extern "C" {
 
 #define LINE_LENGTH 72
 
+/** crlf */
+#define CRLF "\r\n"
+#define DCRLF "\r\n\r\n"
+#define LF "\n"
+
 #ifdef __cplusplus
 }
 #endif

@@ -49,7 +49,7 @@ int main (int argc, char const *argv[]) {
 	cmime_string_list_free(sl);
 	
 	// check string split
-	sl2 = cmime_string_split(test_string1," ");
+	sl2 = cmime_string_split(test_string1," ",3);
 	assert(cmime_string_list_get_count(sl2)==3);
 	
 	s = cmime_string_list_get(sl2,0);

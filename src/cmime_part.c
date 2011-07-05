@@ -169,6 +169,9 @@ int cmime_part_from_file(CMimePart_T **part, char *filename) {
 	unsigned char in[3], out[4];
 	char *disposition;
 	
+	assert((*part));
+	assert(filename);
+	
 	ptemp1 = filename;
 	
 	/* only regular files please */

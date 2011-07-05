@@ -21,6 +21,7 @@
 #include <assert.h>
 #include <ctype.h>
 #include <time.h>
+#include <sys/stat.h>
 
 #include "cmime_address.h"
 #include "cmime_message.h"
@@ -28,6 +29,7 @@
 #include "cmime_table.h"
 #include "cmime_string.h"
 #include "cmime_header.h"
+#include "cmime_internal.h"
 
 static int _case_key_cmp(const void *x, const void *y) {
 	return(strcasecmp((char *)x,(char *)y));
@@ -143,7 +145,7 @@ int cmime_message_set_header(CMimeMessage_T *message, const char *header) {
 	assert(message);
 	assert(header);
 	
-	sl = cmime_string_split(header,":");
+	sl = cmime_string_split(header,":",1);
 	k = cmime_string_list_get(sl,0);
 	k = cmime_string_strip(k);
 	
@@ -290,7 +292,7 @@ int cmime_message_set_date_now(CMimeMessage_T *message) {
 		return(-1);
 }
 
-void cmime_message_set_boundary(CMimeMessage_T *message, char *boundary) {
+void cmime_message_set_boundary(CMimeMessage_T *message, const char *boundary) {
 	assert(message);
 	assert(boundary);
 	
@@ -318,4 +320,44 @@ char *cmime_message_generate_boundary(void) {
 	
 	asprintf(&boundary,"--=_Part_%s",str);
 	return(boundary);
+}
+
+int cmime_message_from_file(CMimeMessage_T **message, const char *filename) {
+	struct stat fileinfo;
+	int retval;
+	FILE *fp;
+	char buffer[BUFSIZ];
+	size_t t = 0;
+	int in_header = 1;
+	
+	assert((*message));
+	assert(filename);
+	
+	retval = stat(filename,&fileinfo);
+	if (retval != 0)
+		return(-1); /* stat error */
+	
+	if(!S_ISREG(fileinfo.st_mode))
+		return(-2); /* not regular file */
+	
+	fp = fopen(filename, "rb");
+	if (fp == NULL) {
+		return(-3);
+	}
+	
+	while (fgets(buffer, sizeof(buffer), fp)) {
+		if((strcmp(buffer,CRLF)==0) || (strcmp(buffer,LF)==0) || (strcmp(buffer,DCRLF)==0)) 
+			in_header = 0;
+		
+		if (in_header==1) {
+			// process header
+			
+			
+		}	else {
+			// process body
+		}
+	}	
+	fclose(fp);
+	
+	return(0);
 }

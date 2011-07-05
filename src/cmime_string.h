@@ -84,9 +84,10 @@ char *cmime_string_list_get(CMimeStringList_T *sl, int pos);
  * @brief Return a list of the words in the string s, using sep as the delimiter string.
  * @param s string to split
  * @param sep split separator
+ * @param maxsplit maximal number of splittings
  * @returns a newly allocated CMimeStringList_T list
  */
-CMimeStringList_T *cmime_string_split(const char *s, const char *sep);
+CMimeStringList_T *cmime_string_split(const char *s, const char *sep, int maxsplit);
 
 /*!
  * @fn char *cmime_string_strip(char *s)

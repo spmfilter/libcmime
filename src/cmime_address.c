@@ -103,9 +103,11 @@ CMimeAddress_T *cmime_address_parse_string(const char *s) {
 
 /* Free used memory */
 void cmime_address_free(CMimeAddress_T *ca) {
-	if (ca->name != NULL)
-		free(ca->name);
-	if (ca->email != NULL)
-		free(ca->email);
-	free(ca);
+	if (ca!=NULL) {
+		if (ca->name != NULL)
+			free(ca->name);
+		if (ca->email != NULL)
+			free(ca->email);
+		free(ca);
+	}
 }
