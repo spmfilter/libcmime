@@ -31,10 +31,6 @@
 extern "C" {
 #endif
 
-#define HEADER_CONTENT_TYPE_PATTERN "Content-Type: %s%s"
-#define HEADER_CONTENT_DISPOSITION_PATTERN "Content-Disposition: %s%s"
-#define HEADER_CONTENT_TRANSFER_ENCODING_PATTERN "Content-Transfer-Encoding: %s%s"
-
 /*!
  * @struct CMimePart_T cmime_part.h
  * @brief A mime part
@@ -45,7 +41,6 @@ typedef struct {
 	char *content_disposition; /**< content disposition of part */
 	char *content_transfer_encoding; /**< content transfer encoding of part */
 	char *content; /**< content of mime part */
-	
 } CMimePart_T;
 
 /*!
@@ -127,7 +122,7 @@ void cmime_part_set_content(CMimePart_T *part, const char *s);
  */
 char *cmime_part_as_string(CMimePart_T *part);
 
-int cmime_part_from_file(CMimePart_T **part, const char *filename);
+int cmime_part_from_file(CMimePart_T **part, char *filename);
 
 #ifdef __cplusplus
 }

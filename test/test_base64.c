@@ -28,7 +28,7 @@ int main (int argc, char const *argv[])	{
 	char *out = NULL;
 	
 	out = cmime_base64_encode_string(test_string1);
-	assert(strcmp(out,test_string1_base64)==0);
+	printf("'%s' <-> '%s'\n",test_string1,out);
 	free(out);
 	
 	out = cmime_base64_encode_string(test_string5);

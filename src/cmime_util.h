@@ -22,8 +22,6 @@
 extern "C" {
 #endif
 
-#define MIMETYPE_DEFAULT "application/octet-stream"
-
 char *cmime_util_get_mimetype(const char *filename);
 
 #ifdef __cplusplus

@@ -62,11 +62,11 @@ int main (int argc, char const *argv[]) {
 	free(out);
 	cmime_part_free(part);
 	
+	part = cmime_part_new();
 	cmime_part_from_file(&part,"../../test/test_data.h");
-	
-	s = cmime_part_get_content_type(part);
-
-
+	out = cmime_part_as_string(part);
+	printf("%s",out);
+	free(out);
 	cmime_part_free(part);
 	return 0;
 }

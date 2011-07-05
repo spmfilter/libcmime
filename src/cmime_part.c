@@ -20,10 +20,13 @@
 #include <string.h>
 #include <sys/stat.h>
 #include <assert.h>
+#include <libgen.h>
 
 #include "cmime_message.h"
 #include "cmime_part.h"
 #include "cmime_util.h"
+#include "cmime_internal.h"
+#include "cmime_base64.h"
 
 CMimePart_T *cmime_part_new(void) {
 	CMimePart_T *part = NULL;
@@ -118,7 +121,7 @@ char *cmime_part_as_string(CMimePart_T *part) {
 	type = cmime_part_get_content_type(part);
 	if (type != NULL) {
 		asprintf(&s,HEADER_CONTENT_TYPE_PATTERN,type,CRLF);
-		out = (char *)realloc(out,strlen(out) + strlen(s));
+		out = (char *)realloc(out,strlen(out) + strlen(s) + sizeof(char));
 		strcat(out,s);
 		free(s);
 	}
@@ -126,7 +129,7 @@ char *cmime_part_as_string(CMimePart_T *part) {
 	encoding = cmime_part_get_content_transfer_encoding(part);
 	if (encoding != NULL) {
 		asprintf(&s,HEADER_CONTENT_TRANSFER_ENCODING_PATTERN,encoding,CRLF);
-		out = (char *)realloc(out,strlen(out) + strlen(s));
+		out = (char *)realloc(out,strlen(out) + strlen(s) + sizeof(char));
 		strcat(out,s);
 		free(s);
 	}
@@ -134,14 +137,13 @@ char *cmime_part_as_string(CMimePart_T *part) {
 	disposition = cmime_part_get_content_disposition(part);
 	if (disposition != NULL) {
 		asprintf(&s,HEADER_CONTENT_DISPOSITION_PATTERN,disposition,CRLF);
-		out = (char *)realloc(out,strlen(out) + strlen(s));
+		out = (char *)realloc(out,strlen(out) + strlen(s) + sizeof(char));
 		strcat(out,s);
 		free(s);
 	}
 
-
 	if ((type!=NULL) || (encoding!=NULL) || (disposition!=NULL)) {
-		out = (char *)realloc(out,strlen(out) + strlen(CRLF));
+		out = (char *)realloc(out,strlen(out) + strlen(CRLF) + sizeof(char));
 		strcat(out,CRLF);
 	} 
 	
@@ -151,15 +153,23 @@ char *cmime_part_as_string(CMimePart_T *part) {
 	return(out);
 }
 
-int cmime_part_from_file(CMimePart_T **part, const char *filename) {
-	CMimePart_T *part;
+int cmime_part_from_file(CMimePart_T **part, char *filename) {
 	struct stat fileinfo;
-	char *ptemp1;
 	int retval;
 	char *mimetype;
+	char *ptemp1;
+	char *ptemp2;
+	FILE *fp = NULL;
+	int encode;
+	int i = 0;
+	int len = 0;
+	int blocklen = 0;
+	int blocksout = 0;
+	int pos = 0;
+	unsigned char in[3], out[4];
+	char *disposition;
 	
-	part = cmime_part_new();
-	ptemp1 = filename; /* Important! basename() fucks up pointer */
+	ptemp1 = filename;
 	
 	/* only regular files please */
 	retval = stat(filename,&fileinfo);
@@ -173,8 +183,63 @@ int cmime_part_from_file(CMimePart_T **part, const char *filename) {
 				strncpy(mimetype, MIMETYPE_DEFAULT, strlen(MIMETYPE_DEFAULT));
 			}
 			
-			cmime_part_set_content_type(part,mimetype);
+			cmime_part_set_content_type((*part),mimetype);
+			encode = (strncmp(mimetype,MIMETYPE_TEXT_PLAIN,strlen(MIMETYPE_TEXT_PLAIN)) == 0) ? 0 : 1;
 			free(mimetype);
+			
+			if (encode == 1) 
+				cmime_part_set_content_transfer_encoding((*part),"base64");
+			
+			ptemp2 = basename(ptemp1);
+			asprintf(&disposition,"attachment; filename=%s",ptemp2);
+			cmime_part_set_content_disposition((*part),disposition);		
+			
+			fp = fopen(filename, "rb");
+			if (fp != NULL) {
+				(*part)->content = (char *)malloc(sizeof(char));
+				while(!feof(fp)) {
+					len = 0;
+					
+					for(i=0; i<3; i++) {
+						in[i] = (unsigned char)fgetc(fp);
+
+						if(!feof(fp)) {
+							len++;
+						} else {
+							in[i] = 0;
+						}
+					}
+					
+					if (len) {
+						(*part)->content = (char *)realloc((*part)->content,strlen((*part)->content) + len + sizeof(char));
+						if (encode == 0) 
+							blocklen = 3;
+						else {
+							cmime_base64_encode_block(in,out,len);
+							blocklen = 4;
+						}
+					
+						for (i=0; i<blocklen;i++) {
+							(*part)->content[pos++] = out[i];
+						}
+						blocksout++;
+					}
+
+					if(blocksout >= (LINE_LENGTH / 4) || feof(fp)) {
+						if(blocksout && (encode == 1)) {
+							/* if base64 data, we need to do a line break after LINE_LENGTH chars */
+							(*part)->content = (char *)realloc((*part)->content,strlen((*part)->content) + strlen(CRLF) + sizeof(char));
+							// TODO: add support for other line endings
+							(*part)->content[pos++] = '\r';
+							(*part)->content[pos++] = '\n';
+						}
+						blocksout = 0;
+					} 
+				}
+				fclose(fp);
+			} else {
+				return (-3); /* failed to open file */
+			}
 			
 		} else {
 			return(-2); /* not regular file */
