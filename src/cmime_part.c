@@ -193,6 +193,7 @@ int cmime_part_from_file(CMimePart_T **part, char *filename) {
 			ptemp2 = basename(ptemp1);
 			asprintf(&disposition,"attachment; filename=%s",ptemp2);
 			cmime_part_set_content_disposition((*part),disposition);		
+			free(disposition);
 			
 			fp = fopen(filename, "rb");
 			if (fp != NULL) {

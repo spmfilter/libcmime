@@ -65,7 +65,6 @@ int main (int argc, char const *argv[]) {
 	part = cmime_part_new();
 	cmime_part_from_file(&part,"../../test/test_data.h");
 	out = cmime_part_as_string(part);
-	printf("%s",out);
 	free(out);
 	cmime_part_free(part);
 	return 0;
