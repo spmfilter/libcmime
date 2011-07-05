@@ -48,10 +48,7 @@ typedef struct {
 	CMimeAddress_T *sender; /**< sender of email */
 	CMimeList_T *recipients; /**< double linked list with recipients */
 	CMimeTable_T *headers; /**< message header hash table */
-
-/*	
-	char *message_id; 
-*/
+	char *boundary; /**< message boundary */
 	time_t date; /**< date of email */
 	int tz_offset; /**< timezone offset */
 } CMimeMessage_T;
@@ -241,6 +238,27 @@ char *cmime_message_get_date(CMimeMessage_T *message);
  * @returns 0 on success or -1 in case of error
  */
 int cmime_message_set_date_now(CMimeMessage_T *message);
+
+/*!
+ * @fn void cmime_message_set_boundary(CMimeMessage_T *message, char *boundary)
+ * @brief Set message boundary
+ * @param message a CMimeMessage_T object
+ * @param boundary the boundary to set
+ */
+void cmime_message_set_boundary(CMimeMessage_T *message, char *boundary);
+
+/*! 
+ * @def cmime_message_get_boundary(message)
+ * @returns message boundary
+ */
+#define cmime_message_get_boundary(message) (message->boundary)
+
+/*! 
+ * @fn char *cmime_message_generate_boundary(void)
+ * @brief Generate a message boundary
+ * @returns a newly allocated boundary
+ */
+char *cmime_message_generate_boundary(void);
 
 #ifdef __cplusplus
 }

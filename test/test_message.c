@@ -30,6 +30,7 @@
 int main (int argc, char const *argv[]) {
 	CMimeMessage_T *msg = cmime_message_new();
 	char *s = NULL;
+	char *s2 = NULL;
 	CMimeHeader_T *h = NULL;
 	CMimeList_T *recipient_list = NULL;
 	CMimeListElem_T *elem;
@@ -93,6 +94,14 @@ int main (int argc, char const *argv[]) {
 	s = cmime_message_get_date(msg);
 	assert(s);
 			
+	// check boundary stuff
+	s = cmime_message_generate_boundary();
+	cmime_message_set_boundary(msg,s);
+	s2 = cmime_message_get_boundary(msg);
+	assert(strcmp(s,s2)==0);
+	
+	free(s);
 	cmime_message_free(msg);
+	
 	return(0);
 }

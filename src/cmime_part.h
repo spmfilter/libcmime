@@ -122,6 +122,13 @@ void cmime_part_set_content(CMimePart_T *part, const char *s);
  */
 char *cmime_part_as_string(CMimePart_T *part);
 
+/*!
+ * @fn int cmime_part_from_file(CMimePart_T **part, char *filename)
+ * @brief Create a CMimePart_T object from file
+ * @param pat out param to return the new part
+ * @param filename path to file
+ * @returns 0 on success, -1 on stat error, -2 if not a regular file
+ */
 int cmime_part_from_file(CMimePart_T **part, char *filename);
 
 #ifdef __cplusplus

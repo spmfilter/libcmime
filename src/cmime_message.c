@@ -95,6 +95,7 @@ CMimeMessage_T *cmime_message_new(void) {
 
 	message->date = 0;
 	message->tz_offset = 0;
+	message->boundary = NULL;
 
 	return(message);
 }
@@ -107,6 +108,9 @@ void cmime_message_free(CMimeMessage_T *message) {
 	cmime_list_free(message->recipients);
 	
 	cmime_table_free(message->headers);
+	
+	if (message->boundary!=NULL)
+		free(message->boundary);
 	
 	free(message);
 }
@@ -271,7 +275,7 @@ char *cmime_message_get_date(CMimeMessage_T *message) {
 }
 
 int cmime_message_set_date_now(CMimeMessage_T *message) {
-	time_t  currtime;                                                    
+	time_t currtime;                                                    
 	char s[128] = {0};     
 	int i;
 	
@@ -284,4 +288,34 @@ int cmime_message_set_date_now(CMimeMessage_T *message) {
 		return(0);
 	} else
 		return(-1);
+}
+
+void cmime_message_set_boundary(CMimeMessage_T *message, char *boundary) {
+	assert(message);
+	assert(boundary);
+	
+	if (message->boundary != NULL)
+		free(message->boundary);
+		
+	message->boundary = (char *)malloc(strlen(boundary) + sizeof(char));
+	strcpy(message->boundary,boundary);
+}
+
+char *cmime_message_generate_boundary(void) {
+	char str[21];
+	char *boundary = NULL;
+	int i;
+	static const char text[] = "abcdefghijklmnopqrstuvwxyz"
+	                           "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+														 "0123456789._-=";
+
+	srand(time(NULL));
+
+	for ( i = 0; i < 20; ++i ) {
+		str[i] = text[rand() % (sizeof text - 1)];
+	}
+	str[20] = '\0';
+	
+	asprintf(&boundary,"--=_Part_%s",str);
+	return(boundary);
 }
