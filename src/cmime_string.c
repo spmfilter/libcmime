@@ -79,10 +79,10 @@ CMimeStringList_T *cmime_string_split(const char *s, const char *sep, int maxspl
 	strcpy(copy,s);
 	
 	for (tmp = strtok(copy,sep); tmp; tmp = strtok(NULL,sep)) {
-		count++;
 		cmime_string_list_insert(sl,tmp);
 		if (count == maxsplit)
 			break;
+		count++;
 	}
 	free(copy);
 	

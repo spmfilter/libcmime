@@ -148,7 +148,7 @@ int cmime_message_set_header(CMimeMessage_T *message, const char *header) {
 	sl = cmime_string_split(header,":",1);
 	k = cmime_string_list_get(sl,0);
 	k = cmime_string_strip(k);
-	
+
 	v = cmime_string_list_get(sl,1);
 	v = cmime_string_strip(v);
 	
@@ -327,8 +327,8 @@ int cmime_message_from_file(CMimeMessage_T **message, const char *filename) {
 	int retval;
 	FILE *fp;
 	char buffer[BUFSIZ];
-	size_t t = 0;
 	int in_header = 1;
+	char *s = NULL;
 	
 	assert((*message));
 	assert(filename);
@@ -351,8 +351,21 @@ int cmime_message_from_file(CMimeMessage_T **message, const char *filename) {
 		
 		if (in_header==1) {
 			// process header
-			
-			
+			if (isspace(buffer[0])) {
+				/* we've got a long header field line, so append the value
+				 * to the previous value */
+				s = (char *)realloc(s,strlen(s) + strlen(buffer) + sizeof(char));
+				strcat(s,buffer);
+			} else {
+				if (s!=NULL) {
+					if (cmime_message_set_header((*message), s)!=0)
+						return(-4); /* failed to add header */
+					free(s);
+				} 
+					
+				s = (char *)malloc(strlen(buffer) + sizeof(char));
+				strcpy(s,buffer);
+			}
 		}	else {
 			// process body
 		}
