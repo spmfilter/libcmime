@@ -57,6 +57,7 @@ char mime_disposition_string1[] = "attachment; filename=\"attachment.zip\"";
 char mime_disposition_string2[] = "inline";
 
 char mime_encoding_string1[] = "base64";
+char mime_encoding_string2[] = "quoted-printable";
 
 char test_content_string1[] = "\
 Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo \
@@ -66,6 +67,8 @@ ultricies nec, pellentesque eu, pretium quis, sem. Nulla consequat massa \
 quis enim. Donec pede justo, fringilla vel, aliquet nec, vulputate eget, \
 arcu. In enim justo, rhoncus ut, imperdiet a, venenatis vitae, justo. \
 Nullam dictum felis eu pede mollis pretium.";
+
+char test_boundary[] = "--Part_5-743799170";
 
 #ifdef __cplusplus
 }

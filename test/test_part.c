@@ -33,14 +33,14 @@ int main (int argc, char const *argv[]) {
 	part = cmime_part_new();
 	assert(part);
 	
-	cmime_part_set_content_type(part,mime_type_string1);
-	s = cmime_part_get_content_type(part);
-	assert(strcmp(s,mime_type_string1)==0);
-
-	// overwrite content type
 	cmime_part_set_content_type(part,mime_type_string2);
 	s = cmime_part_get_content_type(part);
 	assert(strcmp(s,mime_type_string2)==0);
+
+	// overwrite content type
+	cmime_part_set_content_type(part,mime_type_string1);
+	s = cmime_part_get_content_type(part);
+	assert(strcmp(s,mime_type_string1)==0);
 	
 	cmime_part_set_content_disposition(part,mime_disposition_string1);
 	s = cmime_part_get_content_disposition(part);
@@ -54,18 +54,31 @@ int main (int argc, char const *argv[]) {
 	s = cmime_part_get_content_transfer_encoding(part);
 	assert(strcmp(s,mime_encoding_string1)==0);
 	
+	cmime_part_set_content_transfer_encoding(part,mime_encoding_string2);
+	s = cmime_part_get_content_transfer_encoding(part);
+	assert(strcmp(s,mime_encoding_string2)==0);
+	
 	cmime_part_set_content(part,test_content_string1);
 	s = cmime_part_get_content(part);
-	assert(strcmp(s,test_content_string1) == 0);
+	assert(strcmp(s,test_content_string1)==0);
+	
+	cmime_part_set_boundary(part,test_boundary);
+	s = cmime_part_get_boundary(part);
+	assert(strcmp(s,test_boundary)==0);
 	
 	out = cmime_part_as_string(part);
-	free(out);
+	printf("%s\n",out);
+//	free(out);
 	cmime_part_free(part);
-	
+	free(out);
+//	part = cmime_part_new();
+//	cmime_part_from_file(&part,"../../test/test_data.h");
+//	out = cmime_part_as_string(part);
+//	free(out);
+//	cmime_part_free(part);
+/*	
 	part = cmime_part_new();
-	cmime_part_from_file(&part,"../../test/test_data.h");
-	out = cmime_part_as_string(part);
-	free(out);
-	cmime_part_free(part);
+	cmime_part_from_string(&part,test_content_string1);
+	cmime_part_free(part); */
 	return 0;
 }

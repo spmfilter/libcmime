@@ -23,6 +23,7 @@ extern "C" {
 #endif
 
 char *cmime_util_get_mimetype(const char *filename);
+//int cmime_util_is_newline(const char *c);
 
 #ifdef __cplusplus
 }

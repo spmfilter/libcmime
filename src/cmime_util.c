@@ -22,6 +22,7 @@
 
 #include "cmime_config.h"
 #include "cmime_util.h"
+#include "cmime_internal.h"
 
 /* get the mimetype */
 char *cmime_util_get_mimetype(const char *filename) {
@@ -56,3 +57,11 @@ char *cmime_util_get_mimetype(const char *filename) {
 	strncpy(retval, buf, strlen(buf) - 1);
 	return(retval);
 }
+/*
+int cmime_util_is_newline(const char *c) { 
+	if ((strcmp(c,CRLF)==0) || (strcmp(c==LF)==0))
+		return(0);
+	else
+		return(-1);
+}
+*/

@@ -26,6 +26,8 @@
 CMimeAddress_T *cmime_address_new(void) {
 	CMimeAddress_T *ca;
 	ca = (CMimeAddress_T *)calloc((size_t)1,sizeof(CMimeAddress_T));
+	ca->name = NULL;
+	ca->email = NULL;
 	return(ca);
 }
 
@@ -37,7 +39,7 @@ void cmime_address_set_name(CMimeAddress_T *ca, const char *name) {
 	if (ca->name != NULL)
 		free(ca->name);
 		
-	ca->name = (char *)malloc(strlen(name) + 1);
+	ca->name = (char *)malloc(strlen(name) + sizeof(char));
 	strcpy(ca->name,name);
 }
 
@@ -49,7 +51,7 @@ void cmime_address_set_email(CMimeAddress_T *ca, const char *email) {
 	if (ca->email != NULL)
 		free(ca->email);
 		
-	ca->email = (char *)malloc(strlen(email) + 1);
+	ca->email = (char *)malloc(strlen(email) + sizeof(char));
 	strcpy(ca->email, email);
 }
 
@@ -58,6 +60,7 @@ char *cmime_address_to_string(CMimeAddress_T *ca) {
 	char *s = NULL;
 	
 	assert(ca);
+	
 	asprintf(&s,"%s <%s>",ca->name,ca->email);
 	
 	return(s);
@@ -82,7 +85,7 @@ CMimeAddress_T *cmime_address_parse_string(const char *s) {
 		i = size_in - strlen(t1);
 		if (*(s + i - 1) == ' ')
 			i--;
-		ca->name = (char *)malloc(i + 1);
+		ca->name = (char *)calloc(i + sizeof(char),sizeof(char));
 		memcpy(ca->name,s,i);
 		
 		t2 = strrchr(t1,'>');
@@ -91,10 +94,10 @@ CMimeAddress_T *cmime_address_parse_string(const char *s) {
 		} else {
 			i = strlen(++t1);
 		}
-		ca->email = (char *)malloc(i + 1);
+		ca->email = (char *)calloc(i + sizeof(char),sizeof(char));
 		memcpy(ca->email,t1,i);
 	} 	else {
-		ca->email = (char *)malloc(size_in + 1);
+		ca->email = (char *)calloc(size_in + sizeof(char),sizeof(char));
 		memcpy(ca->email,s,size_in);
 	}
 	

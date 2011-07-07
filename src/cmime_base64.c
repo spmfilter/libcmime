@@ -77,7 +77,7 @@ char *cmime_base64_encode_string(const char *source) {
 	unsigned char in[3], out[4];
 	int i,j;
 	int len;
-	char *target;
+	char *target = NULL;
 	int pos = 0;
 
 	/* laenge der ein/ausgabe */

@@ -346,7 +346,7 @@ int cmime_message_from_file(CMimeMessage_T **message, const char *filename) {
 	}
 	
 	while (fgets(buffer, sizeof(buffer), fp)) {
-		if((strcmp(buffer,CRLF)==0) || (strcmp(buffer,LF)==0) || (strcmp(buffer,DCRLF)==0)) 
+		if((strcmp(buffer,CRLF)==0) || (strcmp(buffer,LF)==0)) 
 			in_header = 0;
 		
 		if (in_header==1) {
@@ -371,6 +371,6 @@ int cmime_message_from_file(CMimeMessage_T **message, const char *filename) {
 		}
 	}	
 	fclose(fp);
-	
+
 	return(0);
 }
