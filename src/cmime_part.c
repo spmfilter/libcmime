@@ -68,7 +68,7 @@ void cmime_part_set_content_type(CMimePart_T *part, const char *s) {
 	if (part->content_type != NULL)
 		free(part->content_type);
 	
-	part->content_type = (char *)malloc(strlen(s) + sizeof(char));
+	part->content_type = (char *)calloc(strlen(s) * sizeof(char),sizeof(char));
 	strcpy(part->content_type,s);
 }
 
@@ -79,7 +79,7 @@ void cmime_part_set_content_disposition(CMimePart_T *part, const char *s) {
 	if (part->content_disposition != NULL)
 		free(part->content_disposition);
 	
-	part->content_disposition = (char *)malloc(strlen(s) + sizeof(char));
+	part->content_disposition = (char *)calloc(strlen(s) * sizeof(char),sizeof(char));
 	strcpy(part->content_disposition,s);
 }
 
@@ -90,7 +90,7 @@ void cmime_part_set_content_transfer_encoding(CMimePart_T *part, const char *s) 
 	if (part->content_transfer_encoding != NULL)
 		free(part->content_transfer_encoding);
 	
-	part->content_transfer_encoding = (char *)malloc(strlen(s) + sizeof(char));
+	part->content_transfer_encoding = (char *)calloc(strlen(s) * sizeof(char),sizeof(char));
 	strcpy(part->content_transfer_encoding,s);
 }
 
@@ -101,7 +101,7 @@ void cmime_part_set_content(CMimePart_T *part, const char *s) {
 	if (part->content != NULL)
 		free(part->content);
 	
-	part->content = (char *)malloc(strlen(s) + sizeof(char));
+	part->content = (char *)calloc(strlen(s) * sizeof(char),sizeof(char));
 	strcpy(part->content,s);
 }
 
@@ -119,7 +119,7 @@ char *cmime_part_as_string(CMimePart_T *part) {
 		return(NULL);
 		
 	out = (char *)calloc(1,sizeof(char));
-	
+			
 	/* TODO: Check line endings, it should not be used CRLF as default... */	
 	ptemp = cmime_part_get_content_type(part);
 	if (ptemp != NULL) {
@@ -130,18 +130,18 @@ char *cmime_part_as_string(CMimePart_T *part) {
 		with_headers = 1;
 	}
 
-	ptemp = cmime_part_get_content_transfer_encoding(part);
+	ptemp = cmime_part_get_content_disposition(part);
 	if (ptemp != NULL) {
-		asprintf(&s,HEADER_CONTENT_TRANSFER_ENCODING_PATTERN,ptemp,CRLF);
+		asprintf(&s,HEADER_CONTENT_DISPOSITION_PATTERN,ptemp,CRLF);
 		out = (char *)realloc(out,strlen(out) + strlen(s) + sizeof(char));
 		strcat(out,s);
 		free(s);
 		with_headers = 1;
 	}
-	
-	ptemp = cmime_part_get_content_disposition(part);
+
+	ptemp = cmime_part_get_content_transfer_encoding(part);
 	if (ptemp != NULL) {
-		asprintf(&s,HEADER_CONTENT_DISPOSITION_PATTERN,ptemp,CRLF);
+		asprintf(&s,HEADER_CONTENT_TRANSFER_ENCODING_PATTERN,ptemp,CRLF);
 		out = (char *)realloc(out,strlen(out) + strlen(s) + sizeof(char));
 		strcat(out,s);
 		free(s);
@@ -195,10 +195,12 @@ int cmime_part_from_file(CMimePart_T **part, char *filename) {
 			cmime_part_set_content_type((*part),mimetype);
 			encode = (strncmp(mimetype,MIMETYPE_TEXT_PLAIN,strlen(MIMETYPE_TEXT_PLAIN)) == 0) ? 0 : 1;
 			free(mimetype);
-			
+					
 			if (encode == 1) 
 				cmime_part_set_content_transfer_encoding((*part),"base64");
-			
+			else 
+				cmime_part_set_content_transfer_encoding((*part),"7bit");
+				
 			ptemp2 = basename(ptemp1);
 			asprintf(&disposition,"attachment; filename=%s",ptemp2);
 			cmime_part_set_content_disposition((*part),disposition);		
@@ -206,7 +208,7 @@ int cmime_part_from_file(CMimePart_T **part, char *filename) {
 			
 			fp = fopen(filename, "rb");
 			if (fp != NULL) {
-				(*part)->content = (char *)malloc(sizeof(char));
+				(*part)->content = (char *)calloc(1,sizeof(char));
 				while(!feof(fp)) {
 					len = 0;
 					
@@ -230,7 +232,7 @@ int cmime_part_from_file(CMimePart_T **part, char *filename) {
 						}
 					
 						for (i=0; i<blocklen;i++) {
-							(*part)->content[pos++] = out[i];
+							(*part)->content[pos++] = (encode == 0) ? in[i] : out[i];
 						}
 						blocksout++;
 					}

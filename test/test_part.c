@@ -31,6 +31,8 @@ int main (int argc, char const *argv[]) {
 	char *s;
 	char *out;
 	char *out2;
+
+
 	part = cmime_part_new();
 	assert(part);
 	
@@ -65,12 +67,6 @@ int main (int argc, char const *argv[]) {
 		
 	out = cmime_part_as_string(part);
 	cmime_part_free(part);
-//	free(out);
-//	part = cmime_part_new();
-//	cmime_part_from_file(&part,"../../test/test_data.h");
-//	out = cmime_part_as_string(part);
-//	free(out);
-//	cmime_part_free(part);
 	
 	/* now create a new mime part object from 
 	 * the old part string and compare */
@@ -82,5 +78,14 @@ int main (int argc, char const *argv[]) {
 	free(out);
 	free(out2);
 	cmime_part_free(part); 
-	return 0;
+
+	part = cmime_part_new();
+	cmime_part_from_file(&part,"../../test/test_content.txt");
+	out = cmime_part_as_string(part);
+	assert(out);
+	free(out);
+	cmime_part_free(part);
+	
+
+	return(0);
 }
