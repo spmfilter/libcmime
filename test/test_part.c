@@ -30,6 +30,7 @@ int main (int argc, char const *argv[]) {
 	CMimePart_T *part;
 	char *s;
 	char *out;
+	char *out2;
 	part = cmime_part_new();
 	assert(part);
 	
@@ -61,24 +62,25 @@ int main (int argc, char const *argv[]) {
 	cmime_part_set_content(part,test_content_string1);
 	s = cmime_part_get_content(part);
 	assert(strcmp(s,test_content_string1)==0);
-	
-	cmime_part_set_boundary(part,test_boundary);
-	s = cmime_part_get_boundary(part);
-	assert(strcmp(s,test_boundary)==0);
-	
+		
 	out = cmime_part_as_string(part);
-	printf("%s\n",out);
-//	free(out);
 	cmime_part_free(part);
-	free(out);
+//	free(out);
 //	part = cmime_part_new();
 //	cmime_part_from_file(&part,"../../test/test_data.h");
 //	out = cmime_part_as_string(part);
 //	free(out);
 //	cmime_part_free(part);
-/*	
+	
+	/* now create a new mime part object from 
+	 * the old part string and compare */
 	part = cmime_part_new();
-	cmime_part_from_string(&part,test_content_string1);
-	cmime_part_free(part); */
+	cmime_part_from_string(&part,out);
+	
+	out2 = cmime_part_as_string(part);
+	assert(strcmp(out,out2)==0);
+	free(out);
+	free(out2);
+	cmime_part_free(part); 
 	return 0;
 }

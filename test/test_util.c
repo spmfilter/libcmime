@@ -15,17 +15,23 @@
  * License along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef _CMIME_UTIL_H
-#define	_CMIME_UTIL_H
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <assert.h>
 
-#ifdef __cplusplus
-extern "C" {
-#endif
+#include "../src/cmime_util.h"
 
-char *cmime_util_get_mimetype(const char *filename);
+#include "test_data.h"
 
-#ifdef __cplusplus
-}
-#endif
-
-#endif	/* _CMIME_UTIL_H */
+int main (int argc, char const *argv[]) {
+	char expected_mimetype[] = "text/x-c; charset=utf-8";
+	char *out = NULL;
+	
+	out = cmime_util_get_mimetype("../../test/test_data.h");
+	assert(strcmp(expected_mimetype,out)==0);
+	free(out);
+	
+	return(0);
+}	
+	

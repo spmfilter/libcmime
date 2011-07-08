@@ -21,18 +21,19 @@
 #include <sys/stat.h>
 #include <assert.h>
 #include <libgen.h>
+#include <ctype.h>
 
 #include "cmime_message.h"
 #include "cmime_part.h"
 #include "cmime_util.h"
 #include "cmime_internal.h"
 #include "cmime_base64.h"
+#include "cmime_string.h"
 
 CMimePart_T *cmime_part_new(void) {
 	CMimePart_T *part = NULL;
 	
 	part = (CMimePart_T *)calloc((size_t)1, sizeof(CMimePart_T));
-	part->boundary = NULL;
 	part->content_type = NULL;
 	part->content_disposition = NULL;
 	part->content_transfer_encoding = NULL;
@@ -43,9 +44,6 @@ CMimePart_T *cmime_part_new(void) {
 
 void cmime_part_free(CMimePart_T *part) {
 	assert(part);
-	
-	if(part->boundary != NULL)
-		free(part->boundary);
 	
 	if (part->content_type != NULL)
 		free(part->content_type);
@@ -62,16 +60,6 @@ void cmime_part_free(CMimePart_T *part) {
 	free(part);
 }
 
-void cmime_part_set_boundary(CMimePart_T *part, const char *s) {
-	assert(part);
-	assert(s);
-	
-	if (part->boundary != NULL)
-		free(part->boundary);
-	
-	part->boundary = (char *)malloc(strlen(s) + sizeof(char));
-	strcpy(part->boundary,s);
-}
 
 void cmime_part_set_content_type(CMimePart_T *part, const char *s) {
 	assert(part);
@@ -132,17 +120,7 @@ char *cmime_part_as_string(CMimePart_T *part) {
 		
 	out = (char *)calloc(1,sizeof(char));
 	
-	/* TODO: Check line endings, it should not be used CRLF as default... */
-	ptemp = cmime_part_get_boundary(part);
-	if (ptemp != NULL) {
-		asprintf(&s,"%s%s",ptemp,CRLF);
-		out = (char *)realloc(out,strlen(out) + strlen(s) + sizeof(char));
-		strcat(out,s);
-		free(s);
-		with_headers = 1;
-	}
-		
-	
+	/* TODO: Check line endings, it should not be used CRLF as default... */	
 	ptemp = cmime_part_get_content_type(part);
 	if (ptemp != NULL) {
 		asprintf(&s,HEADER_CONTENT_TYPE_PATTERN,ptemp,CRLF);
@@ -284,16 +262,46 @@ int cmime_part_from_file(CMimePart_T **part, char *filename) {
 }
 
 int cmime_part_from_string(CMimePart_T **part, const char *content) {
-	char *it = content;
-	int pos = 0;
-	char buffer[BUFSIZ];
+	CMimeStringList_T *sl = NULL;
+	char *s = NULL;
+	char *ptemp = NULL;
+	int i = 0;
+	int found_header = 0;
+	char *body = NULL;
 	
-	while (*it != '\0') {
-		if (*it=='\n')
-			printf("NEWLINE\n");
-	//	printf("IT: '%c'\n",*it);
-		*it++;
+	assert((*part));
+	assert(content);
+	sl = cmime_string_split(content,CRLF,0);
+	
+	body = (char *)calloc(1,sizeof(char));
+	
+	for(i=0;i<cmime_string_list_get_count(sl);i++) {
+		s = cmime_string_list_get(sl,i);
+		ptemp = strchr(s,':');
+		if (ptemp!=NULL) {
+			if (isspace(*++ptemp)!=0) {
+				if (strcasestr(s,"Content-Type")!=NULL) { 
+					cmime_part_set_content_type((*part),cmime_string_strip(ptemp));
+					found_header = 1;
+				} else if (strcasestr(s,"Content-Transfer-Encoding")!=NULL) {
+					cmime_part_set_content_transfer_encoding((*part),cmime_string_strip(ptemp));
+					found_header = 1;
+				} else if (strcasestr(s,"Content-Disposition")!=NULL) {
+					cmime_part_set_content_disposition((*part),cmime_string_strip(ptemp));
+					found_header = 1;
+				}
+			}
+		} 
+		
+		if (found_header==0) {
+			body = (char *)realloc(body,strlen(body) + strlen(s) + sizeof(char));
+			strcat(body,s);
+		} else 
+			found_header = 0;
 	}
+	cmime_part_set_content((*part),body);
+	free(body);
 	
+	cmime_string_list_free(sl);
 	return(0);
 }

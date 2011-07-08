@@ -80,7 +80,7 @@ CMimeStringList_T *cmime_string_split(const char *s, const char *sep, int maxspl
 	
 	for (tmp = strtok(copy,sep); tmp; tmp = strtok(NULL,sep)) {
 		cmime_string_list_insert(sl,tmp);
-		if (count == maxsplit)
+		if ((maxsplit != 0) && (count == maxsplit))
 			break;
 		count++;
 	}

@@ -1,3 +1,7 @@
+add_executable(test_util test_util.c)
+target_link_libraries(test_util cmime)
+ADD_TEST(UtilTest ${EXECUTABLE_OUTPUT_PATH}/test_util)
+
 add_executable(test_base64 test_base64.c)
 target_link_libraries(test_base64 cmime)
 ADD_TEST(Base64Test ${EXECUTABLE_OUTPUT_PATH}/test_base64)

@@ -37,7 +37,6 @@ extern "C" {
  */
 
 typedef struct {
-	char *boundary; /**< mime part boundary string **/
 	char *content_type; /**< content type of part */
 	char *content_disposition; /**< content disposition of part */
 	char *content_transfer_encoding; /**< content transfer encoding of part */
@@ -57,20 +56,6 @@ CMimePart_T *cmime_part_new(void);
  * @param part a CMimePart_T object
  */
 void cmime_part_free(CMimePart_T *part);
-
-/*!
- * @fn void cmime_part_set_boundary(CMimePart_T *part, const char *s)
- * @brief Set the boundary of a mime part
- * @param part a CMimePart_T object
- * @param s boundary string
- */
-void cmime_part_set_boundary(CMimePart_T *part, const char *s);
-
-/*!
- * @def cmime_part_get_boundary(part)
- * @returns mime parts boundary
- */
-#define cmime_part_get_boundary(part) (part->boundary);
 
 /*!
  * @fn void cmime_part_set_content_type(CMimePart_T *part, const char *s)
