@@ -27,9 +27,9 @@
 /* get the mimetype */
 char *cmime_util_get_mimetype(const char *filename) {
 	char buf[128];
-	FILE *fh;
+	FILE *fh = NULL;
 	char *command = NULL;
-	char *retval;
+	char *retval = NULL;
 
 	assert(filename);
 	

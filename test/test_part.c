@@ -24,14 +24,12 @@
 
 #include "test_data.h"
 
-#define EXPECTED_MIME_TYPE "text/x-c; charset=utf-8"
-
 int main (int argc, char const *argv[]) {
 	CMimePart_T *part;
 	char *s;
 	char *out;
 	char *out2;
-
+	char content_file[] = "../../test/test_content.txt";
 
 	part = cmime_part_new();
 	assert(part);
@@ -80,10 +78,14 @@ int main (int argc, char const *argv[]) {
 	cmime_part_free(part); 
 
 	part = cmime_part_new();
-	cmime_part_from_file(&part,"../../test/test_content.txt");
+	cmime_part_from_file(&part,content_file);
+//	cmime_part_from_file(&part,"../../test/test_data.h");
 	out = cmime_part_as_string(part);
+	printf("%s\n",out);
 	assert(out);
 	free(out);
+	
+	
 	cmime_part_free(part);
 	
 

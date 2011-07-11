@@ -68,7 +68,7 @@ void cmime_part_set_content_type(CMimePart_T *part, const char *s) {
 	if (part->content_type != NULL)
 		free(part->content_type);
 	
-	part->content_type = (char *)calloc(strlen(s) * sizeof(char),sizeof(char));
+	part->content_type = (char *)malloc(strlen(s) + sizeof(char));
 	strcpy(part->content_type,s);
 }
 
@@ -79,7 +79,7 @@ void cmime_part_set_content_disposition(CMimePart_T *part, const char *s) {
 	if (part->content_disposition != NULL)
 		free(part->content_disposition);
 	
-	part->content_disposition = (char *)calloc(strlen(s) * sizeof(char),sizeof(char));
+	part->content_disposition = (char *)malloc(strlen(s)  + sizeof(char));
 	strcpy(part->content_disposition,s);
 }
 
@@ -90,7 +90,7 @@ void cmime_part_set_content_transfer_encoding(CMimePart_T *part, const char *s) 
 	if (part->content_transfer_encoding != NULL)
 		free(part->content_transfer_encoding);
 	
-	part->content_transfer_encoding = (char *)calloc(strlen(s) * sizeof(char),sizeof(char));
+	part->content_transfer_encoding = (char *)malloc(strlen(s) + sizeof(char));
 	strcpy(part->content_transfer_encoding,s);
 }
 
@@ -101,7 +101,7 @@ void cmime_part_set_content(CMimePart_T *part, const char *s) {
 	if (part->content != NULL)
 		free(part->content);
 	
-	part->content = (char *)calloc(strlen(s) * sizeof(char),sizeof(char));
+	part->content = (char *)malloc(strlen(s) + sizeof(char));
 	strcpy(part->content,s);
 }
 
@@ -161,24 +161,19 @@ char *cmime_part_as_string(CMimePart_T *part) {
 
 int cmime_part_from_file(CMimePart_T **part, char *filename) {
 	struct stat fileinfo;
-	int retval;
-	char *mimetype;
-	char *ptemp1;
-	char *ptemp2;
+	int retval = 0;
+	char *mimetype = NULL;
 	FILE *fp = NULL;
-	int encode;
+	int encode = 0;
 	int i = 0;
 	int len = 0;
-	int blocklen = 0;
 	int blocksout = 0;
 	int pos = 0;
 	unsigned char in[3], out[4];
-	char *disposition;
+	char *disposition = NULL;
 	
 	assert((*part));
 	assert(filename);
-	
-	ptemp1 = filename;
 	
 	/* only regular files please */
 	retval = stat(filename,&fileinfo);
@@ -188,7 +183,7 @@ int cmime_part_from_file(CMimePart_T **part, char *filename) {
 			
 			/* set default mime type if no one found */
 			if(mimetype == NULL) {
-				mimetype = (char *)calloc(strlen(MIMETYPE_DEFAULT) + 1, sizeof(char));
+				mimetype = (char *)malloc(strlen(MIMETYPE_DEFAULT) + sizeof(char));
 				strncpy(mimetype, MIMETYPE_DEFAULT, strlen(MIMETYPE_DEFAULT));
 			}
 			
@@ -201,8 +196,7 @@ int cmime_part_from_file(CMimePart_T **part, char *filename) {
 			else 
 				cmime_part_set_content_transfer_encoding((*part),"7bit");
 				
-			ptemp2 = basename(ptemp1);
-			asprintf(&disposition,"attachment; filename=%s",ptemp2);
+			asprintf(&disposition,"attachment; filename=%s",basename(filename));
 			cmime_part_set_content_disposition((*part),disposition);		
 			free(disposition);
 			
@@ -223,17 +217,16 @@ int cmime_part_from_file(CMimePart_T **part, char *filename) {
 					}
 					
 					if (len) {
-						(*part)->content = (char *)realloc((*part)->content,strlen((*part)->content) + len + sizeof(char));
-						if (encode == 0) 
-							blocklen = 3;
-						else {
+						if (encode == 0) {
+							(*part)->content = (char *)realloc((*part)->content,strlen((*part)->content) + sizeof(in) + sizeof(char));
+							strcat((*part)->content,(char *)in);
+						} else {
 							cmime_base64_encode_block(in,out,len);
-							blocklen = 4;
-						}
-					
-						for (i=0; i<blocklen;i++) {
-							(*part)->content[pos++] = (encode == 0) ? in[i] : out[i];
-						}
+							(*part)->content = (char *)realloc((*part)->content,strlen((*part)->content) + sizeof(out) + sizeof(char));
+							for (i=0; i<4;i++) {
+								(*part)->content[pos++] = out[i];
+							}
+							(*part)->content[pos] = '\0';						}
 						blocksout++;
 					}
 
@@ -244,8 +237,9 @@ int cmime_part_from_file(CMimePart_T **part, char *filename) {
 							// TODO: add support for other line endings
 							(*part)->content[pos++] = '\r';
 							(*part)->content[pos++] = '\n';
+							(*part)->content[pos] = '\0';
 						}
-						blocksout = 0;
+					blocksout = 0;
 					} 
 				}
 				fclose(fp);
