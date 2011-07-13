@@ -85,3 +85,21 @@ char *cmime_header_get_value(CMimeHeader_T *header,int pos) {
 	
 	return(header->value[pos]);
 }
+
+char *cmime_header_as_string(CMimeHeader_T *header) {
+	char *out = NULL;
+	int i = 0;
+	char *ptemp = NULL;
+	
+	assert(header);
+
+	out = (char *)calloc(sizeof(char),sizeof(char));
+	for(i = 0; i < cmime_header_get_count(header); i++) {
+		asprintf(&ptemp,"%s: %s",cmime_header_get_name(header),cmime_header_get_value(header,i));
+		out = (char *)realloc(out,strlen(out) + strlen(ptemp) + 1);
+		strcat(out,ptemp);
+		free(ptemp);
+	}
+	
+	return(out);
+}
