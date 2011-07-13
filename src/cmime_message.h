@@ -48,6 +48,7 @@ typedef struct {
 	char *boundary; /**< message boundary */
 	time_t date; /**< date of email */
 	int tz_offset; /**< timezone offset */
+	CMimeList_T *parts; /**< mime parts */
 } CMimeMessage_T;
 
 /*!

@@ -31,15 +31,15 @@
 extern "C" {
 #endif
 
+#include "cmime_list.h"
+
 /*!
  * @struct CMimePart_T cmime_part.h
  * @brief A mime part
  */
 
 typedef struct {
-	char *content_type; /**< content type of part */
-	char *content_disposition; /**< content disposition of part */
-	char *content_transfer_encoding; /**< content transfer encoding of part */
+	CMimeList_T *headers;
 	char *content; /**< content of mime part */
 } CMimePart_T;
 
@@ -66,10 +66,12 @@ void cmime_part_free(CMimePart_T *part);
 void cmime_part_set_content_type(CMimePart_T *part, const char *s);
 
 /*!
- * @def cmime_part_get_content_type(part)
+ * @fn char *cmime_part_get_content_type(CMimePart_T *part)
+ * @brief Return content type of mime part
+ * @param part a CMimePart_T object
  * @returns mime parts content type
  */
-#define cmime_part_get_content_type(part) (part->content_type);
+char *cmime_part_get_content_type(CMimePart_T *part);
 
 /*!
  * @fn void cmime_part_set_content_disposition(CMimePart_T *part, const char *s)
@@ -80,10 +82,12 @@ void cmime_part_set_content_type(CMimePart_T *part, const char *s);
 void cmime_part_set_content_disposition(CMimePart_T *part, const char *s);
 
 /*!
- * @def cmime_part_get_content_disposition(part)
+ * @fn char *cmime_part_get_content_disposition(CMimePart_T *part)
+ * @brief Return content disposition of mime part
+ * @param part a CMimePart_T object
  * @returns mime parts content disposition
  */
-#define cmime_part_get_content_disposition(part) (part->content_disposition);
+char *cmime_part_get_content_disposition(CMimePart_T *part);
 
 /*!
  * @fn void cmime_part_set_content_transfer_encoding(CMimePart_T *part, const char *s)
@@ -94,10 +98,12 @@ void cmime_part_set_content_disposition(CMimePart_T *part, const char *s);
 void cmime_part_set_content_transfer_encoding(CMimePart_T *part, const char *s);
 
 /*!
- * @def cmime_part_get_content_transfer_encoding(part)
+ * @fn char *cmime_part_get_content_transfer_encoding(CMimePart_T *part)
+ * @brief Return content transfer encoding of mime part
+ * @param part a CMimePart_T object
  * @returns mime parts content transfer encoding
  */
-#define cmime_part_get_content_transfer_encoding(part) (part->content_transfer_encoding)
+char *cmime_part_get_content_transfer_encoding(CMimePart_T *part);
 
 /*!
  * @fn void cmime_part_set_content(CMimePart_T *part, const char *s)

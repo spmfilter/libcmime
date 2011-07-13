@@ -29,6 +29,7 @@
 #include "cmime_table.h"
 #include "cmime_string.h"
 #include "cmime_header.h"
+#include "cmime_part.h"
 #include "cmime_internal.h"
 
 static int _case_key_cmp(const void *x, const void *y) {
@@ -72,15 +73,16 @@ char *_get_core_header_value(CMimeMessage_T *msg, const char *key) {
 		return(NULL);
 }
 
-void _header_destroy(void *data) {
-	CMimeHeader_T *header = (CMimeHeader_T *)data;
-	cmime_header_free(header);
-}
-
 void _recipients_destroy(void *data) {
 	assert(data);
 	CMimeAddress_T *ca = (CMimeAddress_T *)data;
 	cmime_address_free(ca);
+}
+
+void _parts_destroy(void *data) {
+	assert(data);
+	CMimePart_T *p = (CMimePart_T *)data;
+	cmime_part_free(p);
 }
 
 CMimeMessage_T *cmime_message_new(void) {
@@ -88,7 +90,7 @@ CMimeMessage_T *cmime_message_new(void) {
 	
 	message = (CMimeMessage_T *)calloc((size_t)1, sizeof(CMimeMessage_T));
 	
-	if (cmime_table_new(&message->headers,0,_case_key_cmp,_lower_str_hash,_header_destroy)!=0) 
+	if (cmime_table_new(&message->headers,0,_case_key_cmp,_lower_str_hash,_cmime_internal_header_destroy)!=0) 
 		return(NULL);
 	
 	message->sender = NULL;
@@ -98,6 +100,9 @@ CMimeMessage_T *cmime_message_new(void) {
 	message->date = 0;
 	message->tz_offset = 0;
 	message->boundary = NULL;
+
+	if (cmime_list_new(&message->parts,_parts_destroy)!=0) 
+			return(NULL);
 
 	return(message);
 }
@@ -113,6 +118,8 @@ void cmime_message_free(CMimeMessage_T *message) {
 	
 	if (message->boundary!=NULL)
 		free(message->boundary);
+	
+	cmime_list_free(message->parts);
 	
 	free(message);
 }
@@ -322,19 +329,43 @@ char *cmime_message_generate_boundary(void) {
 	return(boundary);
 }
 
+/* extract boundary from given header string */
+char *_get_boundary(char *s) {
+	char *boundary = NULL;
+	int pos = 0;
+	
+	s = strstr(s,"=");
+	if (*++s=='"') 
+		s++;
+	
+	boundary = (char *)calloc(strlen(s) + sizeof(char),sizeof(char));
+	while(*s!='\0') {
+		if ((*s!='"') && (*s!='\r') && (*s!='\n'))
+			boundary[pos++] = *s;
+		else {
+			boundary[pos] = '\0';
+			break;
+		}
+		s++;
+	}
+	
+	return(boundary);
+}
+
 int cmime_message_from_file(CMimeMessage_T **message, const char *filename) {
 	struct stat fileinfo;
-	int retval;
 	FILE *fp;
 	char buffer[BUFSIZ];
 	int in_header = 1;
 	char *s = NULL;
+	char *ptemp = NULL;
+	int in_part = 0;
+	CMimePart_T *part = NULL;
 	
 	assert((*message));
 	assert(filename);
 	
-	retval = stat(filename,&fileinfo);
-	if (retval != 0)
+	if (stat(filename,&fileinfo) != 0)
 		return(-1); /* stat error */
 	
 	if(!S_ISREG(fileinfo.st_mode))
@@ -346,10 +377,26 @@ int cmime_message_from_file(CMimeMessage_T **message, const char *filename) {
 	}
 	
 	while (fgets(buffer, sizeof(buffer), fp)) {
-		if((strcmp(buffer,CRLF)==0) || (strcmp(buffer,LF)==0)) 
-			in_header = 0;
+		if((strcmp(buffer,CRLF)==0) || (strcmp(buffer,LF)==0)) {
+			if (in_header==1) {
+				if (s!=NULL) {
+					free(s);
+					s = (char *)calloc(1,sizeof(char));
+				}
+				in_header = 0;
+				continue;
+			}
+		}
 		
 		if (in_header==1) {
+			// search for boundary
+			if ((*message)->boundary==NULL) {
+				ptemp = strcasestr(buffer,"boundary=");
+				if (ptemp!=NULL) {
+					(*message)->boundary = _get_boundary(ptemp);
+				}
+			}
+			
 			// process header
 			if (isspace(buffer[0])) {
 				/* we've got a long header field line, so append the value
@@ -362,15 +409,37 @@ int cmime_message_from_file(CMimeMessage_T **message, const char *filename) {
 						return(-4); /* failed to add header */
 					free(s);
 				} 
-					
 				s = (char *)malloc(strlen(buffer) + sizeof(char));
 				strcpy(s,buffer);
-			}
-		}	else {
+			}		
+		} else {
 			// process body
+			if ((*message)->boundary!=NULL) {
+				if (strstr(buffer,(*message)->boundary)) {
+					if (in_part == 1) {
+						cmime_part_from_string(&part,s);
+						cmime_list_append((*message)->parts,part);
+					}
+					part = cmime_part_new();
+					in_part = 1;
+					free(s);
+					s = (char *)calloc(1,sizeof(char));
+					continue;
+				}
+			} 
+
+			s = (char *)realloc(s,strlen(s) + strlen(buffer) + sizeof(char));
+			strcat(s,buffer);
 		}
 	}	
 	fclose(fp);
+
+	if ((*message)->boundary==NULL) {
+		part = cmime_part_new();
+		cmime_part_set_content(part,s);
+		free(s);
+		cmime_list_append((*message)->parts,part);
+	}
 
 	return(0);
 }

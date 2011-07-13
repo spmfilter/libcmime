@@ -29,14 +29,53 @@
 #include "cmime_internal.h"
 #include "cmime_base64.h"
 #include "cmime_string.h"
+#include "cmime_list.h"
+
+/* replace or add a new mime part header */
+void _set_part_header_value(CMimeList_T *l, const char *key, const char *value) {
+	CMimeListElem_T *e = NULL;
+	CMimeHeader_T *h = NULL;
+	
+	e = cmime_list_head(l);
+	while(e != NULL) {
+		h = (CMimeHeader_T *)cmime_list_data(e);
+		if (strcasecmp(cmime_header_get_name(h),key)==0) {
+			cmime_header_set_value(h,value,1);
+		}
+		e = e->next;
+	}
+	
+	// mime header seems not to be present
+	h = cmime_header_new();
+	cmime_header_set_name(h,key);
+	cmime_header_set_value(h,value,0);
+	cmime_list_append(l,h);
+}
+
+char *_get_part_header_value(CMimeList_T *l, const char *key) {
+	CMimeListElem_T *e;
+	CMimeHeader_T *h;
+	
+	e = cmime_list_head(l);
+	while(e != NULL) {
+		h = (CMimeHeader_T *)cmime_list_data(e);
+		if (strcasecmp(cmime_header_get_name(h),key)==0) {
+			return(cmime_header_get_value(h,0));
+		}
+		e = e->next;
+	}
+	
+	return(NULL);
+}
 
 CMimePart_T *cmime_part_new(void) {
 	CMimePart_T *part = NULL;
 	
 	part = (CMimePart_T *)calloc((size_t)1, sizeof(CMimePart_T));
-	part->content_type = NULL;
-	part->content_disposition = NULL;
-	part->content_transfer_encoding = NULL;
+	
+	if (cmime_list_new(&part->headers,_cmime_internal_header_destroy)!=0)
+		return(NULL);
+		
 	part->content = NULL;
 	
 	return(part);
@@ -45,15 +84,8 @@ CMimePart_T *cmime_part_new(void) {
 void cmime_part_free(CMimePart_T *part) {
 	assert(part);
 	
-	if (part->content_type != NULL)
-		free(part->content_type);
+	cmime_list_free(part->headers);
 	
-	if (part->content_disposition != NULL)
-		free(part->content_disposition);
-		
-	if (part->content_transfer_encoding != NULL)
-		free(part->content_transfer_encoding);
-		
 	if (part->content != NULL)
 		free(part->content);
 		
@@ -64,34 +96,40 @@ void cmime_part_free(CMimePart_T *part) {
 void cmime_part_set_content_type(CMimePart_T *part, const char *s) {
 	assert(part);
 	assert(s);
+
+	_set_part_header_value(part->headers,"Content-Type",s);
+}
+
+char *cmime_part_get_content_type(CMimePart_T *part) {
+	assert(part);
 	
-	if (part->content_type != NULL)
-		free(part->content_type);
-	
-	part->content_type = (char *)malloc(strlen(s) + sizeof(char));
-	strcpy(part->content_type,s);
+	return(_get_part_header_value(part->headers,"Content-Type"));
 }
 
 void cmime_part_set_content_disposition(CMimePart_T *part, const char *s) {
 	assert(part);
 	assert(s);
+
+	_set_part_header_value(part->headers,"Content-Disposition",s);
+}
+
+char *cmime_part_get_content_disposition(CMimePart_T *part) {
+	assert(part);
 	
-	if (part->content_disposition != NULL)
-		free(part->content_disposition);
-	
-	part->content_disposition = (char *)malloc(strlen(s)  + sizeof(char));
-	strcpy(part->content_disposition,s);
+	return(_get_part_header_value(part->headers,"Content-Disposition"));
 }
 
 void cmime_part_set_content_transfer_encoding(CMimePart_T *part, const char *s) {
 	assert(part);
 	assert(s);
+
+	_set_part_header_value(part->headers,"Content-Transfer-Encoding",s);
+}
+
+char *cmime_part_get_content_transfer_encoding(CMimePart_T *part) {
+	assert(part);
 	
-	if (part->content_transfer_encoding != NULL)
-		free(part->content_transfer_encoding);
-	
-	part->content_transfer_encoding = (char *)malloc(strlen(s) + sizeof(char));
-	strcpy(part->content_transfer_encoding,s);
+	return(_get_part_header_value(part->headers,"Content-Transfer-Encoding"));
 }
 
 void cmime_part_set_content(CMimePart_T *part, const char *s) {
@@ -113,7 +151,7 @@ char *cmime_part_as_string(CMimePart_T *part) {
 	int with_headers = 0;
 	
 	assert(part);
-	
+
 	content = cmime_part_get_content(part);
 	if (content==NULL)
 		return(NULL);
@@ -267,10 +305,12 @@ int cmime_part_from_string(CMimePart_T **part, const char *content) {
 	
 	assert((*part));
 	assert(content);
+	
 	sl = cmime_string_split(content,CRLF,0);
-	
+
 	body = (char *)calloc(1,sizeof(char));
-	
+	// TODO: add newlines to body...
+	// TODO: check folding for header fields
 	for(i=0;i<cmime_string_list_get_count(sl);i++) {
 		s = cmime_string_list_get(sl,i);
 		ptemp = strchr(s,':');

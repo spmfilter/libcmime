@@ -24,6 +24,7 @@
 #include "../src/cmime_message.h"
 #include "../src/cmime_header.h"
 #include "../src/cmime_list.h"
+#include "../src/cmime_part.h"
 
 #include "test_data.h"
 
@@ -35,6 +36,7 @@ int main (int argc, char const *argv[]) {
 	CMimeList_T *recipient_list = NULL;
 	CMimeListElem_T *elem;
 	int retval;
+	CMimePart_T *part;
 	
 	cmime_message_set_sender(msg,addr_string1);
 	s = cmime_message_get_sender(msg);
@@ -105,7 +107,15 @@ int main (int argc, char const *argv[]) {
 	cmime_message_free(msg);
 	
 	msg = cmime_message_new();
-	retval = cmime_message_from_file(&msg,"/Users/ast/Desktop/Test.eml");
+	retval = cmime_message_from_file(&msg,"/Users/ast/Desktop/Eicar.eml");
+
+	elem = cmime_list_head(msg->parts);
+	part = (CMimePart_T *)cmime_list_data(elem);
+	s = cmime_part_as_string(part);
+	printf("Part:\n%s\n", s);
+	free(s);
+	printf("SIZE: %d\n", cmime_list_size(msg->parts));
+	printf("ENCODING: %s\n", cmime_part_get_content_transfer_encoding(part));
 	cmime_message_free(msg);
 	
 	return(0);
