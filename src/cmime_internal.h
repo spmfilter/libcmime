@@ -22,9 +22,10 @@
 extern "C" {
 #endif
 
-#define HEADER_CONTENT_TYPE_PATTERN "Content-Type: %s%s"
-#define HEADER_CONTENT_DISPOSITION_PATTERN "Content-Disposition: %s%s"
-#define HEADER_CONTENT_TRANSFER_ENCODING_PATTERN "Content-Transfer-Encoding: %s%s"
+#define PART_CONTENT_TYPE_PATTERN "Content-Type:"
+#define PART_CONTENT_DISPOSITION_PATTERN "Content-Disposition:"
+#define PART_CONTENT_TRANSFER_ENCODING_PATTERN "Content-Transfer-Encoding:"
+#define PART_CONTENT_ID_PATTERN "Content-Id:"
 
 #define MIMETYPE_DEFAULT "application/octet-stream"
 #define MIMETYPE_TEXT_PLAIN "text/plain"

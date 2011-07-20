@@ -36,11 +36,18 @@ void _set_part_header_value(CMimeList_T *l, const char *key, const char *value) 
 	CMimeListElem_T *e = NULL;
 	CMimeHeader_T *h = NULL;
 	
+	assert(l);
+	assert(key);
+	assert(value);
+
+	value = cmime_string_strip(value);
+	
 	e = cmime_list_head(l);
 	while(e != NULL) {
 		h = (CMimeHeader_T *)cmime_list_data(e);
 		if (strcasecmp(cmime_header_get_name(h),key)==0) {
 			cmime_header_set_value(h,value,1);
+			return;
 		}
 		e = e->next;
 	}
@@ -50,11 +57,15 @@ void _set_part_header_value(CMimeList_T *l, const char *key, const char *value) 
 	cmime_header_set_name(h,key);
 	cmime_header_set_value(h,value,0);
 	cmime_list_append(l,h);
+	return;
 }
 
 char *_get_part_header_value(CMimeList_T *l, const char *key) {
 	CMimeListElem_T *e;
 	CMimeHeader_T *h;
+	
+	assert(l);
+	assert(key);
 	
 	e = cmime_list_head(l);
 	while(e != NULL) {
@@ -66,6 +77,33 @@ char *_get_part_header_value(CMimeList_T *l, const char *key) {
 	}
 	
 	return(NULL);
+}
+
+/* search for header value in pointer p 
+ * and return value as newly allocated string */
+char *_parse_header(char *p) {
+	char *t = NULL;
+	char *out = NULL;
+	int pos = 0;
+
+	t = (char *)calloc(sizeof(char),sizeof(char));
+	while (*p != '\0') {
+		if (*p != '\n') {
+			t = (char *)realloc(t,strlen(t) + 2 + sizeof(char));
+			t[pos++] = *p;
+			t[pos] = '\0';
+		} else {
+			if (*(p + 1) != '\t') 
+				break;
+		}
+		*p++;
+	}
+	
+	out = (char *)calloc(strlen(t) + 1, sizeof(char));
+	strcpy(out,t);
+	
+	free(t);
+	return(out);
 }
 
 CMimePart_T *cmime_part_new(void) {
@@ -132,6 +170,17 @@ char *cmime_part_get_content_transfer_encoding(CMimePart_T *part) {
 	return(_get_part_header_value(part->headers,"Content-Transfer-Encoding"));
 }
 
+void cmime_part_set_content_id(CMimePart_T *part, const char *s) {
+	assert(part);
+	assert(s);
+	
+	_set_part_header_value(part->headers,"Content-Id",s);
+}
+
+char *cmime_part_get_content_id(CMimePart_T *part) {
+	return(_get_part_header_value(part->headers,"Content-Id"));
+}
+
 void cmime_part_set_content(CMimePart_T *part, const char *s) {
 	assert(part);
 	assert(s);
@@ -163,8 +212,14 @@ char *cmime_part_as_string(CMimePart_T *part) {
 		while(e != NULL) {
 			h = (CMimeHeader_T *)cmime_list_data(e);
 			ptemp = cmime_header_as_string(h);
-			out = (char *)realloc(out,strlen(out) + strlen(ptemp) + 1);
-			strcat(out,ptemp);
+			if (strstr(ptemp,CRLF)!=NULL) {
+				out = (char *)realloc(out,strlen(out) + strlen(ptemp) + 1);
+				strcat(out,ptemp);
+			} else {
+				out = (char *)realloc(out,strlen(out) + strlen(ptemp) + strlen(CRLF) + 1);
+				strcat(out,ptemp);
+				strcat(out,CRLF);
+			} 
 			free(ptemp);
 			e = e->next;
 		}
@@ -175,7 +230,7 @@ char *cmime_part_as_string(CMimePart_T *part) {
 		out = (char *)realloc(out,strlen(out) + strlen(CRLF) + sizeof(char));
 		strcat(out,CRLF);
 	} 
-	
+
 	out = (char *)realloc(out,strlen(out) + strlen(content) + sizeof(char));
 	strcat(out,content);
 
@@ -285,48 +340,53 @@ int cmime_part_from_file(CMimePart_T **part, char *filename) {
 }
 
 int cmime_part_from_string(CMimePart_T **part, const char *content) {
-	CMimeStringList_T *sl = NULL;
-	char *s = NULL;
 	char *ptemp = NULL;
-	int i = 0;
-	int found_header = 0;
+	char *ptemp2 = NULL;
 	char *body = NULL;
 	
 	assert((*part));
 	assert(content);
 	
-	sl = cmime_string_split(content,CRLF,0);
-
-	body = (char *)calloc(1,sizeof(char));
-	// TODO: add newlines to body...
-	// TODO: check folding for header fields
-	for(i=0;i<cmime_string_list_get_count(sl);i++) {
-		s = cmime_string_list_get(sl,i);
-		ptemp = strchr(s,':');
-		if (ptemp!=NULL) {
-			if (isspace(*++ptemp)!=0) {
-				if (strcasestr(s,"Content-Type")!=NULL) { 
-					cmime_part_set_content_type((*part),cmime_string_strip(ptemp));
-					found_header = 1;
-				} else if (strcasestr(s,"Content-Transfer-Encoding")!=NULL) {
-					cmime_part_set_content_transfer_encoding((*part),cmime_string_strip(ptemp));
-					found_header = 1;
-				} else if (strcasestr(s,"Content-Disposition")!=NULL) {
-					cmime_part_set_content_disposition((*part),cmime_string_strip(ptemp));
-					found_header = 1;
-				}
-			}
-		} 
+	ptemp = strcasestr(content,"\n\n");
+	if (ptemp != NULL) {
+		ptemp += 2;
+		body = (char *)calloc(strlen(ptemp) + 1,sizeof(char));
+		strcpy(body,ptemp);
 		
-		if (found_header==0) {
-			body = (char *)realloc(body,strlen(body) + strlen(s) + sizeof(char));
-			strcat(body,s);
-		} else 
-			found_header = 0;
+		ptemp = strcasestr(content, PART_CONTENT_TYPE_PATTERN);
+		if (ptemp != NULL) {
+			ptemp = ptemp + sizeof(PART_CONTENT_TYPE_PATTERN);
+			ptemp2 = _parse_header(ptemp);
+			cmime_part_set_content_type((*part),ptemp2);
+		}
+
+		ptemp = strcasestr(content, PART_CONTENT_TRANSFER_ENCODING_PATTERN);
+		if (ptemp != NULL) {
+			ptemp = ptemp + sizeof(PART_CONTENT_TRANSFER_ENCODING_PATTERN);
+			ptemp2 = _parse_header(ptemp);
+			cmime_part_set_content_transfer_encoding((*part),ptemp2);
+		}
+
+		ptemp = strcasestr(content, PART_CONTENT_DISPOSITION_PATTERN);
+		if (ptemp != NULL) {
+			ptemp = ptemp + sizeof(PART_CONTENT_DISPOSITION_PATTERN);
+			ptemp2 = _parse_header(ptemp);
+			cmime_part_set_content_disposition((*part),ptemp2);
+		}
+
+		ptemp = strcasestr(content, PART_CONTENT_ID_PATTERN);
+		if (ptemp != NULL) {
+			ptemp = ptemp + sizeof(PART_CONTENT_ID_PATTERN);
+			ptemp2 = _parse_header(ptemp);
+			cmime_part_set_content_id((*part),ptemp2);
+		}
+	} else {
+		body = (char *)calloc(strlen(content) + 1, sizeof(char));
+		strcpy(body,content);
 	}
+	
 	cmime_part_set_content((*part),body);
 	free(body);
 	
-	cmime_string_list_free(sl);
 	return(0);
 }

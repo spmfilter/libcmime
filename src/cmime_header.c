@@ -15,10 +15,12 @@
  * License along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <assert.h>
 
+#include "cmime_internal.h"
 #include "cmime_header.h"
 
 CMimeHeader_T *cmime_header_new(void) {
@@ -90,12 +92,14 @@ char *cmime_header_as_string(CMimeHeader_T *header) {
 	char *out = NULL;
 	int i = 0;
 	char *ptemp = NULL;
+	char *value = NULL;
 	
 	assert(header);
 
 	out = (char *)calloc(sizeof(char),sizeof(char));
 	for(i = 0; i < cmime_header_get_count(header); i++) {
 		asprintf(&ptemp,"%s: %s",cmime_header_get_name(header),cmime_header_get_value(header,i));
+			
 		out = (char *)realloc(out,strlen(out) + strlen(ptemp) + 1);
 		strcat(out,ptemp);
 		free(ptemp);

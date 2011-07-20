@@ -115,7 +115,7 @@ int main (int argc, char const *argv[]) {
 	printf("Part:\n%s\n", s);
 	free(s);
 	printf("SIZE: %d\n", cmime_list_size(msg->parts));
-	printf("ENCODING: %s\n", cmime_part_get_content_transfer_encoding(part));
+//	printf("ENCODING: %s\n", cmime_part_get_content_transfer_encoding(part));
 	cmime_message_free(msg);
 	
 	return(0);

@@ -105,6 +105,9 @@ void cmime_part_set_content_transfer_encoding(CMimePart_T *part, const char *s);
  */
 char *cmime_part_get_content_transfer_encoding(CMimePart_T *part);
 
+void cmime_part_set_content_id(CMimePart_T *part, const char *s);
+char *cmime_part_get_content_id(CMimePart_T *part);
+
 /*!
  * @fn void cmime_part_set_content(CMimePart_T *part, const char *s)
  * @brief Set content  for mime part
