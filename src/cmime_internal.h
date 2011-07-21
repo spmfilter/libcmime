@@ -36,8 +36,11 @@ extern "C" {
 #define CRLF "\r\n"
 #define DCRLF "\r\n\r\n"
 #define LF "\n"
+#define CR "\r"
 
 void _cmime_internal_header_destroy(void *data);
+
+char *_cmime_internal_determine_linebreak(const char *s);
 
 #ifdef __cplusplus
 }

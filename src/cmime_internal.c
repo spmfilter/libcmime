@@ -16,9 +16,27 @@
  */
 
 #include <stdlib.h>
+#include <string.h>
+#include <assert.h>
+
+#include "cmime_internal.h"
 #include "cmime_header.h"
 
 void _cmime_internal_header_destroy(void *data) {
+	assert(data);
 	CMimeHeader_T *header = (CMimeHeader_T *)data;
 	cmime_header_free(header);
+}
+
+char *_cmime_internal_determine_linebreak(const char *s) {
+	assert(s);
+	
+	if (strstr(s,CRLF)!=NULL)
+		return(CRLF);
+	else if(strstr(s,LF)!=NULL)
+		return(LF);
+	else if(strstr(s,CR)!=NULL)
+		return(CR);
+	else
+		return(NULL);
 }

@@ -92,7 +92,6 @@ char *cmime_header_as_string(CMimeHeader_T *header) {
 	char *out = NULL;
 	int i = 0;
 	char *ptemp = NULL;
-	char *value = NULL;
 	
 	assert(header);
 
