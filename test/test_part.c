@@ -72,8 +72,6 @@ int main (int argc, char const *argv[]) {
 	cmime_part_from_string(&part,out);
 
 	out2 = cmime_part_as_string(part);
-	printf("OUT:\n[%s]\n", out);
-	printf("OUT2:\n[%s]\n", out2);
 	assert(strcmp(out,out2)==0);
 	free(out);
 	free(out2);

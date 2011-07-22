@@ -84,21 +84,25 @@ char *_get_part_header_value(CMimeList_T *l, const char *key) {
 /* search for header value in pointer p 
  * and return value as newly allocated string */
 char *_parse_header(char *p) {
+	char *it = NULL;
 	char *t = NULL;
 	char *out = NULL;
 	int pos = 0;
 
 	t = (char *)calloc(sizeof(char),sizeof(char));
-	while (*p != '\0') {
-		if (*p != '\n') {
+	
+	it = strchr(p,':');
+	it++;
+	while (*it != '\0') {
+		if (*it != '\n') {
 			t = (char *)realloc(t,strlen(t) + 2 + sizeof(char));
-			t[pos++] = *p;
+			t[pos++] = *it;
 			t[pos] = '\0';
 		} else {
-			if (*(p + 1) != '\t') 
+			if (*(it + 1) != '\t') 
 				break;
 		}
-		*p++;
+		it++;
 	}
 	
 	out = (char *)calloc(strlen(t) + 1, sizeof(char));
@@ -343,15 +347,12 @@ int cmime_part_from_file(CMimePart_T **part, char *filename) {
 
 int cmime_part_from_string(CMimePart_T **part, const char *content) {
 	char *ptemp = NULL;
-//	char *ptemp2 = NULL;
-	char *content_type = NULL;
-	char *content_disposition = NULL;
-	char *content_transfer_encoding = NULL;
-	char *content_id = NULL;
+	char *ptemp2 = NULL;
 	char *body = NULL;
 	char *lb = NULL;
 	char *dlb;
-	
+	char *it = NULL;
+
 	assert((*part));
 	assert(content);
 	
@@ -363,37 +364,42 @@ int cmime_part_from_string(CMimePart_T **part, const char *content) {
 
 	ptemp = strstr(content,dlb);
 	if (ptemp != NULL) {
-		ptemp += sizeof(dlb);
+		it = (char *)content;
+		while (*it != '\0') {
+			if (strncasecmp(it,PART_CONTENT_TYPE_PATTERN,strlen(PART_CONTENT_TYPE_PATTERN))==0) {				
+				ptemp2 = _parse_header(it);
+				cmime_part_set_content_type((*part),ptemp2);
+				free(ptemp2);
+			}
+
+			if (strncasecmp(it,PART_CONTENT_TRANSFER_ENCODING_PATTERN,strlen(PART_CONTENT_TRANSFER_ENCODING_PATTERN))==0) {
+				ptemp2 = _parse_header(it);
+				cmime_part_set_content_transfer_encoding((*part),ptemp2);
+				free(ptemp2);
+			}
+			
+			if (strncasecmp(it,PART_CONTENT_DISPOSITION_PATTERN,strlen(PART_CONTENT_DISPOSITION_PATTERN))==0) {
+				ptemp2 = _parse_header(it);
+				cmime_part_set_content_disposition((*part),ptemp2);
+				free(ptemp2);
+			}	
+				
+			if (strncasecmp(it,PART_CONTENT_ID_PATTERN,strlen(PART_CONTENT_ID_PATTERN))==0) {
+				ptemp2 = _parse_header(it);
+				cmime_part_set_content_id((*part),ptemp2);
+				free(ptemp2);
+			}	
+
+			/* break if body begins */
+			if (strncmp(it,dlb,strlen(dlb))==0)
+				break;
+				
+			it++;
+		}
+
+		ptemp += strlen(dlb);
 		body = (char *)calloc(strlen(ptemp) + 1,sizeof(char));
 		strcpy(body,ptemp);
-		
-		content_type = strcasestr(content, PART_CONTENT_TYPE_PATTERN);
-		if (content_type != NULL) {
-			content_type = content_type + sizeof(PART_CONTENT_TYPE_PATTERN);
-			ptemp = _parse_header(content_type);
-			cmime_part_set_content_type((*part),ptemp);
-		}
-
-		content_transfer_encoding = strcasestr(content, PART_CONTENT_TRANSFER_ENCODING_PATTERN);
-		if (content_transfer_encoding != NULL) {
-			content_transfer_encoding = content_transfer_encoding + sizeof(PART_CONTENT_TRANSFER_ENCODING_PATTERN);
-			ptemp = _parse_header(content_transfer_encoding);
-			cmime_part_set_content_transfer_encoding((*part),ptemp);
-		}
-
-		content_disposition = strcasestr(content, PART_CONTENT_DISPOSITION_PATTERN);
-		if (content_disposition != NULL) {
-			content_disposition = content_disposition + sizeof(PART_CONTENT_DISPOSITION_PATTERN);
-			ptemp = _parse_header(content_disposition);
-			cmime_part_set_content_disposition((*part),ptemp);
-		}
-
-		content_id = strcasestr(content, PART_CONTENT_ID_PATTERN);
-		if (content_id != NULL) {
-			content_id = content_id + sizeof(PART_CONTENT_ID_PATTERN);
-			ptemp = _parse_header(content_id);
-			cmime_part_set_content_id((*part),ptemp);
-		}
 	} else {
 		body = (char *)calloc(strlen(content) + 1, sizeof(char));
 		strcpy(body,content);
