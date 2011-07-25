@@ -26,35 +26,29 @@
 
 /* get the mimetype */
 char *cmime_util_get_mimetype(const char *filename) {
-	char buf[128];
+	char buf[128] = {};
 	FILE *fh = NULL;
 	char *command = NULL;
 	char *retval = NULL;
-
+	
 	assert(filename);
 	
 	/* build up the command string */
-	command = (char *)calloc(strlen(FILE_EXECUTABLE) + strlen(filename) + 2, sizeof(char));
-	strncpy(command, FILE_EXECUTABLE, strlen(FILE_EXECUTABLE));
-	strncat(command, " ", 1);
-	strncat(command, filename, strlen(filename));
+	asprintf(&command,"%s %s",FILE_EXECUTABLE,filename);
 
 	/* open the pipe and try to read command output */
 	fh = popen(command, "r");
 	if(fh == NULL) {
 		return(NULL);
 	}
-	if((fgets(buf, 128, fh) == NULL)) {
+	if((fgets(buf, sizeof(buf), fh) == NULL)) {
 		return(NULL);
 	}
-
-	if(command != NULL) {
-		free(command);
-	}
+	free(command);
 
 	/* copy command output from static buffer into string */
 	retval =  (char *)calloc(strlen(buf) + 1, sizeof(char));
-	strncpy(retval, buf, strlen(buf) - 1);
+	strncpy(retval, buf, strlen(buf));
 	return(retval);
 }
 

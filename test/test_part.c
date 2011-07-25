@@ -24,12 +24,13 @@
 
 #include "test_data.h"
 
+#define CONTENT_FILE "../../test/test_content.txt"
+
 int main (int argc, char const *argv[]) {
 	CMimePart_T *part;
 	char *s;
 	char *out;
 	char *out2;
-	char content_file[] = "../../test/test_content.txt";
 
 	part = cmime_part_new();
 	assert(part);
@@ -63,7 +64,7 @@ int main (int argc, char const *argv[]) {
 	s = cmime_part_get_content(part);	
 	assert(strcmp(s,test_content_string1)==0);
 		
-	out = cmime_part_as_string(part);
+	out = cmime_part_to_string(part);
 	cmime_part_free(part);
 	
 	/* now create a new mime part object from 
@@ -71,15 +72,15 @@ int main (int argc, char const *argv[]) {
 	part = cmime_part_new();
 	cmime_part_from_string(&part,out);
 
-	out2 = cmime_part_as_string(part);
+	out2 = cmime_part_to_string(part);
 	assert(strcmp(out,out2)==0);
 	free(out);
 	free(out2);
 	cmime_part_free(part); 
 
 	part = cmime_part_new();
-	cmime_part_from_file(&part,content_file);
-	out = cmime_part_as_string(part);
+	cmime_part_from_file(&part,CONTENT_FILE);
+	out = cmime_part_to_string(part);
 	assert(out);
 	free(out);
 		

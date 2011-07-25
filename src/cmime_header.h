@@ -94,12 +94,12 @@ char *cmime_header_get_value(CMimeHeader_T *header,int pos);
 #define cmime_header_get_count(header) ((int)header->count)
 
 /*!
- * @fn char *cmime_header_as_string(CMimeHeader_T *header)
+ * @fn char *cmime_header_to_string(CMimeHeader_T *header)
  * @brief Return full header as newly allocated string
  * @param header a CMimeHeader_T object
  * @returns full header as newly allocated string
  */
-char *cmime_header_as_string(CMimeHeader_T *header);
+char *cmime_header_to_string(CMimeHeader_T *header);
 
 #ifdef __cplusplus
 }

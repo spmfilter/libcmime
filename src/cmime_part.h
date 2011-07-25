@@ -124,12 +124,12 @@ void cmime_part_set_content(CMimePart_T *part, const char *s);
 #define cmime_part_get_content(part) (part->content);
 
 /*!
- * @fn char *cmime_part_as_string(CMimePart_T *part)
+ * @fn char *cmime_part_to_string(CMimePart_T *part)
  * @brief Return complete mime part as string
  * @param part a CMimePart_T object
  * @returns a newly allocated string with complete mime part
  */
-char *cmime_part_as_string(CMimePart_T *part);
+char *cmime_part_to_string(CMimePart_T *part);
 
 /*!
  * @fn int cmime_part_from_file(CMimePart_T **part, char *filename)

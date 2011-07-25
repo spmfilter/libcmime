@@ -111,7 +111,7 @@ int main (int argc, char const *argv[]) {
 
 	elem = cmime_list_head(msg->parts);
 	part = (CMimePart_T *)cmime_list_data(elem);
-	s = cmime_part_as_string(part);
+	s = cmime_part_to_string(part);
 	printf("Part:\n%s\n", s);
 	free(s);
 	printf("SIZE: %d\n", cmime_list_size(msg->parts));

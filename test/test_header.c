@@ -43,7 +43,7 @@ int main (int argc, char const *argv[]) {
 	s = cmime_header_get_value(h,0);
 	assert(strcmp(s,header_string1_value)==0);
 		
-	s = cmime_header_as_string(h);
+	s = cmime_header_to_string(h);
 	assert(strcmp(s,header_string1)==0);
 	free(s);
 		

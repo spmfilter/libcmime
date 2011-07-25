@@ -88,7 +88,7 @@ char *cmime_header_get_value(CMimeHeader_T *header,int pos) {
 	return(header->value[pos]);
 }
 
-char *cmime_header_as_string(CMimeHeader_T *header) {
+char *cmime_header_to_string(CMimeHeader_T *header) {
 	char *out = NULL;
 	int i = 0;
 	char *ptemp = NULL;
