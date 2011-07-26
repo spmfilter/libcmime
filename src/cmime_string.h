@@ -99,6 +99,16 @@ CMimeStringList_T *cmime_string_split(const char *s, const char *sep, int maxspl
  */
 char *cmime_string_strip(char *s);
 
+/*!
+ * @fn char *cmime_string_chomp(char *s)
+ * @brief remove trailing newline from string
+ *   This function doesn't allocate or reallocate any memory;
+ *   it modifies string in place.
+ * @param s a string
+ * @returns string with removed newline
+ */
+char *cmime_string_chomp(char *s);
+
 #ifdef __cplusplus
 }
 #endif

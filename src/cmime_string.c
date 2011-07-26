@@ -15,6 +15,8 @@
  * License along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+#define _GNU_SOURCE
+
 #include <stdlib.h>
 #include <string.h>
 #include <ctype.h>
@@ -96,6 +98,14 @@ char *cmime_string_strip(char *s) {
 	while(*s && isspace(*s)) s++;
 	while(e > s && isspace(*e)) *e-- = '\0';
 
+	return(s);
+}
+
+char *cmime_string_chomp(char *s) {
+	assert(s);
+	char *p = NULL;
+	p = strrchr(s,'\n');
+	if(p) *p = '\0';
 	return(s);
 }
 

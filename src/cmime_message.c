@@ -15,6 +15,8 @@
  * License along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+#define _GNU_SOURCE
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -337,7 +339,7 @@ char *_get_boundary(char *s) {
 	s = strstr(s,"=");
 	if (*++s=='"') 
 		s++;
-	
+
 	boundary = (char *)calloc(strlen(s) + sizeof(char),sizeof(char));
 	while(*s!='\0') {
 		if ((*s!='"') && (*s!='\r') && (*s!='\n'))
@@ -354,8 +356,9 @@ char *_get_boundary(char *s) {
 
 int cmime_message_from_file(CMimeMessage_T **message, const char *filename) {
 	struct stat fileinfo;
-	FILE *fp;
-	char buffer[BUFSIZ];
+	FILE *fp = NULL;
+	char *buffer = NULL;
+	size_t st = 0;
 	int in_header = 1;
 	char *s = NULL;
 	char *ptemp = NULL;
@@ -376,7 +379,7 @@ int cmime_message_from_file(CMimeMessage_T **message, const char *filename) {
 		return(-3);
 	}
 	
-	while (fgets(buffer, sizeof(buffer), fp)) {
+	while(getline(&buffer,&st,fp) > 0) {
 		if((strcmp(buffer,CRLF)==0) || (strcmp(buffer,LF)==0)) {
 			if (in_header==1) {
 				if (s!=NULL) {
@@ -401,7 +404,7 @@ int cmime_message_from_file(CMimeMessage_T **message, const char *filename) {
 			if (isspace(buffer[0])) {
 				/* we've got a long header field line, so append the value
 				 * to the previous value */
-				s = (char *)realloc(s,strlen(s) + strlen(buffer) + sizeof(char));
+				s = (char *)realloc(s,strlen(s) + st + sizeof(char));
 				strcat(s,buffer);
 			} else {
 				if (s!=NULL) {
@@ -409,8 +412,9 @@ int cmime_message_from_file(CMimeMessage_T **message, const char *filename) {
 						return(-4); /* failed to add header */
 					free(s);
 				} 
-				s = (char *)malloc(strlen(buffer) + sizeof(char));
-				strcpy(s,buffer);
+
+				s = (char *)calloc(st + sizeof(char), sizeof(char));
+				strcat(s,buffer);
 			}		
 		} else {
 			// process body
@@ -428,7 +432,7 @@ int cmime_message_from_file(CMimeMessage_T **message, const char *filename) {
 				}
 			} 
 
-			s = (char *)realloc(s,strlen(s) + strlen(buffer) + sizeof(char));
+			s = (char *)realloc(s,strlen(s) + st + 1);
 			strcat(s,buffer);
 		}
 	}	

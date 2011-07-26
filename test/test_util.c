@@ -24,12 +24,13 @@
 
 #include "test_data.h"
 
+#define EXPECTED_MIMETYPE "text/x-c; charset=utf-8"
+
 int main (int argc, char const *argv[]) {
-	char expected_mimetype[] = "text/x-c; charset=utf-8";
 	char *out = NULL;
 	
 	out = cmime_util_get_mimetype("../../test/test_data.h");
-	assert(strcmp(expected_mimetype,out)==0);
+	assert(strcmp(EXPECTED_MIMETYPE,out)==0);
 	free(out);
 	
 	return(0);

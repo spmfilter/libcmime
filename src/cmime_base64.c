@@ -19,6 +19,8 @@
  * Original implementation by Sebastian Jaekel <sebastian.jaekel@googlemail.com>
  */
 
+#define _GNU_SOURCE
+
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>

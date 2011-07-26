@@ -15,18 +15,22 @@
  * License along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+#define _GNU_SOURCE
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <assert.h>
 
+#include "cmime_string.h"
 #include "cmime_config.h"
 #include "cmime_util.h"
 #include "cmime_internal.h"
 
 /* get the mimetype */
 char *cmime_util_get_mimetype(const char *filename) {
-	char buf[128] = {};
+	char *buf = NULL;
+	size_t st = 0;
 	FILE *fh = NULL;
 	char *command = NULL;
 	char *retval = NULL;
@@ -41,14 +45,15 @@ char *cmime_util_get_mimetype(const char *filename) {
 	if(fh == NULL) {
 		return(NULL);
 	}
-	if((fgets(buf, sizeof(buf), fh) == NULL)) {
+	if(getline(&buf,&st,fh) > 0) {
+		free(command);
+		/* copy command output from static buffer into string */
+		retval =  (char *)calloc(strlen(buf) + 1, sizeof(char));
+		buf = cmime_string_chomp(buf);
+		strncpy(retval, buf, strlen(buf));
+		return(retval);
+	} else {
 		return(NULL);
 	}
-	free(command);
-
-	/* copy command output from static buffer into string */
-	retval =  (char *)calloc(strlen(buf) + 1, sizeof(char));
-	strncpy(retval, buf, strlen(buf));
-	return(retval);
 }
 
