@@ -41,8 +41,7 @@ void cmime_address_set_name(CMimeAddress_T *ca, const char *name) {
 	if (ca->name != NULL)
 		free(ca->name);
 		
-	ca->name = (char *)malloc(strlen(name) + sizeof(char));
-	strcpy(ca->name,name);
+	ca->name = strdup(name);
 }
 
 /* Set the email address of CMimeAdresse_T object */
@@ -52,9 +51,8 @@ void cmime_address_set_email(CMimeAddress_T *ca, const char *email) {
 	
 	if (ca->email != NULL)
 		free(ca->email);
-		
-	ca->email = (char *)malloc(strlen(email) + sizeof(char));
-	strcpy(ca->email, email);
+
+	ca->email = strdup(email);
 }
 
 /* Allocates a string containing the contents of the CMimeAddress_T object. */ 

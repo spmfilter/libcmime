@@ -308,8 +308,7 @@ void cmime_message_set_boundary(CMimeMessage_T *message, const char *boundary) {
 	if (message->boundary != NULL)
 		free(message->boundary);
 		
-	message->boundary = (char *)malloc(strlen(boundary) + sizeof(char));
-	strcpy(message->boundary,boundary);
+	message->boundary = strdup(boundary);
 }
 
 char *cmime_message_generate_boundary(void) {

@@ -58,8 +58,7 @@ void cmime_header_set_name(CMimeHeader_T *header, const char *name) {
 	if (header->name != NULL) 
 		free(header->name);
 	
-	header->name = (char *)malloc(strlen(name) + 1);
-	strcpy(header->name, name);
+	header->name = strdup(name);
 }
 
 void cmime_header_set_value(CMimeHeader_T *header, const char *value, int overwrite) {
@@ -67,7 +66,7 @@ void cmime_header_set_value(CMimeHeader_T *header, const char *value, int overwr
 	size_t i;
 	assert(header);
 	assert(value);
-
+	
 	if (overwrite==1) {
 		for(i = 0; i < header->count; i++) {
 			if (header->value[i] != NULL) 
@@ -77,8 +76,7 @@ void cmime_header_set_value(CMimeHeader_T *header, const char *value, int overwr
 	}
 
 	tmp = realloc(header->value, (sizeof( *tmp) * (header->count+1)));
-	tmp[header->count] = malloc(strlen(value)+1);
-	strcpy(tmp[header->count],value);
+	tmp[header->count] = strdup(value);
 	header->value = tmp;
 	header->count++;
 }

@@ -105,17 +105,18 @@ int main (int argc, char const *argv[]) {
 	
 	free(s);
 	cmime_message_free(msg);
-	
+
 	msg = cmime_message_new();
 	retval = cmime_message_from_file(&msg,"/Users/ast/Desktop/Eicar.eml");
-/*	elem = cmime_list_head(msg->parts);
+	elem = cmime_list_head(msg->parts);
 	part = (CMimePart_T *)cmime_list_data(elem);
 	s = cmime_part_to_string(part);
 	printf("Part:\n%s\n", s);
 	free(s);
 	printf("SIZE: %d\n", cmime_list_size(msg->parts));
 	printf("ENCODING: %s\n", cmime_part_get_content_transfer_encoding(part)); 
-	*/
+	printf("TYPE: [%s]\n", cmime_part_get_content_type(part));
+	
 	cmime_message_free(msg);
 	
 	return(0);

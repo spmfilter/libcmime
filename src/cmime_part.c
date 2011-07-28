@@ -86,33 +86,26 @@ char *_get_part_header_value(CMimeList_T *l, const char *key) {
 /* search for header value in pointer p 
  * and return value as newly allocated string */
 char *_parse_header(char *p) {
-	char *it = NULL;
-	char *in = NULL;
-	char *t = NULL;
+	char *token = NULL;
+	char *cp = NULL;
 	char *out = NULL;
-	int pos = 0;
-
-	t = (char *)calloc(sizeof(char),sizeof(char));
-	in = (char *)calloc(strlen(p) + sizeof(char),sizeof(char));
-	strcpy(in,p);
+	char *brkb = NULL;
+	int i = 0;
+	char *nl = _cmime_internal_determine_linebreak(p);
 	
-	it = strchr(in,':');
-	it++;
-	while (*it != '\0') {
-		if (*it != '\n') {
-			t = (char *)realloc(t,strlen(t) + 2 + sizeof(char));
-			t[pos++] = *it;
-			t[pos] = '\0';
+	cp = strdup(p);
+	for (token = strtok_r(cp,nl,&brkb); token; token = strtok_r(NULL,nl,&brkb)) {
+		if (i==0) {
+			asprintf(&out,"%s\n",token);
 		} else {
-			if (*(it + 1) != '\t') 
+			if (isspace(token[0])!=0) {
+				out = (char *)realloc(out,strlen(out) + 2);
+				sprintf(out,"%s%s\n",out,token);
+			} else
 				break;
 		}
-		it++;
+		i++;
 	}
-
-	out = (char *)calloc(strlen(t) + 1, sizeof(char));
-	strcpy(out,t);
-	free(t);
 
 	return(out);
 }
@@ -199,8 +192,7 @@ void cmime_part_set_content(CMimePart_T *part, const char *s) {
 	if (part->content != NULL)
 		free(part->content);
 	
-	part->content = (char *)malloc(strlen(s) + sizeof(char));
-	strcpy(part->content,s);
+	part->content = strdup(s);
 }
 
 char *cmime_part_to_string(CMimePart_T *part) {
@@ -372,24 +364,28 @@ int cmime_part_from_string(CMimePart_T **part, const char *content) {
 		it = (char *)content;
 		while (*it != '\0') {
 			if (strncasecmp(it,PART_CONTENT_TYPE_PATTERN,strlen(PART_CONTENT_TYPE_PATTERN))==0) {				
-				ptemp2 = _parse_header(it);
+				it = it + sizeof(PART_CONTENT_TYPE_PATTERN);
+				ptemp2 = _parse_header(it);			
 				cmime_part_set_content_type((*part),ptemp2);
 				free(ptemp2);
 			}
 
 			if (strncasecmp(it,PART_CONTENT_TRANSFER_ENCODING_PATTERN,strlen(PART_CONTENT_TRANSFER_ENCODING_PATTERN))==0) {
+				it = it + sizeof(PART_CONTENT_TRANSFER_ENCODING_PATTERN);
 				ptemp2 = _parse_header(it);
 				cmime_part_set_content_transfer_encoding((*part),ptemp2);
 				free(ptemp2);
 			}
 			
 			if (strncasecmp(it,PART_CONTENT_DISPOSITION_PATTERN,strlen(PART_CONTENT_DISPOSITION_PATTERN))==0) {
+				it = it + sizeof(PART_CONTENT_DISPOSITION_PATTERN);
 				ptemp2 = _parse_header(it);
 				cmime_part_set_content_disposition((*part),ptemp2);
 				free(ptemp2);
 			}	
 				
 			if (strncasecmp(it,PART_CONTENT_ID_PATTERN,strlen(PART_CONTENT_ID_PATTERN))==0) {
+				it = it + sizeof(PART_CONTENT_ID_PATTERN);
 				ptemp2 = _parse_header(it);
 				cmime_part_set_content_id((*part),ptemp2);
 				free(ptemp2);
@@ -403,11 +399,9 @@ int cmime_part_from_string(CMimePart_T **part, const char *content) {
 		}
 		
 		ptemp += strlen(dlb);
-		body = (char *)calloc(strlen(ptemp) + 1,sizeof(char));
-		strcpy(body,ptemp);
+		body = strdup(ptemp);
 	} else {
-		body = (char *)calloc(strlen(content) + 1, sizeof(char));
-		strcpy(body,content);
+		body = strdup(content);
 	}
 	
 	cmime_part_set_content((*part),body);

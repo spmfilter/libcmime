@@ -50,8 +50,7 @@ void cmime_string_list_insert(CMimeStringList_T *sl, const char *s) {
 	assert(s);
 
 	tmp = realloc(sl->node, (sizeof( *tmp) * (sl->count+1)));
-	tmp[sl->count] = malloc(strlen(s)+1);
-	strcpy(tmp[sl->count],s);
+	tmp[sl->count] = strdup(s);
 	sl->node = tmp;
 	sl->count++;
 }
@@ -64,9 +63,9 @@ char *cmime_string_list_get(CMimeStringList_T *sl,int pos) {
 
 CMimeStringList_T *cmime_string_split(const char *s, const char *sep, int maxsplit) {
 	CMimeStringList_T *sl;
-	char *copy;
-	char *tmp;
-	int size;
+	char *copy = NULL;
+	char *tmp = NULL;
+	int size = 0;
 	int count = 0;
 	
 	size = strlen(s);
@@ -77,8 +76,7 @@ CMimeStringList_T *cmime_string_split(const char *s, const char *sep, int maxspl
 
 	sl = cmime_string_list_new();
 	
-	copy = (char *)malloc(size + 1);
-	strcpy(copy,s);
+	copy = strdup(s);
 	
 	for (tmp = strtok(copy,sep); tmp; tmp = strtok(NULL,sep)) {
 		cmime_string_list_insert(sl,tmp);
