@@ -96,17 +96,17 @@ char *_parse_header(char *p) {
 	cp = strdup(p);
 	for (token = strtok_r(cp,nl,&brkb); token; token = strtok_r(NULL,nl,&brkb)) {
 		if (i==0) {
-			asprintf(&out,"%s\n",token);
+			asprintf(&out,"%s%s",token,nl);
 		} else {
 			if (isspace(token[0])!=0) {
-				out = (char *)realloc(out,strlen(out) + 2);
-				sprintf(out,"%s%s\n",out,token);
+				out = (char *)realloc(out,strlen(out) + strlen(token) + strlen(nl) + 1);
+				sprintf(out,"%s%s%s",out,token,nl);
 			} else
 				break;
 		}
 		i++;
 	}
-
+	
 	return(out);
 }
 
@@ -202,6 +202,7 @@ char *cmime_part_to_string(CMimePart_T *part) {
 	int with_headers = 0;
 	CMimeListElem_T *e;
 	CMimeHeader_T *h;
+	char *nl = NULL;
 	
 	assert(part);
 
@@ -209,20 +210,25 @@ char *cmime_part_to_string(CMimePart_T *part) {
 	if (content==NULL)
 		return(NULL);
 		
+	nl = _cmime_internal_determine_linebreak(content);	
+	if (nl == NULL)
+		nl = CRLF;
+	
 	out = (char *)calloc(1,sizeof(char));
 	if (cmime_list_size(part->headers)!=0) {
 		e = cmime_list_head(part->headers);
 		while(e != NULL) {
 			h = (CMimeHeader_T *)cmime_list_data(e);
 			ptemp = cmime_header_to_string(h);
-			if (strstr(ptemp,CRLF)!=NULL) {
+			/* check whether we have to add a newline, or not */
+			if ( strcmp(ptemp + strlen(ptemp) - strlen(nl), nl) == 0) {
 				out = (char *)realloc(out,strlen(out) + strlen(ptemp) + 1);
 				strcat(out,ptemp);
 			} else {
-				out = (char *)realloc(out,strlen(out) + strlen(ptemp) + strlen(CRLF) + 1);
+				out = (char *)realloc(out,strlen(out) + strlen(ptemp) + strlen(nl) + 1);
 				strcat(out,ptemp);
-				strcat(out,CRLF);
-			} 
+				strcat(out,nl);
+			}
 			free(ptemp);
 			e = e->next;
 		} 
@@ -230,7 +236,7 @@ char *cmime_part_to_string(CMimePart_T *part) {
 	}
 	
 	if (with_headers==1) {
-		out = (char *)realloc(out,strlen(out) + strlen(CRLF) + 1);
+		out = (char *)realloc(out,strlen(out) + strlen(nl) + 1);
 		strcat(out,CRLF);
 	} 
 

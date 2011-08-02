@@ -107,3 +107,30 @@ char *cmime_string_chomp(char *s) {
 	return(s);
 }
 
+char *cmime_string_strstr_last(const char *s1, const char *s2) {
+	char* strp;
+	int len1, len2;
+
+	assert(s1);
+	assert(s2);
+ 
+	len2 = strlen(s2);
+	if(len2==0)
+		return((char*)s1);
+ 
+	len1 = strlen(s1);
+	if(len1 - len2 <= 0)
+		return(NULL);
+    
+	strp = (char*)(s1 + len1 - len2);
+	while(strp != s1) {
+		if(*strp == *s2) {
+			if(strncmp(strp,s2,len2)==0)
+				return(strp);
+		}
+		strp--;
+	}
+	
+	return(NULL);
+}
+

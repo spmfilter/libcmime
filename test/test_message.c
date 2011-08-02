@@ -108,7 +108,7 @@ int main (int argc, char const *argv[]) {
 
 	msg = cmime_message_new();
 	retval = cmime_message_from_file(&msg,"/Users/ast/Desktop/Eicar.eml");
-	elem = cmime_list_head(msg->parts);
+	elem = cmime_list_tail(msg->parts);
 	part = (CMimePart_T *)cmime_list_data(elem);
 	s = cmime_part_to_string(part);
 	printf("Part:\n%s\n", s);
