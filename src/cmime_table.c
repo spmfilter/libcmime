@@ -94,8 +94,7 @@ int cmime_table_insert(CMimeTable_T *table, const void *key, void *value) {
 		assert(key);	
 		return(-1);
 	}
-	
-	
+		
 	i = (*table->hash)(key)%table->size;
 	for (p = table->buckets[i]; p; p = p->link) {
 		if ((*table->cmp)(key, p->key) == 0)

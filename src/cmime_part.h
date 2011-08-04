@@ -140,6 +140,13 @@ char *cmime_part_to_string(CMimePart_T *part);
  */
 int cmime_part_from_file(CMimePart_T **part, char *filename);
 
+/*!
+ * @fn int cmime_part_from_string(CMimePart_T **part, const char *content)
+ * @brief Parse given string and create a new CMimePart_T object
+ * @param part out param to return the new mime part object
+ * @param content mime part string to parse
+ * @returns 0 on success or -1 in case of error
+ */
 int cmime_part_from_string(CMimePart_T **part, const char *content);
 
 #ifdef __cplusplus

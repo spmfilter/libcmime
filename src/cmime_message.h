@@ -44,7 +44,8 @@ extern "C" {
 typedef struct {
 	CMimeAddress_T *sender; /**< sender of email */
 	CMimeList_T *recipients; /**< double linked list with recipients */
-	CMimeTable_T *headers; /**< message header hash table */
+//	CMimeTable_T *headers; /**< message header hash table */
+	CMimeList_T *headers;
 	char *boundary; /**< message boundary */
 	time_t date; /**< date of email */
 	int tz_offset; /**< timezone offset */
@@ -258,7 +259,22 @@ void cmime_message_set_boundary(CMimeMessage_T *message, const char *boundary);
  */
 char *cmime_message_generate_boundary(void);
 
+/*!
+ * @fn int cmime_message_from_file(CMimeMessage_T **message, const char *filename)
+ * @brief Parse given file and create a CMimeMessage_T object
+ * @param message out param to return the new message object
+ * @param filename path to message file
+ * @returns 0 on success, -1 on stat error, -2 if not a regular file
+ */
 int cmime_message_from_file(CMimeMessage_T **message, const char *filename);
+
+/*!
+ * @fn char *cmime_message_to_string(CMimeMessage_T *message) 
+ * @brief Return a message object as string
+ * @param message a CMimeMessage_T object 
+ * @returns message as newly allocated string
+ */
+char *cmime_message_to_string(CMimeMessage_T *message);
 
 #ifdef __cplusplus
 }

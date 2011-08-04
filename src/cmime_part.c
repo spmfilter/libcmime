@@ -33,56 +33,6 @@
 #include "cmime_string.h"
 #include "cmime_list.h"
 
-/* replace or add a new mime part header */
-void _set_part_header_value(CMimeList_T *l, const char *key, const char *value) {
-	CMimeListElem_T *e = NULL;
-	CMimeHeader_T *h = NULL;
-	char *ptemp = NULL;
-	
-	assert(l);
-	assert(key);
-	assert(value);
-
-	ptemp = (char *)value;
-	ptemp = cmime_string_strip(ptemp);
-	
-	e = cmime_list_head(l);
-	while(e != NULL) {
-		h = (CMimeHeader_T *)cmime_list_data(e);
-		if (strcasecmp(cmime_header_get_name(h),key)==0) {
-			cmime_header_set_value(h,ptemp,1);
-			return;
-		}
-		e = e->next;
-	}
-	
-	// mime header seems not to be present
-	h = cmime_header_new();
-	cmime_header_set_name(h,key);
-	cmime_header_set_value(h,ptemp,0);
-	cmime_list_append(l,h);
-	return;
-}
-
-char *_get_part_header_value(CMimeList_T *l, const char *key) {
-	CMimeListElem_T *e;
-	CMimeHeader_T *h;
-	
-	assert(l);
-	assert(key);
-	
-	e = cmime_list_head(l);
-	while(e != NULL) {
-		h = (CMimeHeader_T *)cmime_list_data(e);
-		if (strcasecmp(cmime_header_get_name(h),key)==0) {
-			return(cmime_header_get_value(h,0));
-		}
-		e = e->next;
-	}
-	
-	return(NULL);
-}
-
 /* search for header value in pointer p 
  * and return value as newly allocated string */
 char *_parse_header(char *p) {
@@ -139,50 +89,50 @@ void cmime_part_set_content_type(CMimePart_T *part, const char *s) {
 	assert(part);
 	assert(s);
 
-	_set_part_header_value(part->headers,"Content-Type",s);
+	_cmime_internal_set_linked_header_value(part->headers,"Content-Type",s);
 }
 
 char *cmime_part_get_content_type(CMimePart_T *part) {
 	assert(part);
 	
-	return(_get_part_header_value(part->headers,"Content-Type"));
+	return(_cmime_internal_get_linked_header_value(part->headers,"Content-Type"));
 }
 
 void cmime_part_set_content_disposition(CMimePart_T *part, const char *s) {
 	assert(part);
 	assert(s);
 
-	_set_part_header_value(part->headers,"Content-Disposition",s);
+	_cmime_internal_set_linked_header_value(part->headers,"Content-Disposition",s);
 }
 
 char *cmime_part_get_content_disposition(CMimePart_T *part) {
 	assert(part);
 	
-	return(_get_part_header_value(part->headers,"Content-Disposition"));
+	return(_cmime_internal_get_linked_header_value(part->headers,"Content-Disposition"));
 }
 
 void cmime_part_set_content_transfer_encoding(CMimePart_T *part, const char *s) {
 	assert(part);
 	assert(s);
 
-	_set_part_header_value(part->headers,"Content-Transfer-Encoding",s);
+	_cmime_internal_set_linked_header_value(part->headers,"Content-Transfer-Encoding",s);
 }
 
 char *cmime_part_get_content_transfer_encoding(CMimePart_T *part) {
 	assert(part);
 	
-	return(_get_part_header_value(part->headers,"Content-Transfer-Encoding"));
+	return(_cmime_internal_get_linked_header_value(part->headers,"Content-Transfer-Encoding"));
 }
 
 void cmime_part_set_content_id(CMimePart_T *part, const char *s) {
 	assert(part);
 	assert(s);
 	
-	_set_part_header_value(part->headers,"Content-Id",s);
+	_cmime_internal_set_linked_header_value(part->headers,"Content-Id",s);
 }
 
 char *cmime_part_get_content_id(CMimePart_T *part) {
-	return(_get_part_header_value(part->headers,"Content-Id"));
+	return(_cmime_internal_get_linked_header_value(part->headers,"Content-Id"));
 }
 
 void cmime_part_set_content(CMimePart_T *part, const char *s) {

@@ -34,47 +34,6 @@
 #include "cmime_part.h"
 #include "cmime_internal.h"
 
-static int _case_key_cmp(const void *x, const void *y) {
-	return(strcasecmp((char *)x,(char *)y));
-}
-
-static unsigned _lower_str_hash(const void *x) {
-	const char *str = x;
-	unsigned h = 0;
-
-	while (*str)
-		h = (h<<1) + tolower(*str++);
-	return h;
-}
-
-void _set_core_header_value(CMimeMessage_T *msg, const char *key, const char *value) {
-	CMimeHeader_T *h = NULL;
-	assert(msg);
-	assert(key);
-	assert(value);
-	
-	h = cmime_table_get(msg->headers,key);
-	if (h != NULL) {
-		cmime_header_set_value(h,value,1);
-	} else {
-		h = cmime_header_new();
-		cmime_header_set_name(h,key);
-		cmime_header_set_value(h,value,1);
-		cmime_table_insert(msg->headers,cmime_header_get_name(h),h);
-	}
-}
-
-char *_get_core_header_value(CMimeMessage_T *msg, const char *key) {
-	CMimeHeader_T *h;
-	char *v = NULL;
-	h = cmime_table_get(msg->headers,key);
-	if (h != NULL) {
-		v = cmime_header_get_value(h,0);
-		return(v);
-	} else
-		return(NULL);
-}
-
 void _recipients_destroy(void *data) {
 	assert(data);
 	CMimeAddress_T *ca = (CMimeAddress_T *)data;
@@ -91,8 +50,8 @@ CMimeMessage_T *cmime_message_new(void) {
 	CMimeMessage_T *message = NULL;
 	
 	message = (CMimeMessage_T *)calloc((size_t)1, sizeof(CMimeMessage_T));
-	
-	if (cmime_table_new(&message->headers,0,_case_key_cmp,_lower_str_hash,_cmime_internal_header_destroy)!=0) 
+
+	if (cmime_list_new(&message->headers,_cmime_internal_header_destroy)!=0)
 		return(NULL);
 	
 	message->sender = NULL;
@@ -115,8 +74,8 @@ void cmime_message_free(CMimeMessage_T *message) {
 
 	cmime_address_free(message->sender);	
 	cmime_list_free(message->recipients);
-	
-	cmime_table_free(message->headers);
+
+	cmime_list_free(message->headers);
 	
 	if (message->boundary!=NULL)
 		free(message->boundary);
@@ -138,17 +97,15 @@ void cmime_message_set_sender(CMimeMessage_T *message, const char *sender) {
 }
 
 void cmime_message_set_message_id(CMimeMessage_T *message, const char *mid) {
-	_set_core_header_value(message,"Message-ID",mid);
+	_cmime_internal_set_linked_header_value(message->headers,"Message-ID",mid);
 }
 
 char *cmime_message_get_message_id(CMimeMessage_T *message) {
-	return(_get_core_header_value(message,"Message-ID"));
+	return(_cmime_internal_get_linked_header_value(message->headers,"Message-ID"));
 }
 
 int cmime_message_set_header(CMimeMessage_T *message, const char *header) {
 	CMimeStringList_T *sl;
-	CMimeHeader_T *h;
-	CMimeHeader_T *oh;
 	char *k;
 	char *v;
 	assert(message);
@@ -161,23 +118,7 @@ int cmime_message_set_header(CMimeMessage_T *message, const char *header) {
 	v = cmime_string_list_get(sl,1);
 	v = cmime_string_strip(v);
 	
-	h = cmime_header_new();
-	cmime_header_set_name(h,k);
-	cmime_header_set_value(h,v,0);
-	
-	// check if header already exists
-	if (cmime_table_get(message->headers,k) != NULL) {
-		// header already exists, we'll overwrite it...
-		if (cmime_table_remove(message->headers,k,(void **)&oh) != 0)
-			return(-1);
-		else 
-			cmime_header_free(oh); 
-	} 
-	
-	// insert new header object in hash table
-	if (cmime_table_insert(message->headers, cmime_header_get_name(h), h)!=0)
-		return(-1);
-
+	_cmime_internal_set_linked_header_value(message->headers,k,v);
 	cmime_string_list_free(sl);
 
 	return(0);
@@ -185,11 +126,19 @@ int cmime_message_set_header(CMimeMessage_T *message, const char *header) {
 
 CMimeHeader_T *cmime_message_get_header(CMimeMessage_T *message, const char *header) {
 	CMimeHeader_T *h = NULL;
+	CMimeListElem_T *e;
 	
 	assert(message);
 	assert(header);
 	
-	h = (CMimeHeader_T *)cmime_table_get(message->headers,header);
+	e = cmime_list_head(message->headers);
+	while(e != NULL) {
+		h = (CMimeHeader_T *)cmime_list_data(e);
+		if (strcasecmp(cmime_header_get_name(h),header)==0) {
+			return(h);
+		}
+		e = e->next;
+	}
 	
 	return(h);
 }
@@ -237,52 +186,52 @@ int cmime_message_add_recipient(CMimeMessage_T *message, const char *recipient, 
 }
 
 void cmime_message_set_content_type(CMimeMessage_T *message, const char *s) {
-	_set_core_header_value(message,"Content-Type",s);
+	_cmime_internal_set_linked_header_value(message->headers,"Content-Type",s);
 }
 
 char *cmime_message_get_content_type(CMimeMessage_T *message) {
-	return(_get_core_header_value(message,"Content-Type"));
+	return(_cmime_internal_get_linked_header_value(message->headers,"Content-Type"));
 }
 
 void cmime_message_set_content_transfer_encoding(CMimeMessage_T *message, const char *s) {
-	_set_core_header_value(message,"Content-Transfer-Encoding",s);
+	_cmime_internal_set_linked_header_value(message->headers,"Content-Transfer-Encoding",s);
 }
 
 char *cmime_message_get_content_transfer_encoding(CMimeMessage_T *message) {
-	return(_get_core_header_value(message,"Content-Transfer-Encoding"));
+	return(_cmime_internal_get_linked_header_value(message->headers,"Content-Transfer-Encoding"));
 }
 
 void cmime_message_set_mime_version(CMimeMessage_T *message, const char *s) {
-	_set_core_header_value(message,"Mime-Version",s);
+	_cmime_internal_set_linked_header_value(message->headers,"Mime-Version",s);
 }
 
 /* Return the full mime-version header, with possible comments */
 char *cmime_message_get_mime_version(CMimeMessage_T *message) {
-	return(_get_core_header_value(message,"Mime-Version"));
+	return(_cmime_internal_get_linked_header_value(message->headers,"Mime-Version"));
 }
 
 void cmime_message_set_content_id(CMimeMessage_T *message, const char *s) { 
-	_set_core_header_value(message,"Content-ID",s);
+	_cmime_internal_set_linked_header_value(message->headers,"Content-ID",s);
 }
 
 char *cmime_message_get_content_id(CMimeMessage_T *message) {
-	return(_get_core_header_value(message,"Content-ID"));
+	return(_cmime_internal_get_linked_header_value(message->headers,"Content-ID"));
 }
 
 void cmime_message_set_content_description(CMimeMessage_T *message, const char *s) {
-	_set_core_header_value(message,"Content-Description",s);
+	_cmime_internal_set_linked_header_value(message->headers,"Content-Description",s);
 }
 
 char *cmime_message_get_content_description(CMimeMessage_T *message) {
-	return(_get_core_header_value(message,"Content-Description"));
+	return(_cmime_internal_get_linked_header_value(message->headers,"Content-Description"));
 }
 
 void cmime_message_set_date(CMimeMessage_T *message, const char *s) {
-	_set_core_header_value(message,"Date",s);
+	_cmime_internal_set_linked_header_value(message->headers,"Date",s);
 }
 
 char *cmime_message_get_date(CMimeMessage_T *message) {
-	return(_get_core_header_value(message,"Date"));
+	return(_cmime_internal_get_linked_header_value(message->headers,"Date"));
 }
 
 int cmime_message_set_date_now(CMimeMessage_T *message) {
@@ -295,7 +244,7 @@ int cmime_message_set_date_now(CMimeMessage_T *message) {
 	time(&currtime);                                                     
 	i = strftime(s,sizeof(s),"%a, %d %b %Y %H:%M:%S %z",localtime(&currtime));
 	if (i>0) {
-		_set_core_header_value(message,"Date",s);
+		_cmime_internal_set_linked_header_value(message->headers,"Date",s);
 		return(0);
 	} else
 		return(-1);
@@ -363,6 +312,7 @@ int cmime_message_from_file(CMimeMessage_T **message, const char *filename) {
 	char *ptemp = NULL;
 	int in_part = 0;
 	CMimePart_T *part = NULL;
+	char *nl = NULL;
 	
 	assert((*message));
 	assert(filename);
@@ -379,9 +329,15 @@ int cmime_message_from_file(CMimeMessage_T **message, const char *filename) {
 	}
 	
 	while(getline(&buffer,&st,fp) > 0) {
-		if((strcmp(buffer,CRLF)==0) || (strcmp(buffer,LF)==0)) {
+		// check newline frist
+		if (nl==NULL)
+			nl = _cmime_internal_determine_linebreak(buffer);
+		
+		if(strcmp(buffer,nl)==0) {
 			if (in_header==1) {
 				if (s!=NULL) {
+					if (cmime_message_set_header((*message), s)!=0)
+						return(-4); /* failed to add header */
 					free(s);
 					s = (char *)calloc(1,sizeof(char));
 				}
@@ -445,4 +401,24 @@ int cmime_message_from_file(CMimeMessage_T **message, const char *filename) {
 	}
 
 	return(0);
+}
+
+char *cmime_message_to_string(CMimeMessage_T *message) {
+	char *out = NULL;
+	CMimeHeader_T *h = NULL;
+	CMimeListElem_T *e = NULL;
+	char *s = NULL;
+	
+	assert(message);
+	
+	e = cmime_list_head(message->headers);
+	while(e != NULL) {
+		h = (CMimeHeader_T *)cmime_list_data(e);
+		s = cmime_header_to_string(h);
+		printf("H: [%s]\n", s);
+		free(s);
+		e = e->next;
+	}
+	
+	return(out);
 }

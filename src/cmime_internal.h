@@ -22,6 +22,8 @@
 extern "C" {
 #endif
 
+#include "cmime_list.h"
+
 #define PART_CONTENT_TYPE_PATTERN "Content-Type:"
 #define PART_CONTENT_DISPOSITION_PATTERN "Content-Disposition:"
 #define PART_CONTENT_TRANSFER_ENCODING_PATTERN "Content-Transfer-Encoding:"
@@ -41,6 +43,9 @@ extern "C" {
 void _cmime_internal_header_destroy(void *data);
 
 char *_cmime_internal_determine_linebreak(const char *s);
+
+void _cmime_internal_set_linked_header_value(CMimeList_T *l, const char *key, const char *value);
+char *_cmime_internal_get_linked_header_value(CMimeList_T *l, const char *key);
 
 #ifdef __cplusplus
 }
