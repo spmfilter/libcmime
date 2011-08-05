@@ -44,11 +44,11 @@ extern "C" {
 typedef struct {
 	CMimeAddress_T *sender; /**< sender of email */
 	CMimeList_T *recipients; /**< double linked list with recipients */
-//	CMimeTable_T *headers; /**< message header hash table */
 	CMimeList_T *headers;
 	char *boundary; /**< message boundary */
 	time_t date; /**< date of email */
 	int tz_offset; /**< timezone offset */
+	char *gap;
 	CMimeList_T *parts; /**< mime parts */
 } CMimeMessage_T;
 

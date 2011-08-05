@@ -118,7 +118,7 @@ int main (int argc, char const *argv[]) {
 //	printf("TYPE: [%s]\n", cmime_part_get_content_type(part));
 	
 	s = cmime_message_to_string(msg);
-	
+	printf("%s\n", s);
 	cmime_message_free(msg);
 	
 	return(0);

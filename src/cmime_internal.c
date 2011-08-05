@@ -54,7 +54,7 @@ void _cmime_internal_set_linked_header_value(CMimeList_T *l, const char *key, co
 	assert(key);
 	assert(value);
 
-	ptemp = (char *)value;
+	ptemp = (char *)value;		
 	ptemp = cmime_string_strip(ptemp);
 	
 	e = cmime_list_head(l);

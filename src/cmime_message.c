@@ -61,6 +61,7 @@ CMimeMessage_T *cmime_message_new(void) {
 	message->date = 0;
 	message->tz_offset = 0;
 	message->boundary = NULL;
+	message->gap = NULL;
 
 	if (cmime_list_new(&message->parts,_parts_destroy)!=0) 
 			return(NULL);
@@ -79,6 +80,9 @@ void cmime_message_free(CMimeMessage_T *message) {
 	
 	if (message->boundary!=NULL)
 		free(message->boundary);
+	
+	if (message->gap!=NULL)
+		free(message->gap);
 	
 	cmime_list_free(message->parts);
 	
@@ -308,6 +312,7 @@ int cmime_message_from_file(CMimeMessage_T **message, const char *filename) {
 	char *buffer = NULL;
 	size_t st = 0;
 	int in_header = 1;
+	int in_gap = 1;
 	char *s = NULL;
 	char *ptemp = NULL;
 	int in_part = 0;
@@ -342,7 +347,7 @@ int cmime_message_from_file(CMimeMessage_T **message, const char *filename) {
 					s = (char *)calloc(1,sizeof(char));
 				}
 				in_header = 0;
-				continue;
+			//	continue;
 			}
 		}
 		
@@ -352,6 +357,7 @@ int cmime_message_from_file(CMimeMessage_T **message, const char *filename) {
 				ptemp = strcasestr(buffer,"boundary=");
 				if (ptemp!=NULL) {
 					(*message)->boundary = _get_boundary(ptemp);
+					(*message)->gap = (char *)calloc(sizeof(char),sizeof(char));
 				}
 			}
 			
@@ -383,12 +389,18 @@ int cmime_message_from_file(CMimeMessage_T **message, const char *filename) {
 					in_part = 1;
 					free(s);
 					s = (char *)calloc(1,sizeof(char));
+					in_gap = 0;
 					continue;
-				}
+				} 
 			} 
 
-			s = (char *)realloc(s,strlen(s) + st + 1);
-			strcat(s,buffer);
+			if (in_gap == 1) {
+				(*message)->gap = (char *)realloc((*message)->gap,strlen((*message)->gap) + strlen(buffer) + sizeof(char));
+				strcat((*message)->gap,buffer);
+			} else {
+				s = (char *)realloc(s,strlen(s) + st + 1);
+				strcat(s,buffer);
+			}
 		}
 	}	
 	fclose(fp);
@@ -405,19 +417,62 @@ int cmime_message_from_file(CMimeMessage_T **message, const char *filename) {
 
 char *cmime_message_to_string(CMimeMessage_T *message) {
 	char *out = NULL;
-	CMimeHeader_T *h = NULL;
 	CMimeListElem_T *e = NULL;
+	CMimeHeader_T *h = NULL;
+	CMimePart_T *p = NULL;
 	char *s = NULL;
+	char *nl = NULL;
 	
 	assert(message);
+	out = (char *)calloc(sizeof(char),sizeof(char));
+	
+	e = cmime_list_head(message->parts);
+	nl = _cmime_internal_determine_linebreak(((CMimePart_T *)cmime_list_data(e))->content);
 	
 	e = cmime_list_head(message->headers);
 	while(e != NULL) {
 		h = (CMimeHeader_T *)cmime_list_data(e);
 		s = cmime_header_to_string(h);
-		printf("H: [%s]\n", s);
+		out = (char *)realloc(out,strlen(out) + strlen(s) + strlen(nl) + sizeof(char));
+		strcat(out,s);
+		strcat(out,nl);
 		free(s);
 		e = e->next;
+	}
+
+	if (message->gap != NULL) {
+		out = (char *)realloc(out,strlen(out) + strlen(message->gap) + sizeof(char));
+		strcat(out,message->gap);
+	} else {
+		out = (char *)realloc(out,strlen(out) + strlen(nl) + sizeof(char));
+		strcat(out,nl);
+	}
+	
+	e = cmime_list_head(message->parts);
+	while(e != NULL) {
+		p = (CMimePart_T *)cmime_list_data(e);
+		if (message->boundary != NULL) {
+			asprintf(&s,"--%s%s",message->boundary,nl);
+			out = (char *)realloc(out,strlen(out) + strlen(s) + sizeof(char));
+			strcat(out,s);
+			free(s);
+		}
+		s = cmime_part_to_string(p);
+		out = (char *)realloc(out,strlen(out) + strlen(s) + sizeof(char));
+		strcat(out,s);
+		free(s);
+		e = e->next;
+	}
+	
+	if(message->boundary != NULL) {
+		asprintf(&s,"--%s--",message->boundary,nl);
+		out = (char *)realloc(out,strlen(out) + strlen(s) + sizeof(char));
+		strcat(out,s);
+		free(s);
+		if (strcmp(nl,CRLF)==0) {
+			out = (char *)realloc(out,strlen(out) + strlen(CR) + sizeof(char));
+			strcat(out,CR);
+		}
 	}
 	
 	return(out);
