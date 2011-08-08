@@ -109,22 +109,15 @@ char *cmime_message_get_message_id(CMimeMessage_T *message) {
 }
 
 int cmime_message_set_header(CMimeMessage_T *message, const char *header) {
-	CMimeStringList_T *sl;
+	char *copy;
 	char *k;
-	char *v;
 	assert(message);
 	assert(header);
 	
-	sl = cmime_string_split(header,":",1);
-	k = cmime_string_list_get(sl,0);
-	k = cmime_string_strip(k);
-
-	v = cmime_string_list_get(sl,1);
-	v = cmime_string_strip(v);
+	copy = strdup(header);
+	k = strsep(&copy,":");
 	
-	_cmime_internal_set_linked_header_value(message->headers,k,v);
-	cmime_string_list_free(sl);
-
+	_cmime_internal_set_linked_header_value(message->headers,k,copy);
 	return(0);
 }
 
@@ -369,6 +362,7 @@ int cmime_message_from_file(CMimeMessage_T **message, const char *filename) {
 				strcat(s,buffer);
 			} else {
 				if (s!=NULL) {
+
 					if (cmime_message_set_header((*message), s)!=0)
 						return(-4); /* failed to add header */
 					free(s);
@@ -465,7 +459,7 @@ char *cmime_message_to_string(CMimeMessage_T *message) {
 	}
 	
 	if(message->boundary != NULL) {
-		asprintf(&s,"--%s--",message->boundary,nl);
+		asprintf(&s,"--%s--",message->boundary);
 		out = (char *)realloc(out,strlen(out) + strlen(s) + sizeof(char));
 		strcat(out,s);
 		free(s);
