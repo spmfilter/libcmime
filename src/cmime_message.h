@@ -276,6 +276,15 @@ int cmime_message_from_file(CMimeMessage_T **message, const char *filename);
  */
 char *cmime_message_to_string(CMimeMessage_T *message);
 
+/*!
+ * @fn int cmime_message_from_string(CMimeMessage_T **message, const char *content)
+ * @brief Parse given string and create a new CMimeMessage_T object
+ * @param message out param to return the new message object
+ * @param content message string to parse
+ * @returns 0 on success or -1 in case of error
+ */
+int cmime_message_from_string(CMimeMessage_T **message, const char *content);
+
 #ifdef __cplusplus
 }
 #endif
