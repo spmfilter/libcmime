@@ -33,9 +33,15 @@ extern "C" {
 
 void cmime_base64_encode_block(unsigned char in[3], unsigned char out[4], int len);
 
+void cmime_base64_decode_block(unsigned char in[4], unsigned char out[3]);
+
 void cmime_base64_encode_file(FILE *infile, FILE *outfile, int linelen);
 
+void cmime_base64_decode_file(FILE *infile, FILE *outfile);
+
 char *cmime_base64_encode_string(const char *source);
+
+char *cmime_base64_decode_string(const char *source);
 
 #ifdef __cplusplus
 }

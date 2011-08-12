@@ -26,13 +26,22 @@
 
 int main (int argc, char const *argv[])	{
 	char *out = NULL;
+	char *out2 = NULL;
 	
 	out = cmime_base64_encode_string(test_string1);
 	free(out);
 	
 	out = cmime_base64_encode_string(test_string5);
 	assert(strcmp(out,test_string5_base64)==0);
+	printf("IN:   [%s] (%d)\n", test_string5, (int)strlen(test_string5));
+	printf("CO    [%s]\n", out);
+	out2 = cmime_base64_decode_string(out);
+	printf("OUT2: [%s]\n", out2);
+	free(out2);
 	free(out);
+	
+	
+	
 	
 	
 	return 0;
