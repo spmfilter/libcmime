@@ -24,8 +24,6 @@
 
 #include "test_data.h"
 
-#define CONTENT_FILE "../../test/test_content.txt"
-
 int main (int argc, char const *argv[]) {
 	CMimePart_T *part;
 	char *s;

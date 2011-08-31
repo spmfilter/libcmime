@@ -27,22 +27,44 @@
 int main (int argc, char const *argv[])	{
 	char *out = NULL;
 	char *out2 = NULL;
+	FILE *fp = NULL;
+	FILE *fp2 = NULL;
+	long in_size = 0;
+	char *in_data = NULL;
+	size_t i;
 	
 	out = cmime_base64_encode_string(test_string1);
 	free(out);
 	
 	out = cmime_base64_encode_string(test_string5);
 	assert(strcmp(out,test_string5_base64)==0);
-	printf("IN:   [%s] (%d)\n", test_string5, (int)strlen(test_string5));
-	printf("CO    [%s]\n", out);
 	out2 = cmime_base64_decode_string(out);
-	printf("OUT2: [%s]\n", out2);
+	assert(strcmp(test_string5,out2)==0);
 	free(out2);
 	free(out);
 	
+	if ((fp = fopen(CONTENT_FILE, "rb")) == NULL) 
+		return(-1);
+		
+	if (fseek(fp, 0, SEEK_END)!=0)
+		return(-1);
+		
+	in_size = ftell(fp);
+	rewind(fp);	
+	in_data = (char*) calloc(sizeof(char), in_size + 20);
+	fread(in_data, 1, in_size, fp);
+	if(ferror(fp))
+		return(-1);
+	printf("%s\n", in_data);
+		
+//	if ((fp2 = fopen("test_base64.out","wb")) == NULL)
+//		return(-1);
+	
+//	cmime_base64_encode_file(fp,fp2,72);
 	
 	
+//	fclose(fp2);
+	fclose(fp);
 	
-	
-	return 0;
+	return(0);
 }

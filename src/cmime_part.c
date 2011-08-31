@@ -44,7 +44,8 @@ char *_parse_header(char *p) {
 	char *nl = _cmime_internal_determine_linebreak(p);
 	
 	cp = strdup(p);
-	for (token = strtok_r(cp,nl,&brkb); token; token = strtok_r(NULL,nl,&brkb)) {
+//	for (token = strtok_r(cp,nl,&brkb); token; token = strtok_r(NULL,nl,&brkb)) {
+	while ((token = strsep(&cp, nl)) != NULL) {
 		if (i==0) {
 			asprintf(&out,"%s%s",token,nl);
 		} else {

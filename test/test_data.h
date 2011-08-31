@@ -22,6 +22,8 @@
 extern "C" {
 #endif
 
+#define CONTENT_FILE "../../test/test_content.txt"
+
 char addr_string1[] = "Foo Bar <foobar@example.com>";
 char addr_string1_name_part[] = "Foo Bar";
 char addr_string1_email_part[] = "foobar@example.com";
