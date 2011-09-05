@@ -39,12 +39,10 @@ char *_parse_header(char *p) {
 	char *token = NULL;
 	char *cp = NULL;
 	char *out = NULL;
-	char *brkb = NULL;
 	int i = 0;
 	char *nl = _cmime_internal_determine_linebreak(p);
 	
 	cp = strdup(p);
-//	for (token = strtok_r(cp,nl,&brkb); token; token = strtok_r(NULL,nl,&brkb)) {
 	while ((token = strsep(&cp, nl)) != NULL) {
 		if (i==0) {
 			asprintf(&out,"%s%s",token,nl);
