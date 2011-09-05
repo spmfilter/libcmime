@@ -45,14 +45,17 @@ char *cmime_util_get_mimetype(const char *filename) {
 	if(fh == NULL) {
 		return(NULL);
 	}
+	free(command);
 	if(getline(&buf,&st,fh) > 0) {
-		free(command);
 		/* copy command output from static buffer into string */
 		retval =  (char *)calloc(strlen(buf) + 1, sizeof(char));
 		buf = cmime_string_chomp(buf);
 		strncpy(retval, buf, strlen(buf));
+		free(buf);
+		fclose(fh);
 		return(retval);
 	} else {
+		fclose(fh);
 		return(NULL);
 	}
 }

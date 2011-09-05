@@ -35,7 +35,7 @@ int main (int argc, char const *argv[]) {
 	CMimeHeader_T *h = NULL;
 	CMimeList_T *recipient_list = NULL;
 	CMimeListElem_T *elem;
-	int retval;
+	int retval = 0;
 	CMimePart_T *part;
 	
 	cmime_message_set_sender(msg,addr_string1);
