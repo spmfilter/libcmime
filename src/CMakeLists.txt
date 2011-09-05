@@ -2,7 +2,6 @@ set(LIBCMIME_SRC
 	cmime_address.c
 	cmime_list.c
 	cmime_message.c
-	cmime_table.c
 	cmime_header.c
 	cmime_string.c
 	cmime_part.c

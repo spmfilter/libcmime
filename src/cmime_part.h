@@ -105,7 +105,20 @@ void cmime_part_set_content_transfer_encoding(CMimePart_T *part, const char *s);
  */
 char *cmime_part_get_content_transfer_encoding(CMimePart_T *part);
 
+/*!
+ * @fn void cmime_part_set_content_id(CMimePart_T *part, const char *s)
+ * @brief Set content id for mime part
+ * @param part a CMimePart_T object
+ * @param s content id string
+ */
 void cmime_part_set_content_id(CMimePart_T *part, const char *s);
+
+/*!
+ * @fn char *cmime_part_get_content_id(CMimePart_T *part)
+ * @brief Return content id of mime part
+ * @param part a CMimePart_T object
+ * @returns newly allocated char pointer with content id of mime part 
+ */
 char *cmime_part_get_content_id(CMimePart_T *part);
 
 /*!

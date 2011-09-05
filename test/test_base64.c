@@ -29,9 +29,10 @@ int main (int argc, char const *argv[])	{
 	char *out2 = NULL;
 	FILE *fp = NULL;
 	FILE *fp2 = NULL;
-	long in_size = 0;
+	long size = 0;
 	char *in_data = NULL;
-	size_t i;
+	char *out_data = NULL;
+	char *in_64 = NULL;
 	
 	out = cmime_base64_encode_string(test_string1);
 	free(out);
@@ -49,22 +50,38 @@ int main (int argc, char const *argv[])	{
 	if (fseek(fp, 0, SEEK_END)!=0)
 		return(-1);
 		
-	in_size = ftell(fp);
+	size = ftell(fp);
 	rewind(fp);	
-	in_data = (char*) calloc(sizeof(char), in_size + 20);
-	fread(in_data, 1, in_size, fp);
+	in_data = (char*) calloc(sizeof(char), size + 20);
+	fread(in_data, 1, size, fp);
 	if(ferror(fp))
 		return(-1);
-	printf("%s\n", in_data);
-		
-//	if ((fp2 = fopen("test_base64.out","wb")) == NULL)
-//		return(-1);
+
+	rewind(fp);
+	if ((fp2 = fopen("test_base64.out","wb")) == NULL)
+		return(-1);
+
+	cmime_base64_encode_file(fp,fp2,0);
+	in_64 = cmime_base64_encode_string(in_data);
 	
-//	cmime_base64_encode_file(fp,fp2,72);
+	size = ftell(fp2);
+	rewind(fp2);
+	out_data = (char *)calloc(sizeof(char),size + 20);
+	fp2 = freopen("test_base64.out","rb",fp2);
+	fread(out_data,1,size,fp2);
+	if (ferror(fp2))
+		return(-1);
+
+	assert(strcmp(in_64,out_data)==0);
+	free(in_64);
+	free(out_data);
+	free(in_data);
 	
-	
-//	fclose(fp2);
+	fclose(fp2);
 	fclose(fp);
+	
+	if (remove("test_base64.out")!=0)
+		return(-1);
 	
 	return(0);
 }

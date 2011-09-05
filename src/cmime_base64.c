@@ -70,11 +70,11 @@ void cmime_base64_encode_file(FILE *infile, FILE *outfile, int linelen) {
 			for(i=0; i<4; i++) {
 				putc(out[i], outfile);
 			}
-
+			
 			blocksout++;
 		}
 
-		if(blocksout >= (linelen / 4) || feof(infile)) {
+		if((blocksout >= (linelen / 4) || feof(infile)) && (linelen != 0)) {
 			if(blocksout) {
 				fprintf(outfile, "\r\n");
 			}

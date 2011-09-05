@@ -28,7 +28,6 @@
 #include "cmime_address.h"
 #include "cmime_message.h"
 #include "cmime_list.h"
-#include "cmime_table.h"
 #include "cmime_string.h"
 #include "cmime_header.h"
 #include "cmime_part.h"
