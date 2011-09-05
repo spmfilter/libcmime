@@ -128,7 +128,7 @@ char *cmime_base64_encode_string(const char *source) {
 	int source_len = strlen(source);
 	int target_len = source_len + (0.35 * source_len) + 1;
 
-	target = (char *)calloc(target_len, sizeof(char));
+	target = (char *)calloc(target_len, sizeof(char) + 1);
 
 	for(j=0; j<source_len; j+=3) {
 		len = 0;
@@ -160,7 +160,7 @@ char *cmime_base64_decode_string(const char *source) {
 	int source_len = strlen(source);
 	int target_len = source_len - (0.35 * source_len) + 1;
 	
-	target = (char *)calloc(target_len,sizeof(char));
+	target = (char *)calloc(target_len,sizeof(char) + 1);
 
 	for(j=0; j<source_len; j+=4) {
 		v = 0;
