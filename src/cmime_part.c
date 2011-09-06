@@ -261,14 +261,18 @@ int cmime_part_from_file(CMimePart_T **part, char *filename) {
 					if (len) {
 						if (encode == 0) {
 							(*part)->content = (char *)realloc((*part)->content,strlen((*part)->content) + sizeof(in) + sizeof(char) +1);
-							strcat((*part)->content,(char *)in);
+							for(i=0; i<3; i++) {
+								(*part)->content[pos++] = in[i];	
+							}
+							(*part)->content[pos] = '\0';
 						} else {
 							cmime_base64_encode_block(in,out,len);
 							(*part)->content = (char *)realloc((*part)->content,strlen((*part)->content) + sizeof(out) + sizeof(char) + 1);
 							for (i=0; i<4;i++) {
 								(*part)->content[pos++] = out[i];
 							}
-							(*part)->content[pos] = '\0';						}
+							(*part)->content[pos] = '\0';						
+						}
 						blocksout++;
 					}
 
@@ -287,8 +291,7 @@ int cmime_part_from_file(CMimePart_T **part, char *filename) {
 				fclose(fp);
 			} else {
 				return (-3); /* failed to open file */
-			}
-			
+			}			
 		} else {
 			return(-2); /* not regular file */
 		} 

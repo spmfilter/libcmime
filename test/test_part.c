@@ -77,8 +77,7 @@ int main (int argc, char const *argv[]) {
 	free(out);
 	free(out2);
 	cmime_part_free(part); 
-	
-/*	
+		
 	part = cmime_part_new();
 	asprintf(&s,"%s/c0001.txt",SAMPLES_DIR);
 	cmime_part_from_file(&part,s);
@@ -88,6 +87,6 @@ int main (int argc, char const *argv[]) {
 	free(out);
 		
 	cmime_part_free(part);
-*/
+
 	return(0);
 }
