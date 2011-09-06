@@ -15,6 +15,8 @@
  * License along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+#define _GNU_SOURCE
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -25,8 +27,8 @@
 #include "test_data.h"
 
 int main (int argc, char const *argv[])	{
-	char *out = NULL;
-	char *out2 = NULL;
+	char *s = NULL;
+	char *s2 = NULL;
 	FILE *fp = NULL;
 	FILE *fp2 = NULL;
 	long size = 0;
@@ -34,19 +36,22 @@ int main (int argc, char const *argv[])	{
 	char *out_data = NULL;
 	char *in_64 = NULL;
 	
-	out = cmime_base64_encode_string(test_string1);
-	free(out);
+	s = cmime_base64_encode_string(test_string1);
+	free(s);
 	
-	out = cmime_base64_encode_string(test_string5);
-	assert(strcmp(out,test_string5_base64)==0);
-	out2 = cmime_base64_decode_string(out);
-	assert(strcmp(test_string5,out2)==0);
-	free(out2);
-	free(out);
+	s = cmime_base64_encode_string(test_string5);
+	assert(strcmp(s,test_string5_base64)==0);
+	s2 = cmime_base64_decode_string(s);
+	assert(strcmp(test_string5,s2)==0);
+	free(s2);
+	free(s);
 	
-	if ((fp = fopen(CONTENT_FILE, "rb")) == NULL) 
+	asprintf(&s,"%s/c0001.txt",SAMPLES_DIR);
+	if ((fp = fopen(s, "rb")) == NULL) 
 		return(-1);
 		
+	free(s);
+	
 	if (fseek(fp, 0, SEEK_END)!=0)
 		return(-1);
 		

@@ -15,6 +15,8 @@
  * License along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+#define _GNU_SOURCE
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -25,10 +27,10 @@
 #include "test_data.h"
 
 int main (int argc, char const *argv[]) {
-	CMimePart_T *part;
-	char *s;
-	char *out;
-	char *out2;
+	CMimePart_T *part = NULL;
+	char *s = NULL;
+	char *out = NULL;
+	char *out2 = NULL;
 
 	part = cmime_part_new();
 	assert(part);
@@ -61,7 +63,7 @@ int main (int argc, char const *argv[]) {
 	cmime_part_set_content(part,test_content_string1);
 	s = cmime_part_get_content(part);	
 	assert(strcmp(s,test_content_string1)==0);
-		
+	
 	out = cmime_part_to_string(part);
 	cmime_part_free(part);
 	
@@ -75,14 +77,17 @@ int main (int argc, char const *argv[]) {
 	free(out);
 	free(out2);
 	cmime_part_free(part); 
-
+	
+/*	
 	part = cmime_part_new();
-	cmime_part_from_file(&part,CONTENT_FILE);
+	asprintf(&s,"%s/c0001.txt",SAMPLES_DIR);
+	cmime_part_from_file(&part,s);
+	free(s);
 	out = cmime_part_to_string(part);
 	assert(out);
 	free(out);
 		
 	cmime_part_free(part);
-
+*/
 	return(0);
 }

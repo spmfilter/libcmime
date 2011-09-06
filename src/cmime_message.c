@@ -108,15 +108,17 @@ char *cmime_message_get_message_id(CMimeMessage_T *message) {
 }
 
 int cmime_message_set_header(CMimeMessage_T *message, const char *header) {
-	char *copy;
-	char *k;
+	char *cp = NULL;
+	char *tf = NULL;
+	char *k = NULL;
 	assert(message);
 	assert(header);
 	
-	copy = strdup(header);
-	k = strsep(&copy,":");
+	tf = cp = strdup(header);
+	k = strsep(&cp,":");
 	
-	_cmime_internal_set_linked_header_value(message->headers,k,copy);
+	_cmime_internal_set_linked_header_value(message->headers,k,cp);
+	free(tf);
 	return(0);
 }
 

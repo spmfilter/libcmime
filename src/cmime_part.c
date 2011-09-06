@@ -38,11 +38,12 @@
 char *_parse_header(char *p) {
 	char *token = NULL;
 	char *cp = NULL;
+	char *tf = NULL;
 	char *out = NULL;
 	int i = 0;
 	char *nl = _cmime_internal_determine_linebreak(p);
 	
-	cp = strdup(p);
+	tf = cp = strdup(p);
 	while ((token = strsep(&cp, nl)) != NULL) {
 		if (i==0) {
 			asprintf(&out,"%s%s",token,nl);
@@ -56,6 +57,7 @@ char *_parse_header(char *p) {
 		i++;
 	}
 	
+	free(tf);
 	return(out);
 }
 
@@ -185,11 +187,11 @@ char *cmime_part_to_string(CMimePart_T *part) {
 	}
 	
 	if (with_headers==1) {
-		out = (char *)realloc(out,strlen(out) + strlen(nl) + 1);
+		out = (char *)realloc(out,strlen(out) + strlen(nl) + 2);
 		strcat(out,CRLF);
 	} 
 
-	out = (char *)realloc(out,strlen(out) + strlen(content) + 1);
+	out = (char *)realloc(out,strlen(out) + strlen(content) + 2);
 	strcat(out,content);
 
 	return(out);
@@ -258,11 +260,11 @@ int cmime_part_from_file(CMimePart_T **part, char *filename) {
 					
 					if (len) {
 						if (encode == 0) {
-							(*part)->content = (char *)realloc((*part)->content,strlen((*part)->content) + sizeof(in) + sizeof(char));
+							(*part)->content = (char *)realloc((*part)->content,strlen((*part)->content) + sizeof(in) + sizeof(char) +1);
 							strcat((*part)->content,(char *)in);
 						} else {
 							cmime_base64_encode_block(in,out,len);
-							(*part)->content = (char *)realloc((*part)->content,strlen((*part)->content) + sizeof(out) + sizeof(char));
+							(*part)->content = (char *)realloc((*part)->content,strlen((*part)->content) + sizeof(out) + sizeof(char) + 1);
 							for (i=0; i<4;i++) {
 								(*part)->content[pos++] = out[i];
 							}
@@ -365,3 +367,4 @@ int cmime_part_from_string(CMimePart_T **part, const char *content) {
 	
 	return(0);
 }
+                                                                                                     

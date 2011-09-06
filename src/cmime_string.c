@@ -63,7 +63,8 @@ char *cmime_string_list_get(CMimeStringList_T *sl,int pos) {
 
 CMimeStringList_T *cmime_string_split(const char *s, const char *sep, int maxsplit) {
 	CMimeStringList_T *sl;
-	char *copy = NULL;
+	char *cp = NULL;
+	char *tf = NULL;
 	char *tmp = NULL;
 	int size = 0;
 	int count = 0;
@@ -76,15 +77,16 @@ CMimeStringList_T *cmime_string_split(const char *s, const char *sep, int maxspl
 
 	sl = cmime_string_list_new();
 	
-	copy = strdup(s);
+	tf = cp = strdup(s);
 	
-	while ((tmp = strsep(&copy, sep)) != NULL) {
+	while ((tmp = strsep(&cp, sep)) != NULL) {
 		cmime_string_list_insert(sl,tmp);
 		if ((maxsplit != 0) && (count == maxsplit))
 			break;
 		count++;
 	}
-	free(copy);
+
+	free(tf);
 	
 	return(sl);
 }

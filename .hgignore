@@ -3,3 +3,4 @@ build/*
 doc/*
 .DS_Store
 src/cmime_config.h
+test/test_data.h
