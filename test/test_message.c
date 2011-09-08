@@ -30,15 +30,33 @@
 
 #include "test_data.h"
 
+char test_files[54][10] = {
+	"m0001.txt","m0002.txt","m0003.txt","m0004.txt","m0005.txt",
+	"m0006.txt","m0007.txt","m0008.txt","m0009.txt","m0010.txt",
+	"m0011.txt","m0012.txt","m0013.txt","m0014.txt","m0015.txt",
+	"m0016.txt","m0017.txt","m0018.txt","m1001.txt","m1002.txt",
+	"m1003.txt","m1004.txt","m1005.txt","m1006.txt","m1007.txt",
+	"m1008.txt","m1009.txt","m1010.txt","m1011.txt","m1012.txt",
+	"m1013.txt","m1014.txt","m1015.txt","m1016.txt","m2001.txt",
+	"m2002.txt","m2003.txt","m2004.txt","m2005.txt","m2006.txt",
+	"m2007.txt","m2008.txt","m2009.txt","m2010.txt","m2011.txt",
+	"m2012.txt","m2013.txt","m2014.txt","m2015.txt","m2016.txt",
+	"m3001.txt","m3002.txt","m3003.txt","m3004.txt"
+};
+
 int main (int argc, char const *argv[]) {
 	CMimeMessage_T *msg = cmime_message_new();
 	char *s = NULL;
 	char *s2 = NULL;
+	char *msg_string = NULL;
+	char *fname = NULL;
 	CMimeHeader_T *h = NULL;
 	CMimeList_T *recipient_list = NULL;
 	CMimeListElem_T *elem;
 	int retval = 0;
-	CMimePart_T *part;
+	FILE *fp = NULL;
+	long size = 0;
+	int i = 0;
 	
 	cmime_message_set_sender(msg,addr_string1);
 	s = cmime_message_get_sender(msg);
@@ -107,43 +125,37 @@ int main (int argc, char const *argv[]) {
 	free(s);
 	cmime_message_free(msg);
 
-	msg = cmime_message_new();
-	asprintf(&s,"%s/m0001.txt",SAMPLES_DIR);
-	retval = cmime_message_from_file(&msg,s);
-	if (retval != 0)
-		return retval;
-	free(s);
-/*
-	elem = cmime_list_tail(msg->parts);
-	if (elem) {
-		part = (CMimePart_T *)cmime_list_data(elem);
+	for (i=0; i < 54; i++) {
+		printf("Checking sample message [%s]...", test_files[i]);
+		msg = cmime_message_new();
+		asprintf(&fname,"%s/%s",SAMPLES_DIR,test_files[i]);
+		retval = cmime_message_from_file(&msg,fname);
+		if (retval != 0)
+			return retval;
+			
+		msg_string = cmime_message_to_string(msg);
+	
+		if ((fp = fopen(fname, "rb")) == NULL) 
+			return(-1);
+		free(fname);	
 
-		s = cmime_part_to_string(part);
-		printf("%s\n", s);
-	} else {
-		printf("noe\n");
-	}*/
-	s = cmime_message_to_string(msg);
+		if (fseek(fp, 0, SEEK_END)!=0)
+			return(-1);
 		
-	printf("[%s]\n", s);
-	cmime_message_free(msg);
-	
-/*	retval = cmime_message_from_file(&msg,"/Users/ast/Desktop/Eicar.eml");
-	elem = cmime_list_tail(msg->parts);
-	part = (CMimePart_T *)cmime_list_data(elem);
-	s = cmime_part_to_string(part);
-	free(s);
-	
-	s = cmime_message_to_string(msg);
-	assert(s);
-	cmime_message_free(msg);
+		size = ftell(fp);
+		rewind(fp);	
+		s = (char*) calloc(sizeof(char), size + 20);
+		fread(s, 1, size, fp);
+		if(ferror(fp))
+			return(-1);
 
-	msg = cmime_message_new();
-	cmime_message_from_string(&msg,s);
-	free(s);
-	s = cmime_message_to_string(msg);
-	assert(s);
-	free(s);
-	cmime_message_free(msg);*/
+		assert(strcmp(msg_string,s)==0);
+		free(s);
+		free(msg_string);
+		cmime_message_free(msg);
+		printf("passed!\n");
+	}
+	
+
 	return(0);
 }

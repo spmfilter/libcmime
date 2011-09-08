@@ -378,6 +378,7 @@ int _parse_file(CMimeMessage_T *message, FILE *fp) {
 					message->gap = (char *)realloc(message->gap,strlen(message->gap) + strlen(buffer) + sizeof(char));
 				else
 					message->gap = (char *)calloc(strlen(buffer) + sizeof(char), sizeof(char));
+				
 				strcat(message->gap,buffer);
 			} else {
 				s = (char *)realloc(s,strlen(s) + st + 1);
@@ -393,7 +394,9 @@ int _parse_file(CMimeMessage_T *message, FILE *fp) {
 		free(s);
 		cmime_list_append(message->parts,part);
 	}
-
+	
+	free(buffer);
+	
 	return(0);
 }
 
