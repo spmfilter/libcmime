@@ -347,7 +347,6 @@ int _parse_file(CMimeMessage_T *message, FILE *fp) {
 				strcat(s,buffer);
 			} else {
 				if (s!=NULL) {
-
 					if (cmime_message_set_header(message, s)!=0)
 						return(-4); /* failed to add header */
 					free(s);
@@ -371,10 +370,14 @@ int _parse_file(CMimeMessage_T *message, FILE *fp) {
 					in_gap = 0;
 					continue;
 				} 
-			} 
+			} else
+				in_gap = 0;
 
 			if (in_gap == 1) {
-				message->gap = (char *)realloc(message->gap,strlen(message->gap) + strlen(buffer) + sizeof(char));
+				if (message->gap != NULL)
+					message->gap = (char *)realloc(message->gap,strlen(message->gap) + strlen(buffer) + sizeof(char));
+				else
+					message->gap = (char *)calloc(strlen(buffer) + sizeof(char), sizeof(char));
 				strcat(message->gap,buffer);
 			} else {
 				s = (char *)realloc(s,strlen(s) + st + 1);
@@ -382,6 +385,7 @@ int _parse_file(CMimeMessage_T *message, FILE *fp) {
 			}
 		}
 	}	
+
 
 	if (message->boundary==NULL) {
 		part = cmime_part_new();
@@ -432,7 +436,7 @@ char *cmime_message_to_string(CMimeMessage_T *message) {
 	
 	e = cmime_list_head(message->parts);
 	nl = _cmime_internal_determine_linebreak(((CMimePart_T *)cmime_list_data(e))->content);
-	
+
 	e = cmime_list_head(message->headers);
 	while(e != NULL) {
 		h = (CMimeHeader_T *)cmime_list_data(e);
@@ -447,9 +451,6 @@ char *cmime_message_to_string(CMimeMessage_T *message) {
 	if (message->gap != NULL) {
 		out = (char *)realloc(out,strlen(out) + strlen(message->gap) + sizeof(char));
 		strcat(out,message->gap);
-	} else {
-		out = (char *)realloc(out,strlen(out) + strlen(nl) + sizeof(char));
-		strcat(out,nl);
 	}
 	
 	e = cmime_list_head(message->parts);

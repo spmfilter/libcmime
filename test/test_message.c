@@ -15,6 +15,8 @@
  * License along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+#define _GNU_SOURCE
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -106,7 +108,27 @@ int main (int argc, char const *argv[]) {
 	cmime_message_free(msg);
 
 	msg = cmime_message_new();
-	retval = cmime_message_from_file(&msg,"/Users/ast/Desktop/Eicar.eml");
+	asprintf(&s,"%s/m0001.txt",SAMPLES_DIR);
+	retval = cmime_message_from_file(&msg,s);
+	if (retval != 0)
+		return retval;
+	free(s);
+/*
+	elem = cmime_list_tail(msg->parts);
+	if (elem) {
+		part = (CMimePart_T *)cmime_list_data(elem);
+
+		s = cmime_part_to_string(part);
+		printf("%s\n", s);
+	} else {
+		printf("noe\n");
+	}*/
+	s = cmime_message_to_string(msg);
+		
+	printf("[%s]\n", s);
+	cmime_message_free(msg);
+	
+/*	retval = cmime_message_from_file(&msg,"/Users/ast/Desktop/Eicar.eml");
 	elem = cmime_list_tail(msg->parts);
 	part = (CMimePart_T *)cmime_list_data(elem);
 	s = cmime_part_to_string(part);
@@ -122,6 +144,6 @@ int main (int argc, char const *argv[]) {
 	s = cmime_message_to_string(msg);
 	assert(s);
 	free(s);
-	cmime_message_free(msg);
+	cmime_message_free(msg);*/
 	return(0);
 }
