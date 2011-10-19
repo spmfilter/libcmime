@@ -57,6 +57,7 @@ int main (int argc, char const *argv[]) {
 	CMimeListElem_T *elem;
 	int retval = 0;
 	FILE *fp = NULL;
+	FILE *fp2 = NULL;
 	long size = 0;
 	int i = 0;
 	
@@ -150,7 +151,15 @@ int main (int argc, char const *argv[]) {
 		fread(s, 1, size, fp);
 		if(ferror(fp))
 			return(-1);
-
+		
+		asprintf(&s2,"out_%s",test_files[i]);
+		fp2 = fopen(s2,"wb");
+		fwrite(msg_string,1,size,fp2);
+		fclose(fp2);
+		free(s2);
+		
+		
+		printf("S:\n[%s]\n", msg_string);
 		assert(strcmp(msg_string,s)==0);
 		free(s);
 		free(msg_string);

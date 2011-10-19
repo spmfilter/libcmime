@@ -27,7 +27,7 @@ extern "C" {
 #define PART_CONTENT_TYPE_PATTERN "Content-Type:"
 #define PART_CONTENT_DISPOSITION_PATTERN "Content-Disposition:"
 #define PART_CONTENT_TRANSFER_ENCODING_PATTERN "Content-Transfer-Encoding:"
-#define PART_CONTENT_ID_PATTERN "Content-Id:"
+#define PART_CONTENT_ID_PATTERN "Content-ID:"
 
 #define MIMETYPE_DEFAULT "application/octet-stream"
 #define MIMETYPE_TEXT_PLAIN "text/plain"

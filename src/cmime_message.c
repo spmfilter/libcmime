@@ -280,15 +280,18 @@ char *cmime_message_generate_boundary(void) {
 /* extract boundary from given header string */
 char *_get_boundary(char *s) {
 	char *boundary = NULL;
+	char *nl = NULL;
 	int pos = 0;
 	
+	nl = _cmime_internal_determine_linebreak(s);
 	s = strstr(s,"=");
 	if (*++s=='"') 
 		s++;
 
 	boundary = (char *)calloc(strlen(s) + sizeof(char),sizeof(char));
 	while(*s!='\0') {
-		if ((*s!='"') && (*s!='\r') && (*s!='\n'))
+		//if ((*s!='"') && (*s!='\r') && (*s!='\n'))
+		if ((*s!='"') && (strncmp(s,nl,strlen(nl))!=0))
 			boundary[pos++] = *s;
 		else {
 			boundary[pos] = '\0';
@@ -473,14 +476,14 @@ char *cmime_message_to_string(CMimeMessage_T *message) {
 	}
 	
 	if(message->boundary != NULL) {
-		asprintf(&s,"--%s--",message->boundary);
+		asprintf(&s,"--%s--%s",message->boundary,nl);
 		out = (char *)realloc(out,strlen(out) + strlen(s) + sizeof(char));
 		strcat(out,s);
 		free(s);
-		if (strcmp(nl,CRLF)==0) {
-			out = (char *)realloc(out,strlen(out) + strlen(CR) + sizeof(char));
-			strcat(out,CR);
-		}
+//		if (strcmp(nl,CRLF)==0) {
+//			out = (char *)realloc(out,strlen(out) + strlen(CR) + sizeof(char));
+//			strcat(out,CR);
+//		}
 	}
 	
 	return(out);

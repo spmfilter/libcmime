@@ -42,9 +42,11 @@ char *_parse_header(char *p) {
 	char *out = NULL;
 	int i = 0;
 	char *nl = _cmime_internal_determine_linebreak(p);
-	
+	char *brkb = NULL;
 	tf = cp = strdup(p);
-	while ((token = strsep(&cp, nl)) != NULL) {
+	
+	for (token = strtok_r(cp,nl,&brkb); token; token = strtok_r(NULL,nl,&brkb)) {	
+
 		if (i==0) {
 			asprintf(&out,"%s%s",token,nl);
 		} else {
@@ -129,11 +131,11 @@ void cmime_part_set_content_id(CMimePart_T *part, const char *s) {
 	assert(part);
 	assert(s);
 	
-	_cmime_internal_set_linked_header_value(part->headers,"Content-Id",s);
+	_cmime_internal_set_linked_header_value(part->headers,"Content-ID",s);
 }
 
 char *cmime_part_get_content_id(CMimePart_T *part) {
-	return(_cmime_internal_get_linked_header_value(part->headers,"Content-Id"));
+	return(_cmime_internal_get_linked_header_value(part->headers,"Content-ID"));
 }
 
 void cmime_part_set_content(CMimePart_T *part, const char *s) {
@@ -188,7 +190,7 @@ char *cmime_part_to_string(CMimePart_T *part) {
 	
 	if (with_headers==1) {
 		out = (char *)realloc(out,strlen(out) + strlen(nl) + 2);
-		strcat(out,CRLF);
+		strcat(out,nl);
 	} 
 
 	out = (char *)realloc(out,strlen(out) + strlen(content) + 2);
@@ -370,4 +372,4 @@ int cmime_part_from_string(CMimePart_T **part, const char *content) {
 	
 	return(0);
 }
-                                                                                                     
+                                                                                          
