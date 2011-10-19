@@ -5,7 +5,7 @@ project(libcmime)
 # check for build.properties
 include("${CMAKE_SOURCE_DIR}/build.properties" OPTIONAL)
 
-ENABLE_TESTING()
+enable_testing()
 
 # check prefix
 if(PREFIX)
@@ -33,13 +33,15 @@ if(ENABLE_DEBUG)
 	add_definitions(-DDEBUG -g -O0 -Wall)
 endif(ENABLE_DEBUG)
 
+find_package(Flex REQUIRED)
+find_package(Bison REQUIRED)
 
 find_program(FILE_EXECUTABLE NAME file PATHS ENV PATH)
 if(NOT FILE_EXECUTABLE)
 	message(FATAL_ERROR "Could not find file executable")
 endif(NOT FILE_EXECUTABLE)
 
-CONFIGURE_FILE(
+configure_file(
 	${CMAKE_CURRENT_SOURCE_DIR}/src/cmime_config.h.cmake
 	${CMAKE_CURRENT_SOURCE_DIR}/src/cmime_config.h
 )
