@@ -92,3 +92,23 @@ char *_cmime_internal_get_linked_header_value(CMimeList_T *l, const char *key) {
 	
 	return(NULL);
 }
+
+CMimeHeader_T *_cmime_internal_get_linked_header(CMimeList_T *l, const char *key) {
+	CMimeListElem_T *e;
+	CMimeHeader_T *h;
+	
+	assert(l);
+	assert(key);
+	
+	e = cmime_list_head(l);
+	while(e != NULL) {
+		h = (CMimeHeader_T *)cmime_list_data(e);
+		if (strcasecmp(cmime_header_get_name(h),key)==0) {
+			return(h);
+		}	
+		
+		e = e->next;
+	}
+	
+	return(NULL);
+}

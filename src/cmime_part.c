@@ -372,4 +372,3 @@ int cmime_part_from_string(CMimePart_T **part, const char *content) {
 	
 	return(0);
 }
-                                                                                          

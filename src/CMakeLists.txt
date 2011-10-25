@@ -1,5 +1,9 @@
-BISON_TARGET(cmime_parser cmime_parser.y ${CMAKE_CURRENT_BINARY_DIR}/cmime_parser.tab.c)
-FLEX_TARGET(cmime_scanner cmime_scanner.l ${CMAKE_CURRENT_BINARY_DIR}/lex.yy.c)
+#BISON_TARGET(cmime_parser cmime_parser.y ${CMAKE_CURRENT_BINARY_DIR}/cmime_parser.tab.c)
+#FLEX_TARGET(cmime_scanner cmime_scanner.l ${CMAKE_CURRENT_BINARY_DIR}/lex.yy.c)
+
+BISON_TARGET(cmime_parser cmime_parser.y ${CMAKE_CURRENT_SOURCE_DIR}/cmime_parser.tab.c)
+FLEX_TARGET(cmime_scanner cmime_scanner.l ${CMAKE_CURRENT_SOURCE_DIR}/lex.yy.c)
+
 ADD_FLEX_BISON_DEPENDENCY(cmime_scanner cmime_parser)
 
 include_directories(
@@ -22,7 +26,7 @@ set(LIBCMIME_SRC
 )
 
 add_library(cmime SHARED ${LIBCMIME_SRC})
-target_link_libraries(cmime fl y)
+target_link_libraries(cmime ${FLEX_LIBRARIES})
 set_property(TARGET cmime PROPERTY PUBLIC_HEADER cmime.h)
 set_property(TARGET cmime PROPERTY VERSION ${CMIME_VERSION})
 set_property(TARGET cmime PROPERTY SOVERSION ${CMIME_VERSION})

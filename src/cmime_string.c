@@ -102,10 +102,21 @@ char *cmime_string_strip(char *s) {
 }
 
 char *cmime_string_chomp(char *s) {
-	assert(s);
 	char *p = NULL;
-	p = strrchr(s,'\n');
-	if(p) *p = '\0';
+
+	switch(s[strlen(s)-1]) {
+		case '\n':
+			if((p = strrchr(s,'\r')) != NULL ) *p = '\0';
+			else *(p = strrchr(s,'\n')) = '\0';
+			break;
+		case '\r':
+			*(p = strrchr(s,'\r')) = '\0';
+			break;
+		case '\x0c':
+			*(p = strrchr(s,'\x0c')) = '\0';
+			break;
+	}
+
 	return(s);
 }
 

@@ -61,6 +61,7 @@ CMimeMessage_T *cmime_message_new(void) {
 	message->tz_offset = 0;
 	message->boundary = NULL;
 	message->gap = NULL;
+	message->linebreak = NULL;
 
 	if (cmime_list_new(&message->parts,_parts_destroy)!=0) 
 			return(NULL);
@@ -107,6 +108,10 @@ char *cmime_message_get_message_id(CMimeMessage_T *message) {
 	return(_cmime_internal_get_linked_header_value(message->headers,"Message-ID"));
 }
 
+/*
+ * TODO: 
+ * split header to name/value?!
+ */
 int cmime_message_set_header(CMimeMessage_T *message, const char *header) {
 	char *cp = NULL;
 	char *tf = NULL;
@@ -441,7 +446,10 @@ char *cmime_message_to_string(CMimeMessage_T *message) {
 	out = (char *)calloc(sizeof(char),sizeof(char));
 	
 	e = cmime_list_head(message->parts);
-	nl = _cmime_internal_determine_linebreak(((CMimePart_T *)cmime_list_data(e))->content);
+	if (e != NULL)
+		nl = _cmime_internal_determine_linebreak(((CMimePart_T *)cmime_list_data(e))->content);
+	else
+		nl = CRLF;
 
 	e = cmime_list_head(message->headers);
 	while(e != NULL) {

@@ -2,6 +2,9 @@
 %s BODY HEADER
 
 %{
+	#include <string.h>
+	#include "cmime_message.h"
+	#include "cmime_internal.h"
 	#include "cmime_parser.tab.h"
 %}
 
@@ -13,29 +16,26 @@ LINE_PATTERN						(.*{LF_PATTERN})
 %%
 
 <BODY>{LINE_PATTERN}	{
-	printf("body line: %s\n", yytext);
 	yylval.string = yytext;
 	return LINE;
 }
 
 {HEADERNAME_PATTERN} { 
 	BEGIN HEADER;
-	strtok(yytext, ":");
-	printf("HEADERNAME: [%s]\n",yytext);
-	yylval.string = yytext;
+	yylval.string = strsep(&yytext,":");
 	return HEADERNAME;   
 }
 
 <HEADER>{LINE_PATTERN} {
-	printf("HEADER IS: [%s]",yytext); 
-	BEGIN INITIAL;
+/*	yylval.string = strsep(&yytext,_cmime_internal_determine_linebreak(yytext));    */
 	yylval.string = yytext;
+	BEGIN INITIAL;
 	return HEADERBODY;  
 }
 
 {CONTINUATION_PATTERN}	{
-	printf("CONTINUES: [%s]\n", yytext);
-	yylval.string = yytext; 
+/*	yylval.string = strsep(&yytext,_cmime_internal_determine_linebreak(yytext));  */
+	yylval.string = yytext;
 	return CONTINUATION;   
 }
 

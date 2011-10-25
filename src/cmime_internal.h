@@ -22,7 +22,10 @@
 extern "C" {
 #endif
 
+#include <stdio.h>
 #include "cmime_list.h"
+#include "cmime_message.h"
+#include "cmime_header.h"
 
 #define PART_CONTENT_TYPE_PATTERN "Content-Type:"
 #define PART_CONTENT_DISPOSITION_PATTERN "Content-Disposition:"
@@ -46,6 +49,10 @@ char *_cmime_internal_determine_linebreak(const char *s);
 
 void _cmime_internal_set_linked_header_value(CMimeList_T *l, const char *key, const char *value);
 char *_cmime_internal_get_linked_header_value(CMimeList_T *l, const char *key);
+CMimeHeader_T *_cmime_internal_get_linked_header(CMimeList_T *l, const char *key);
+
+void yyrestart (FILE *input_file);
+int yyparse (CMimeMessage_T *msg);
 
 #ifdef __cplusplus
 }
