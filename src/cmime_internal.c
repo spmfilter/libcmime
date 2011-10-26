@@ -33,7 +33,7 @@ void _cmime_internal_header_destroy(void *data) {
 
 char *_cmime_internal_determine_linebreak(const char *s) {
 	assert(s);
-	
+	printf("INPUT: [%s]\n",s);
 	if (strstr(s,CRLF)!=NULL)
 		return(CRLF);
 	else if(strstr(s,LF)!=NULL)
@@ -53,10 +53,10 @@ void _cmime_internal_set_linked_header_value(CMimeList_T *l, const char *key, co
 	assert(l);
 	assert(key);
 	assert(value);
-
+	
 	ptemp = (char *)value;		
 	ptemp = cmime_string_strip(ptemp);
-	
+
 	e = cmime_list_head(l);
 	while(e != NULL) {
 		h = (CMimeHeader_T *)cmime_list_data(e);

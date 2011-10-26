@@ -5,6 +5,7 @@
 	#include <stdarg.h>
 	#include <string.h>
 	
+	#include "cmime_string.h"
 	#include "cmime_message.h"
 	#include "cmime_list.h"
 	#include "cmime_internal.h"
@@ -17,8 +18,6 @@
 %parse-param {CMimeMessage_T *msg}
 
 %union {
-	CMimeMessage_T *m;
-	CMimeHeader_T *h;
 	char *string;
 }
 
@@ -34,58 +33,35 @@
 
 message:
 		header EMPTY_LINE body { 
-			printf("BODY\n");
+			/* printf("BODY\n"); */
 		}
 	;
 	
 header: 
-		headerline { 
-			printf("HEADERLINE: [%s]\n",$1);
-		}
-	|	header headerline { 
-			printf("HEADERLINE LOOP: [%s]\n",$2);
-		}
+		headerline { /* nothing */	}
+	|	header headerline 
 	;
 	
 headerline:
 		HEADERNAME HEADERBODY {
-			if (msg->linebreak == NULL)
-				msg->linebreak = _cmime_internal_determine_linebreak($2);
+			char *t = $2;
+			if (msg->linebreak == NULL) 
+				msg->linebreak = _cmime_internal_determine_linebreak(t);
 			
-		//	char *t;
-		//	t = 
-		//	$2 = strsep(&yytext,);
-		//	$2 = str
-			_cmime_internal_set_linked_header_value(msg->headers,$1,$2); 
-			printf("ADDED HEADER [%s] [%s]\n",$1,$2);
+			t = strsep(&t,msg->linebreak);
+			_cmime_internal_set_linked_header_value(msg->headers,$1,t); 
+			
 		}
-	| HEADERNAME HEADERBODY continuations {
-		char *t;
-		asprintf(&t,"%s%s",$2,$3);
-		_cmime_internal_set_linked_header_value(msg->headers,$1,t);
-		printf("T: [%s]\n",t);
-//		printf("$1: [%s] $2: [%s] $3 [%s]\n",$1,$2,$3);
-/*			char *t;
-			char *nl;
-			nl = _cmime_internal_determine_linebreak($3);
-			asprintf(&t,"%s%s%s",$2,nl,$3);
-			printf("C: [%s]\n",t);
-			_cmime_internal_set_linked_header_value(msg->headers,$1,t);
-			free(t); */
+	| HEADERNAME HEADERBODY continuations {		
+		_cmime_internal_set_linked_header_value(msg->headers,$1,$2);
 		}
 	;
 
 continuations:
-		CONTINUATION {
-			printf("CONTINUATION [%s]\n",$1);
-		}
+		CONTINUATION { /* nothing */ }
 	| continuations CONTINUATION {
-		printf("continuations [%s] [%s]\n",$1, $2);
-	/*		char *t;
-			asprintf(&t,"%s%s",$1,$2);	
-			$$ = t;
-			printf("continuations [%s] [%s]\n",$1, $2);
-			printf("T2 [%s]\n",t); */
+			$1 = cmime_string_chomp($1);
+			$$ = $1; 
 		}
 	;
 	

@@ -1,8 +1,9 @@
-%option noyywrap case-insensitive yylineno
+%option noyywrap yylineno
 %s BODY HEADER
 
 %{
 	#include <string.h>
+	#include "cmime_string.h"
 	#include "cmime_message.h"
 	#include "cmime_internal.h"
 	#include "cmime_parser.tab.h"
@@ -12,8 +13,8 @@ LF_PATTERN							(\r\n)|(\r)|(\n)|(\x0c)
 HEADERNAME_PATTERN			([A-Za-z0-9-]*:\ )
 CONTINUATION_PATTERN		(\t.*{LF_PATTERN})
 LINE_PATTERN						(.*{LF_PATTERN})
-
 %%
+
 
 <BODY>{LINE_PATTERN}	{
 	yylval.string = yytext;
@@ -27,14 +28,13 @@ LINE_PATTERN						(.*{LF_PATTERN})
 }
 
 <HEADER>{LINE_PATTERN} {
-/*	yylval.string = strsep(&yytext,_cmime_internal_determine_linebreak(yytext));    */
-	yylval.string = yytext;
 	BEGIN INITIAL;
+	yylval.string = yytext;
+	
 	return HEADERBODY;  
 }
 
 {CONTINUATION_PATTERN}	{
-/*	yylval.string = strsep(&yytext,_cmime_internal_determine_linebreak(yytext));  */
 	yylval.string = yytext;
 	return CONTINUATION;   
 }
@@ -44,6 +44,6 @@ LINE_PATTERN						(.*{LF_PATTERN})
 	return EMPTY_LINE;   
 }
 
-. { /* nothing */ }
+. { /* nothing */ } 
 
 %%
