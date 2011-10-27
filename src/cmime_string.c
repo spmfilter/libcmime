@@ -121,7 +121,7 @@ char *cmime_string_chomp(char *s) {
 }
 
 char *cmime_string_strstr_last(const char *s1, const char *s2) {
-	char* strp;
+	char *strp;
 	int len1, len2;
 
 	assert(s1);
@@ -147,3 +147,28 @@ char *cmime_string_strstr_last(const char *s1, const char *s2) {
 	return(NULL);
 }
 
+char *cmime_string_strsep_last(const char *s, const char *sep) {
+	int count = 0;
+	int seen = 0;
+	int pos = 0;
+	int len = strlen(sep);
+	char *out = NULL;
+	const char *it = s;
+	
+	while(*it != '\0') { 
+		if (strncmp(it,sep,len)==0) count++;
+		*it++;
+	}
+	
+	it = s;
+	out = (char *)malloc(strlen(s) + sizeof(char));
+	while(*it != '\0') {
+		if (strncmp(it,sep,len)==0) {
+			seen++;
+			if (seen == count) break;
+		} 		
+		out[pos++] = *it++;
+	}
+	
+	return(out);
+}

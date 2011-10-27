@@ -121,6 +121,8 @@ char *cmime_string_chomp(char *s);
  */
 char *cmime_string_strstr_last(const char *s1, const char *s2);
 
+char *cmime_string_strsep_last(const char *s, const char *sep);
+
 #ifdef __cplusplus
 }
 #endif

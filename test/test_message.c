@@ -65,14 +65,8 @@ int main (int argc, char const *argv[]) {
 	out = cmime_message_to_string(msg);
 	printf("OUT:\n%s",out);
 	
-<<<<<<< HEAD
-/*	CMimeMessage_T *msg = cmime_message_new();
-=======
-	fclose(fp);
-	
 /*	
 	CMimeMessage_T *msg = cmime_message_new();
->>>>>>> - added first flex/bison stuff
 	char *s = NULL;
 	char *s2 = NULL;
 	char *msg_string = NULL;

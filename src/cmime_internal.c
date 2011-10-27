@@ -33,7 +33,7 @@ void _cmime_internal_header_destroy(void *data) {
 
 char *_cmime_internal_determine_linebreak(const char *s) {
 	assert(s);
-	printf("INPUT: [%s]\n",s);
+
 	if (strstr(s,CRLF)!=NULL)
 		return(CRLF);
 	else if(strstr(s,LF)!=NULL)

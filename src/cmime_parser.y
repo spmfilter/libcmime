@@ -39,29 +39,41 @@ message:
 	
 header: 
 		headerline { /* nothing */	}
-	|	header headerline 
+	|	header headerline { /* nothing */ } 
 	;
 	
 headerline:
 		HEADERNAME HEADERBODY {
 			char *t = $2;
 			if (msg->linebreak == NULL) 
-				msg->linebreak = _cmime_internal_determine_linebreak(t);
+				msg->linebreak = _cmime_internal_determine_linebreak($2);
 			
 			t = strsep(&t,msg->linebreak);
+//			printf("1: HEADERNAME [%s] HEADERBODY [%s]\n",$1,t);
 			_cmime_internal_set_linked_header_value(msg->headers,$1,t); 
-			
 		}
-	| HEADERNAME HEADERBODY continuations {		
-		_cmime_internal_set_linked_header_value(msg->headers,$1,$2);
+	| HEADERNAME HEADERBODY continuations {	
+//			printf("2: HEADERNAME [%s] HEADERBODY [%s] continuations [%s]\n",$1,$2,$3);	
+			char *t;
+			t = cmime_string_strsep_last($2,msg->linebreak);
+			_cmime_internal_set_linked_header_value(msg->headers,$1,t);
+			free(t);
 		}
 	;
 
 continuations:
-		CONTINUATION { /* nothing */ }
+		CONTINUATION { 
+//			printf("3: CONTINUATION [%s]\n",$1);
+//			$1 = cmime_string_chomp($1);
+//			$$ = $1; 
+		}
 	| continuations CONTINUATION {
-			$1 = cmime_string_chomp($1);
-			$$ = $1; 
+//			printf("4: continuations [%s] CONTINUATION [%s]\n",$1,$2);
+			
+//			char *t;
+//			$2 = cmime_string_chomp($2);
+//			asprintf(&t,"%s%s%s",$1,msg->linebreak,$2); 
+//			$$ = t;
 		}
 	;
 	

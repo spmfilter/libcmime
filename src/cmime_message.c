@@ -84,6 +84,9 @@ void cmime_message_free(CMimeMessage_T *message) {
 	if (message->gap!=NULL)
 		free(message->gap);
 	
+	if (message->linebreak!=NULL)
+		free(message->linebreak);
+	
 	cmime_list_free(message->parts);
 	
 	free(message);
