@@ -7,14 +7,18 @@
 	
 	#include "cmime_string.h"
 	#include "cmime_message.h"
-	#include "cmime_list.h"
 	#include "cmime_internal.h"
+	#include "cmime_flbi.h"
 	
-	extern int yylex();
+/*	extern int yylex();
 	void yyerror(CMimeMessage_T *msg,char *s,...);
-	extern int yylineno; 
+	extern int yylineno;  */
+	
 %}
 
+%pure-parser
+%lex-param {void * scanner}
+%parse-param {void * scanner}
 %parse-param {CMimeMessage_T *msg}
 
 %union {
@@ -46,15 +50,15 @@ headerline:
 		HEADERNAME HEADERBODY {
 			char *t = $2;
 			if (msg->linebreak == NULL) 
-				msg->linebreak = _cmime_internal_determine_linebreak($2);
+				msg->linebreak = strdup(_cmime_internal_determine_linebreak($2));
 			
 			t = strsep(&t,msg->linebreak);
 //			printf("1: HEADERNAME [%s] HEADERBODY [%s]\n",$1,t);
-			_cmime_internal_set_linked_header_value(msg->headers,$1,t); 
+			_cmime_internal_set_linked_header_value(msg->headers,$1,t);
 		}
 	| HEADERNAME HEADERBODY continuations {	
 //			printf("2: HEADERNAME [%s] HEADERBODY [%s] continuations [%s]\n",$1,$2,$3);	
-			char *t;
+			char *t = NULL;
 			t = cmime_string_strsep_last($2,msg->linebreak);
 			_cmime_internal_set_linked_header_value(msg->headers,$1,t);
 			free(t);
@@ -90,7 +94,7 @@ void yyerror(CMimeMessage_T *msg,char *s,...) {
   va_list ap;
   va_start(ap, s);
 
-  fprintf(stderr, "%d: error: ", yylineno);
+  fprintf(stderr, "error: ");
   vfprintf(stderr, s, ap);
   fprintf(stderr, "\n");
 }

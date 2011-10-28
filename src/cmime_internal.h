@@ -51,9 +51,6 @@ void _cmime_internal_set_linked_header_value(CMimeList_T *l, const char *key, co
 char *_cmime_internal_get_linked_header_value(CMimeList_T *l, const char *key);
 CMimeHeader_T *_cmime_internal_get_linked_header(CMimeList_T *l, const char *key);
 
-void yyrestart (FILE *input_file);
-int yyparse (CMimeMessage_T *msg);
-
 #ifdef __cplusplus
 }
 #endif

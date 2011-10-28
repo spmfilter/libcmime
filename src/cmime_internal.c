@@ -71,6 +71,7 @@ void _cmime_internal_set_linked_header_value(CMimeList_T *l, const char *key, co
 	cmime_header_set_name(h,key);
 	cmime_header_set_value(h,ptemp,0);
 	cmime_list_append(l,h);
+	
 	return;
 }
 

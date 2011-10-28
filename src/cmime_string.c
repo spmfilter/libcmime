@@ -169,6 +169,6 @@ char *cmime_string_strsep_last(const char *s, const char *sep) {
 		} 		
 		out[pos++] = *it++;
 	}
-	
+	out[pos] = '\0';
 	return(out);
 }

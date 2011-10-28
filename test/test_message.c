@@ -29,7 +29,7 @@
 #include "../src/cmime_part.h"
 
 #include "../src/cmime_parser.tab.h"
-#include "../src/cmime_internal.h"
+#include "../src/cmime_flbi.h"
 
 #include "test_data.h"
 
@@ -61,9 +61,11 @@ int main (int argc, char const *argv[]) {
 
 	yyrestart(fp);
 	yyparse(msg);
-	
 	out = cmime_message_to_string(msg);
 	printf("OUT:\n%s",out);
+	free(out);
+	cmime_message_free(msg);
+	fclose(fp);
 	
 /*	
 	CMimeMessage_T *msg = cmime_message_new();
@@ -185,6 +187,6 @@ int main (int argc, char const *argv[]) {
 		cmime_message_free(msg);
 		printf("passed!\n");
 	}
-
+*/
 	return(0);
 }

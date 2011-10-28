@@ -1,11 +1,12 @@
-%option noyywrap yylineno
+%option noyywrap 
+%option reentrant 
+%option nounput
+%option bison-bridge
+
 %s BODY HEADER
 
 %{
 	#include <string.h>
-	#include "cmime_string.h"
-	#include "cmime_message.h"
-	#include "cmime_internal.h"
 	#include "cmime_parser.tab.h"
 %}
 
@@ -17,25 +18,25 @@ LINE_PATTERN						(.*{LF_PATTERN})
 
 
 <BODY>{LINE_PATTERN}	{
-	yylval.string = yytext;
+	yylval = yytext;
 	return LINE;
 }
 
 {HEADERNAME_PATTERN} { 
 	BEGIN HEADER;
-	yylval.string = strsep(&yytext,":");
+	yylval = strsep(&yytext,":");
 	return HEADERNAME;   
 }
 
 <HEADER>{LINE_PATTERN} {
 	BEGIN INITIAL;
-	yylval.string = yytext;
+	yylval = yytext;
 	
 	return HEADERBODY;  
 }
 
 {CONTINUATION_PATTERN}	{
-	yylval.string = yytext;
+	yylval = yytext;
 	return CONTINUATION;   
 }
 
