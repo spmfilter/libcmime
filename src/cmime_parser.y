@@ -90,7 +90,7 @@ body:
 	
 %%
 
-void yyerror(CMimeMessage_T *msg,char *s,...) {
+void yyerror(char *s,...) {
   va_list ap;
   va_start(ap, s);
 

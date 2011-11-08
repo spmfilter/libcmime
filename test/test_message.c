@@ -48,26 +48,32 @@ char test_files[54][10] = {
 };
 
 int main (int argc, char const *argv[]) {
-	CMimeMessage_T *msg = cmime_message_new();
-	FILE *fp = NULL;
+//	CMimeMessage_T *msg = cmime_message_new();
+	CMimeMessage_T *msg = NULL;
+//	FILE *fp = NULL;
 	char *fname = NULL;
 	char *out = NULL;
 	
 //	asprintf(&fname,"%s/%s",SAMPLES_DIR,test_files[0]);
 	asprintf(&fname,"%s/test.txt",SAMPLES_DIR);
-	if ((fp = fopen(fname, "rb")) == NULL) 
-		return(-1);
+//	if ((fp = fopen(fname, "rb")) == NULL) 
+//		return(-1);
+	
+	msg = cmime_scanner_read_file(fname);
 	free(fname);
 
-	yyrestart(fp);
-	yyparse(msg);
 	out = cmime_message_to_string(msg);
 	printf("OUT:\n%s",out);
 	free(out);
 	cmime_message_free(msg);
+	
+
+/*	
+	yyrestart(fp);
+	yyparse(msg);
 	fclose(fp);
 	
-/*	
+	
 	CMimeMessage_T *msg = cmime_message_new();
 	char *s = NULL;
 	char *s2 = NULL;

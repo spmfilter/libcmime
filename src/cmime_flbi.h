@@ -30,10 +30,11 @@ extern "C" {
 
 #include "cmime_message.h"
 
-void yyrestart (FILE *input_file);
-int yyparse(CMimeMessage_T *msg);
+//void yyrestart (FILE *input_file);
+int yyparse (void *scanner, CMimeMessage_T *msg); 
 extern int yylex();
-void yyerror(CMimeMessage_T *msg,char *s,...);
+void yyerror(char *s,...);
+CMimeMessage_T *cmime_scanner_read_file(const char *filename); 
 
 #ifdef __cplusplus
 }

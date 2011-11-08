@@ -6,7 +6,11 @@
 %s BODY HEADER
 
 %{
+	#include <stdio.h>
 	#include <string.h>
+	
+	#include "cmime_flbi.h"
+	#include "cmime_message.h"
 	#include "cmime_parser.tab.h"
 %}
 
@@ -18,25 +22,25 @@ LINE_PATTERN						(.*{LF_PATTERN})
 
 
 <BODY>{LINE_PATTERN}	{
-	yylval = yytext;
+	yylval->string = yytext;
 	return LINE;
 }
 
 {HEADERNAME_PATTERN} { 
 	BEGIN HEADER;
-	yylval = strsep(&yytext,":");
+	yylval->string = strsep(&yytext,":");
 	return HEADERNAME;   
 }
 
 <HEADER>{LINE_PATTERN} {
 	BEGIN INITIAL;
-	yylval = yytext;
+	yylval->string = yytext;
 	
 	return HEADERBODY;  
 }
 
 {CONTINUATION_PATTERN}	{
-	yylval = yytext;
+	yylval->string = yytext;
 	return CONTINUATION;   
 }
 
@@ -48,3 +52,26 @@ LINE_PATTERN						(.*{LF_PATTERN})
 . { /* nothing */ } 
 
 %%
+
+CMimeMessage_T *cmime_scanner_read_file(const char *filename) {
+	CMimeMessage_T *msg = cmime_message_new();
+	yyscan_t scanner;
+	FILE *fp = NULL;
+	
+	if(yylex_init(&scanner)) { 
+		printf("no scanning today\n"); 
+		return(NULL); 
+	}
+	
+	if ((fp = fopen(filename, "rb")) == NULL) 
+		return(NULL);
+
+	
+	yyrestart(fp,scanner);
+	yyparse(scanner,msg);
+
+	fclose(fp);
+	yylex_destroy(scanner);
+
+	return(msg);
+}
