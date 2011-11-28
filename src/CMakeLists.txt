@@ -13,6 +13,7 @@ include_directories(
 
 set(LIBCMIME_SRC 
 	cmime_address.c
+	cmime_flbi.c
 	cmime_list.c
 	cmime_message.c
 	cmime_header.c

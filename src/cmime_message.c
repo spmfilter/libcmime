@@ -443,24 +443,25 @@ char *cmime_message_to_string(CMimeMessage_T *message) {
 	CMimeHeader_T *h = NULL;
 	CMimePart_T *p = NULL;
 	char *s = NULL;
-	char *nl = NULL;
+//	char *nl = NULL;
 	
 	assert(message);
 	out = (char *)calloc(sizeof(char),sizeof(char));
 	
 	e = cmime_list_head(message->parts);
-	if (e != NULL)
-		nl = _cmime_internal_determine_linebreak(((CMimePart_T *)cmime_list_data(e))->content);
-	else
-		nl = CRLF;
+
+//	if (e != NULL)
+//		nl = _cmime_internal_determine_linebreak(((CMimePart_T *)cmime_list_data(e))->content);
+//	else
+//		nl = CRLF;
 
 	e = cmime_list_head(message->headers);
 	while(e != NULL) {
 		h = (CMimeHeader_T *)cmime_list_data(e);
 		s = cmime_header_to_string(h);
-		out = (char *)realloc(out,strlen(out) + strlen(s) + strlen(nl) + sizeof(char));
+		out = (char *)realloc(out,strlen(out) + strlen(s) + strlen(message->linebreak) + sizeof(char));
 		strcat(out,s);
-		strcat(out,nl);
+		strcat(out,message->linebreak);
 		free(s);
 		e = e->next;
 	}
@@ -474,7 +475,7 @@ char *cmime_message_to_string(CMimeMessage_T *message) {
 	while(e != NULL) {
 		p = (CMimePart_T *)cmime_list_data(e);
 		if (message->boundary != NULL) {
-			asprintf(&s,"--%s%s",message->boundary,nl);
+			asprintf(&s,"--%s%s",message->boundary,message->linebreak);
 			out = (char *)realloc(out,strlen(out) + strlen(s) + sizeof(char));
 			strcat(out,s);
 			free(s);
@@ -487,7 +488,7 @@ char *cmime_message_to_string(CMimeMessage_T *message) {
 	}
 	
 	if(message->boundary != NULL) {
-		asprintf(&s,"--%s--%s",message->boundary,nl);
+		asprintf(&s,"--%s--%s",message->boundary,message->linebreak);
 		out = (char *)realloc(out,strlen(out) + strlen(s) + sizeof(char));
 		strcat(out,s);
 		free(s);

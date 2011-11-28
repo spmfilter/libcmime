@@ -70,7 +70,7 @@ CMimePart_T *cmime_part_new(void) {
 	
 	if (cmime_list_new(&part->headers,_cmime_internal_header_destroy)!=0)
 		return(NULL);
-		
+
 	part->content = NULL;
 	
 	return(part);

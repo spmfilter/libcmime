@@ -28,7 +28,6 @@
 #include "../src/cmime_list.h"
 #include "../src/cmime_part.h"
 
-#include "../src/cmime_parser.tab.h"
 #include "../src/cmime_flbi.h"
 
 #include "test_data.h"
@@ -54,17 +53,21 @@ int main (int argc, char const *argv[]) {
 	char *fname = NULL;
 	char *out = NULL;
 	
-//	asprintf(&fname,"%s/%s",SAMPLES_DIR,test_files[0]);
-	asprintf(&fname,"%s/test.txt",SAMPLES_DIR);
+	asprintf(&fname,"%s/%s",SAMPLES_DIR,test_files[10]);
+//	asprintf(&fname,"%s/test.txt",SAMPLES_DIR);
 //	if ((fp = fopen(fname, "rb")) == NULL) 
 //		return(-1);
 	
-	msg = cmime_scanner_read_file(fname);
+	msg = cmime_scanner_scan_file(fname);
 	free(fname);
 
-	out = cmime_message_to_string(msg);
-	printf("OUT:\n%s",out);
-	free(out);
+//	out = cmime_message_to_string(msg);
+//	printf("OUT:\n%s",out);
+//	free(out);
+	
+//	printf("GAP: [%s]\n",msg->gap);
+	
+//	printf("BOUNDARY: [%s]\n",msg->boundary);
 	cmime_message_free(msg);
 	
 

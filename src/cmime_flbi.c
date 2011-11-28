@@ -15,34 +15,33 @@
  * License along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/*!
- * @file cmime_flbi.h
- * @brief -
- *
- */
+#define _GNU_SOURCE
 
-#ifndef _CMIME_FLBI_H
-#define _CMIME_FLBI_H
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <assert.h>
 
-#ifdef __cplusplus
-extern "C" {
-#endif
+#include "cmime_flbi.h"
 
-#include "cmime_message.h"
-#include "cmime_part.h"
-#include "cmime_parser.tab.h"
-
-//void yyrestart (FILE *input_file);
-int yyparse (void *scanner, CMimeMessage_T *msg); 
-extern int yylex();
-//void yyerror(char *s,...);
-void yyerror(YYLTYPE *yyllocp, void *scanner, CMimeMessage_T *msg, const char *s, ...);
-CMimeMessage_T *cmime_scanner_scan_file(const char *filename); 
-
-void cmime_flbi_check_boundary(CMimeMessage_T *msg, char *s);
-
-#ifdef __cplusplus
+void cmime_flbi_check_boundary(CMimeMessage_T *msg, char *s) {
+	int pos = 0;
+	if (msg->boundary==NULL) {
+		if (strcasestr(s,"boundary=")) {
+			s = strstr(s,"=");
+			if (*++s=='"') 
+				s++;
+				
+			msg->boundary = (char *)calloc(strlen(s) + sizeof(char),sizeof(char));
+			while(*s!='\0') {
+				if ((*s!=';') && (*s!='"'))
+					msg->boundary[pos++] = *s;
+				else {
+					msg->boundary[pos] = '\0';
+					break;
+				}
+				s++;
+			}
+		}
+	}
 }
-#endif
-
-#endif /* _CMIME_FLBI_H */
