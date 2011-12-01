@@ -48,31 +48,36 @@ char test_files[54][10] = {
 
 int main (int argc, char const *argv[]) {
 /*
-//	CMimeMessage_T *msg = cmime_message_new();
 	CMimeMessage_T *msg = NULL;
-//	FILE *fp = NULL;
+	FILE *fp = NULL;
 	char *fname = NULL;
 	char *out = NULL;
-	int retval = 0;
+	char *s = NULL;
+	
 	asprintf(&fname,"%s/%s",SAMPLES_DIR,test_files[10]);
-//	asprintf(&fname,"%s/test.txt",SAMPLES_DIR);
-//	if ((fp = fopen(fname, "rb")) == NULL) 
-//		return(-1);
+
 	msg = cmime_message_new();
-	retval = cmime_message_from_file(&msg,fname);
+	cmime_message_from_file(&msg,fname);
 	free(fname);
 
 	out = cmime_message_to_string(msg);
-	printf("OUT:\n%s",out);
+	
+	
+	asprintf(&s,"out_test.txt");
+	fp = fopen(s,"wb");
+	fwrite(out,strlen(out),1,fp);
+	fclose(fp);
+	free(s);
+	
 	free(out);
 	
 //	printf("GAP: [%s]\n",msg->gap);
 	
 //	printf("BOUNDARY: [%s]\n",msg->boundary);
 	cmime_message_free(msg);
-	
+*/	
 
-*/
+
 	CMimeMessage_T *msg = cmime_message_new();
 	char *s = NULL;
 	char *s2 = NULL;
@@ -86,6 +91,7 @@ int main (int argc, char const *argv[]) {
 	FILE *fp2 = NULL;
 	long size = 0;
 	int i = 0;
+
 	
 	cmime_message_set_sender(msg,addr_string1);
 	s = cmime_message_get_sender(msg);
@@ -154,8 +160,10 @@ int main (int argc, char const *argv[]) {
 	free(s);
 	cmime_message_free(msg);
 
+
 	for (i=0; i < 54; i++) {
 		printf("Checking sample message [%s]...", test_files[i]);
+		
 		msg = cmime_message_new();
 		asprintf(&fname,"%s/%s",SAMPLES_DIR,test_files[i]);
 		retval = cmime_message_from_file(&msg,fname);
@@ -174,17 +182,16 @@ int main (int argc, char const *argv[]) {
 		size = ftell(fp);
 		rewind(fp);	
 		s = (char*) calloc(sizeof(char), size + 20);
-		fread(s, 1, size, fp);
+		fread(s, size, 1, fp);
 		if(ferror(fp))
 			return(-1);
 		
 		asprintf(&s2,"out_%s",test_files[i]);
 		fp2 = fopen(s2,"wb");
-		fwrite(msg_string,1,size,fp2);
+		fwrite(msg_string,size,1,fp2);
 		fclose(fp2);
 		free(s2);
-
-		
+	
 //		printf("S:\n[%s]\n", msg_string);
 		assert(strcmp(msg_string,s)==0);
 		free(s);

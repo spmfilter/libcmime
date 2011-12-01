@@ -70,7 +70,8 @@ part:
 	mime_headers mime_body {
 		CMimePart_T *p = NULL;
 		p = (CMimePart_T *)calloc((size_t)1, sizeof(CMimePart_T));
-		p->content = $2;
+		p->content = NULL;
+		cmime_part_set_content(p,$2);
 		$$ = p; 
 		p->headers = $1;
 	}
@@ -90,7 +91,7 @@ mime_headers:
 	
 mime_body:
 	LINE {
-		$$ = (char *)malloc(strlen($1) + sizeof(char));
+		$$ = (char *)calloc((size_t)1,strlen($1) + sizeof(char));
 		strcat($$,$1);
 	}
 	| mime_body LINE  {
