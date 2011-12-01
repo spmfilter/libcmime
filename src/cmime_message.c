@@ -32,6 +32,7 @@
 #include "cmime_header.h"
 #include "cmime_part.h"
 #include "cmime_internal.h"
+#include "cmime_flbi.h"
 
 void _recipients_destroy(void *data) {
 	assert(data);
@@ -285,132 +286,6 @@ char *cmime_message_generate_boundary(void) {
 	return(boundary);
 }
 
-/* extract boundary from given header string */
-char *_get_boundary(char *s) {
-	char *boundary = NULL;
-	char *nl = NULL;
-	int pos = 0;
-	
-	nl = _cmime_internal_determine_linebreak(s);
-	s = strstr(s,"=");
-	if (*++s=='"') 
-		s++;
-
-	boundary = (char *)calloc(strlen(s) + sizeof(char),sizeof(char));
-	while(*s!='\0') {
-		//if ((*s!='"') && (*s!='\r') && (*s!='\n'))
-		if ((*s!='"') && (strncmp(s,nl,strlen(nl))!=0))
-			boundary[pos++] = *s;
-		else {
-			boundary[pos] = '\0';
-			break;
-		}
-		s++;
-	}
-	
-	return(boundary);
-}
-
-int _parse_file(CMimeMessage_T *message, FILE *fp) {
-	char *buffer = NULL;
-	size_t st = 0;
-	int in_header = 1;
-	int in_gap = 1;
-	char *s = NULL;
-	char *ptemp = NULL;
-	int in_part = 0;
-	CMimePart_T *part = NULL;
-	char *nl = NULL;
-	
-	while(getline(&buffer,&st,fp) > 0) {
-		// check newline frist
-		if (nl==NULL)
-			nl = _cmime_internal_determine_linebreak(buffer);
-		
-		if(strcmp(buffer,nl)==0) {
-			if (in_header==1) {
-				if (s!=NULL) {
-					if (cmime_message_set_header(message, s)!=0)
-						return(-4); /* failed to add header */
-					free(s);
-					s = (char *)calloc(1,sizeof(char));
-				}
-				in_header = 0;
-			//	continue;
-			}
-		}
-		
-		if (in_header==1) {
-			// search for boundary
-			if (message->boundary==NULL) {
-				ptemp = strcasestr(buffer,"boundary=");
-				if (ptemp!=NULL) {
-					message->boundary = _get_boundary(ptemp);
-					message->gap = (char *)calloc(sizeof(char),sizeof(char));
-				}
-			}
-			
-			// process header
-			if (isspace(buffer[0])) {
-				/* we've got a long header field line, so append the value
-				 * to the previous value */
-				s = (char *)realloc(s,strlen(s) + st + sizeof(char));
-				strcat(s,buffer);
-			} else {
-				if (s!=NULL) {
-					if (cmime_message_set_header(message, s)!=0)
-						return(-4); /* failed to add header */
-					free(s);
-				} 
-
-				s = (char *)calloc(st + sizeof(char), sizeof(char));
-				strcat(s,buffer);
-			}		
-		} else {
-			// process body
-			if (message->boundary!=NULL) {
-				if (strstr(buffer,message->boundary)) {
-					if (in_part == 1) {
-						cmime_part_from_string(&part,s);
-						cmime_list_append(message->parts,part);
-					}
-					part = cmime_part_new();
-					in_part = 1;
-					free(s);
-					s = (char *)calloc(1,sizeof(char));
-					in_gap = 0;
-					continue;
-				} 
-			} else
-				in_gap = 0;
-
-			if (in_gap == 1) {
-				if (message->gap != NULL)
-					message->gap = (char *)realloc(message->gap,strlen(message->gap) + strlen(buffer) + sizeof(char));
-				else
-					message->gap = (char *)calloc(strlen(buffer) + sizeof(char), sizeof(char));
-				
-				strcat(message->gap,buffer);
-			} else {
-				s = (char *)realloc(s,strlen(s) + st + 1);
-				strcat(s,buffer);
-			}
-		}
-	}	
-
-
-	if (message->boundary==NULL) {
-		part = cmime_part_new();
-		cmime_part_set_content(part,s);
-		free(s);
-		cmime_list_append(message->parts,part);
-	}
-	
-	free(buffer);
-	
-	return(0);
-}
-
 int cmime_message_from_file(CMimeMessage_T **message, const char *filename) {
 	struct stat fileinfo;
 	FILE *fp = NULL;
@@ -424,14 +299,14 @@ int cmime_message_from_file(CMimeMessage_T **message, const char *filename) {
 	
 	if(!S_ISREG(fileinfo.st_mode))
 		return(-2); /* not regular file */
-	
+
 	fp = fopen(filename, "rb");
 	if (fp == NULL) {
 		return(-3);
 	}
-	
-	ret = _parse_file((*message),fp);
 
+	ret = cmime_scanner_scan_file(message,fp);
+	
 	fclose(fp);
 
 	return(ret);
@@ -443,18 +318,10 @@ char *cmime_message_to_string(CMimeMessage_T *message) {
 	CMimeHeader_T *h = NULL;
 	CMimePart_T *p = NULL;
 	char *s = NULL;
-//	char *nl = NULL;
 	
 	assert(message);
 	out = (char *)calloc(sizeof(char),sizeof(char));
 	
-	e = cmime_list_head(message->parts);
-
-//	if (e != NULL)
-//		nl = _cmime_internal_determine_linebreak(((CMimePart_T *)cmime_list_data(e))->content);
-//	else
-//		nl = CRLF;
-
 	e = cmime_list_head(message->headers);
 	while(e != NULL) {
 		h = (CMimeHeader_T *)cmime_list_data(e);
@@ -494,10 +361,6 @@ char *cmime_message_to_string(CMimeMessage_T *message) {
 		out = (char *)realloc(out,strlen(out) + strlen(s) + sizeof(char));
 		strcat(out,s);
 		free(s);
-//		if (strcmp(nl,CRLF)==0) {
-//			out = (char *)realloc(out,strlen(out) + strlen(CR) + sizeof(char));
-//			strcat(out,CR);
-//		}
 	}
 	
 	return(out);
@@ -505,16 +368,11 @@ char *cmime_message_to_string(CMimeMessage_T *message) {
 
 int cmime_message_from_string(CMimeMessage_T **message, const char *content) {
 	FILE *fp = NULL;
-	char *lb = NULL;
 	int ret = 0;
 	
 	assert((*message));
 	assert(content);
-	
-	lb = _cmime_internal_determine_linebreak(content);
-	if (lb == NULL)
-		return(-1);
-	
+
 	fp = tmpfile();
 	if (fp == NULL) 
 		return(-2);
@@ -523,9 +381,8 @@ int cmime_message_from_string(CMimeMessage_T **message, const char *content) {
 		return(-3);
 	
 	rewind(fp);
-	
-	ret = _parse_file((*message),fp);
-	
+	ret = cmime_scanner_scan_file(message,fp);	
 	fclose(fp);
+	
 	return(ret);
 }

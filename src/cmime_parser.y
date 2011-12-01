@@ -39,9 +39,7 @@
 %%
 
 message:
-	headers gap parts {
-		printf("PARTS [%d]\n",msg->parts->size);
-	}
+	headers gap parts
 	| headers BODY_CONTENT {
 		CMimePart_T *p = cmime_part_new();
 		cmime_part_set_content(p,$2);
@@ -94,15 +92,12 @@ mime_body:
 	LINE {
 		$$ = (char *)malloc(strlen($1) + sizeof(char));
 		strcat($$,$1);
-	/*	printf("LINE: [%s]\n", $1);  */
 	}
 	| mime_body LINE  {
 		$$ = (char *)realloc($$,strlen($$) + strlen($2) + sizeof(char));
 		strcat($$,$2);
-	/*	printf("LINE2: [%s]\n", $2);  */
 	}
 ;
-	
 
 gap:
 	GAP_LINE {

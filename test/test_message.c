@@ -47,18 +47,19 @@ char test_files[54][10] = {
 };
 
 int main (int argc, char const *argv[]) {
+/*
 //	CMimeMessage_T *msg = cmime_message_new();
 	CMimeMessage_T *msg = NULL;
 //	FILE *fp = NULL;
 	char *fname = NULL;
 	char *out = NULL;
-	
+	int retval = 0;
 	asprintf(&fname,"%s/%s",SAMPLES_DIR,test_files[10]);
 //	asprintf(&fname,"%s/test.txt",SAMPLES_DIR);
 //	if ((fp = fopen(fname, "rb")) == NULL) 
 //		return(-1);
-	
-	msg = cmime_scanner_scan_file(fname);
+	msg = cmime_message_new();
+	retval = cmime_message_from_file(&msg,fname);
 	free(fname);
 
 	out = cmime_message_to_string(msg);
@@ -71,12 +72,7 @@ int main (int argc, char const *argv[]) {
 	cmime_message_free(msg);
 	
 
-/*	
-	yyrestart(fp);
-	yyparse(msg);
-	fclose(fp);
-	
-	
+*/
 	CMimeMessage_T *msg = cmime_message_new();
 	char *s = NULL;
 	char *s2 = NULL;
@@ -187,15 +183,15 @@ int main (int argc, char const *argv[]) {
 		fwrite(msg_string,1,size,fp2);
 		fclose(fp2);
 		free(s2);
+
 		
-		
-		printf("S:\n[%s]\n", msg_string);
+//		printf("S:\n[%s]\n", msg_string);
 		assert(strcmp(msg_string,s)==0);
 		free(s);
 		free(msg_string);
 		cmime_message_free(msg);
 		printf("passed!\n");
 	}
-*/
+
 	return(0);
 }

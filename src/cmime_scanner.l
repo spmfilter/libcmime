@@ -35,21 +35,7 @@ LF_RE								(\r\n)|(\r)|(\n)|(\x0c)
 HEADERNAME_RE				([A-Za-z0-9-]*:\ )
 HEADERBODY_RE				(.*({LF_RE}(\t|\s).*)*{LF_RE}?)
 BODY_RE							((.*({LF_RE}))*)
-LINE_RE							(.*{LF_PATTERN})
-
-
-
-
-LF_PATTERN							(\r\n)|(\r)|(\n)|(\x0c)
- 
-HEADERNAME_PATTERN			(^[A-Za-z0-9-]*:\ ) 
-
-GAP_PATTERN							(^{LF_PATTERN})
-CONTINUATION_PATTERN		([ \t].*{LF_PATTERN})
-LINE_PATTERN						(.*{LF_PATTERN})
-BOUNDARY_PATTERN				([ \t]*.*boundary=(.*){LF_PATTERN})
-
-HEADERCONTENT_PATTERN		(.*\n((\t*)|(\s*).*\n)*)
+LINE_RE							(.*{LF_RE})
 
 %%
 
@@ -121,30 +107,20 @@ HEADERCONTENT_PATTERN		(.*\n((\t*)|(\s*).*\n)*)
 
 . { } 
 
-	
-
 %%
 
-CMimeMessage_T *cmime_scanner_scan_file(const char *filename) {
-	CMimeMessage_T *msg = cmime_message_new();
+int cmime_scanner_scan_file(CMimeMessage_T **message, FILE *fp) {
 	yyscan_t scanner;
-	FILE *fp = NULL;
 	
-	if(yylex_init_extra(msg,&scanner)) { 
+	if(yylex_init_extra((*message),&scanner)) { 
 		fprintf(stderr, "error: no scanning today\n"); 
-		return(NULL); 
+		return(-4); 
 	}
-	
-	if ((fp = fopen(filename, "rb")) == NULL) {
-		fprintf(stderr, "error: failed opening %s\n",filename); 
-		return(NULL);
-	}
-	
+
 	yyrestart(fp,scanner); 
-	yyparse(scanner,msg);  
+	yyparse(scanner,(*message));  
 	
-	fclose(fp); 
 	yylex_destroy(scanner);
 
-	return(msg);
+	return(0);
 }

@@ -37,7 +37,7 @@ int yyparse (void *scanner, CMimeMessage_T *msg);
 extern int yylex();
 //void yyerror(char *s,...);
 void yyerror(YYLTYPE *yyllocp, void *scanner, CMimeMessage_T *msg, const char *s, ...);
-CMimeMessage_T *cmime_scanner_scan_file(const char *filename); 
+int cmime_scanner_scan_file(CMimeMessage_T **message, FILE *fp); 
 
 void cmime_flbi_check_boundary(CMimeMessage_T *msg, char *s);
 
