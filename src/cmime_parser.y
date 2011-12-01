@@ -26,26 +26,27 @@
 	CMimePart_T *p;
 	CMimeList_T *l;
 }
-%token <string> HEADERNAME HEADERBODY EMPTY_LINE PARTBODY LINE
+%token <string> HEADER_NAME HEADER_CONTENT GAP_LINE BODY_CONTENT LINE 
 
-%type <string> headers
+%type <l> headers
 %type <l> mime_headers
 %type <h> header
 
-%type <string> parts
+%type <l> parts
 %type <p> part
 
-%type <string> body
-
+%type <string> mime_body
 %%
 
 message:
-	headers gap parts
-	| headers body {
+	headers gap parts {
+		printf("PARTS [%d]\n",msg->parts->size);
+	}
+	| headers BODY_CONTENT {
 		CMimePart_T *p = cmime_part_new();
 		cmime_part_set_content(p,$2);
 		cmime_list_append(msg->parts,p);
-	}
+	} 
 ;
 		
 headers:
@@ -54,7 +55,7 @@ headers:
 ;
 	
 header:
-	HEADERNAME HEADERBODY {
+	HEADER_NAME HEADER_CONTENT {
 		CMimeHeader_T *h = cmime_header_new();
 		cmime_header_set_name(h,$1);
 		cmime_header_set_value(h,$2,0);
@@ -68,14 +69,12 @@ parts:
 ;
 	
 part:
-	mime_headers body {
+	mime_headers mime_body {
 		CMimePart_T *p = NULL;
 		p = (CMimePart_T *)calloc((size_t)1, sizeof(CMimePart_T));
-		p->content = NULL;
+		p->content = $2;
 		$$ = p; 
-		printf("PART NEW\n");
 		p->headers = $1;
-		printf("SIZE: [%d]\n",p->headers->size);
 	}
 ; 
 	
@@ -90,19 +89,27 @@ mime_headers:
 		cmime_list_append($1,$2); 
 	}
 ;
-
-body:
-	PARTBODY {
-		$$ = $1;
+	
+mime_body:
+	LINE {
+		$$ = (char *)malloc(strlen($1) + sizeof(char));
+		strcat($$,$1);
+	/*	printf("LINE: [%s]\n", $1);  */
+	}
+	| mime_body LINE  {
+		$$ = (char *)realloc($$,strlen($$) + strlen($2) + sizeof(char));
+		strcat($$,$2);
+	/*	printf("LINE2: [%s]\n", $2);  */
 	}
 ;
+	
 
 gap:
-	LINE {
+	GAP_LINE {
 		msg->gap = (char *)realloc(msg->gap,strlen(msg->gap) + strlen($1) + sizeof(char));
 		strcat(msg->gap,$1);
 	}
-	| gap LINE {
+	| gap GAP_LINE {
 		msg->gap = (char *)realloc(msg->gap,strlen(msg->gap) + strlen($2) + sizeof(char));
 		strcat(msg->gap,$2);
 	}

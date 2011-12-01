@@ -61,9 +61,9 @@ int main (int argc, char const *argv[]) {
 	msg = cmime_scanner_scan_file(fname);
 	free(fname);
 
-//	out = cmime_message_to_string(msg);
-//	printf("OUT:\n%s",out);
-//	free(out);
+	out = cmime_message_to_string(msg);
+	printf("OUT:\n%s",out);
+	free(out);
 	
 //	printf("GAP: [%s]\n",msg->gap);
 	

@@ -481,9 +481,11 @@ char *cmime_message_to_string(CMimeMessage_T *message) {
 			free(s);
 		}
 		s = cmime_part_to_string(p);
-		out = (char *)realloc(out,strlen(out) + strlen(s) + sizeof(char));
-		strcat(out,s);
-		free(s);
+		if (s) {
+			out = (char *)realloc(out,strlen(out) + strlen(s) + sizeof(char));
+			strcat(out,s);
+			free(s);
+		}
 		e = e->next;
 	}
 	

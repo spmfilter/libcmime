@@ -7,10 +7,11 @@
 %option yylineno
 	
 %x HEADER
-%x BODY 
 %x GAP
+%x BODY 
 %x MIME_PART
-%x PART_HEADER
+%x MIME_HEADER
+%x MIME_CONTENT
 
 %{
 	#include <stdio.h>
@@ -55,7 +56,7 @@ HEADERCONTENT_PATTERN		(.*\n((\t*)|(\s*).*\n)*)
 {HEADERNAME_RE} {
 	BEGIN(HEADER);
 	yylval->string = strsep(&yytext,":");
-	return HEADERNAME;
+	return HEADER_NAME;
 }
 
 <HEADER>{HEADERBODY_RE} {
@@ -66,25 +67,34 @@ HEADERCONTENT_PATTERN		(.*\n((\t*)|(\s*).*\n)*)
 	cmime_flbi_check_boundary(yyextra,yytext);	
 	
 	yylval->string = cmime_string_strip(yytext);
-	return HEADERBODY; 	 
+	return HEADER_CONTENT; 	 
 }
 
 {LF_RE} {
 	yyextra->gap = strdup(yytext); 
-	if (yyextra->boundary)
-		BEGIN GAP;
- 	else
-		BEGIN BODY;
-}
-
-<BODY>{BODY_RE} {
-	yylval->string = yytext;
-	return PARTBODY;
+	if (yyextra->boundary) 
+		BEGIN(GAP);
+ 	 else
+		BEGIN(BODY);
 }
 
 <GAP>{LINE_RE} {
 	if (strstr(yytext,yyextra->boundary))
-		BEGIN MIME_PART;
+		BEGIN(MIME_PART);
+	else {
+		yylval->string = yytext;
+		return GAP_LINE;
+	}
+}
+
+<BODY>{BODY_RE} {
+	yylval->string = yytext;
+	return BODY_CONTENT;
+}
+
+<MIME_CONTENT>{LINE_RE} {
+	if (strstr(yytext,yyextra->boundary))
+		BEGIN(MIME_PART);
 	else {
 		yylval->string = yytext;
 		return LINE;
@@ -92,96 +102,22 @@ HEADERCONTENT_PATTERN		(.*\n((\t*)|(\s*).*\n)*)
 }
 
 <MIME_PART>{HEADERNAME_RE} {
-	BEGIN PART_HEADER;
+	BEGIN(MIME_HEADER);
 	yylval->string = strsep(&yytext,":");
-	return HEADERNAME;
+	return HEADER_NAME;
 }
 
 <MIME_PART>{LF_RE} {
-	BEGIN BODY;
+	BEGIN(MIME_CONTENT);
 }
 
-<PART_HEADER>{HEADERBODY_RE} {
+<MIME_HEADER>{HEADERBODY_RE} {
 	BEGIN(MIME_PART);
 
 	yylval->string = cmime_string_strip(yytext);
-	return HEADERBODY;
+	return HEADER_CONTENT;
 }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
- /*
-{HEADERNAME_PATTERN} {
-	BEGIN(HEADER);
-	printf("HEADERNAME [%s]\n", yytext);
-}
-
-<HEADER>{HEADERCONTENT_PATTERN} {
-		printf("matched next header\n"); 
-}
-
-<HEADER>{HEADERNAME_PATTERN} {
-	printf("AHA [%s]\n",yytext);
-	BEGIN(INITIAL);
-}
-
-	
-<BODY>{LINE_PATTERN}	{
-	yylval->string = yytext;
-	return LINE;
-}
-
-{HEADERNAME_PATTERN} { 
-	BEGIN HEADER;
-	yylval->string = strsep(&yytext,":");
-	return HEADERNAME;   
-}
-
-<HEADER>{LINE_PATTERN} {
-	BEGIN INITIAL;
-	yylval->string = yytext;
-	
-	return HEADERBODY;  
-}
-
-{BOUNDARY_PATTERN} {
-	yyextra->boundary = _extract_boundary(yytext);  
-	yylval->string = yytext; 
-	return CONTINUATION; 
-}
-
-{CONTINUATION_PATTERN}	{
-	yylval->string = yytext;
-	return CONTINUATION;   
-}
-
-{GAP_PATTERN} {
-	BEGIN GAP;
-	printf("GAP: [%s]\n",yytext);
-	return GAP;
-}
-
-{LF_PATTERN} {
-	BEGIN BODY;
-	return EMPTY_LINE;   
-}
-	*/
 
 . { } 
 
