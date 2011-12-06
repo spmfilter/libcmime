@@ -54,7 +54,7 @@ int main (int argc, char const *argv[]) {
 	char *out = NULL;
 	char *s = NULL;
 	
-	asprintf(&fname,"%s/%s",SAMPLES_DIR,test_files[10]);
+	asprintf(&fname,"%s/%s",SAMPLES_DIR,test_files[19]);
 
 	msg = cmime_message_new();
 	cmime_message_from_file(&msg,fname);
@@ -75,8 +75,8 @@ int main (int argc, char const *argv[]) {
 	
 //	printf("BOUNDARY: [%s]\n",msg->boundary);
 	cmime_message_free(msg);
-*/	
 
+*/
 
 	CMimeMessage_T *msg = cmime_message_new();
 	char *s = NULL;
@@ -181,14 +181,14 @@ int main (int argc, char const *argv[]) {
 		
 		size = ftell(fp);
 		rewind(fp);	
-		s = (char*) calloc(sizeof(char), size + 20);
+		s = (char*) calloc(sizeof(char), size + sizeof(char));
 		fread(s, size, 1, fp);
 		if(ferror(fp))
 			return(-1);
 		
 		asprintf(&s2,"out_%s",test_files[i]);
 		fp2 = fopen(s2,"wb");
-		fwrite(msg_string,size,1,fp2);
+		fwrite(msg_string,strlen(msg_string),1,fp2);
 		fclose(fp2);
 		free(s2);
 	

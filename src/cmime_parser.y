@@ -60,7 +60,16 @@ header:
 		$$ = h;
 	}
 ;
-	
+	/*
+continuations:
+	HEADER_CONTINUATION {
+		printf("CONT2: [%s]\n",$1);
+	}
+	| continuations HEADER_CONTINUATION {
+		printf("CONT3: [%s]\n",$2);
+	}
+;	
+	*/
 parts:
 	part { cmime_list_append(msg->parts,$1); }
 	| parts part { cmime_list_append(msg->parts,$2); } 
