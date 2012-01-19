@@ -44,11 +44,9 @@ LINE_RE							(.*{LF_RE})
 	return HEADER_NAME;
 }
 
-	
 <HEADER>{HEADERBODY_RE} {
 	BEGIN(INITIAL);
-	printf("HEADER: [%s]\n",yytext);
-	
+
 	if (yyextra->linebreak==NULL)
 		yyextra->linebreak = strdup(_cmime_internal_determine_linebreak(yytext));
 	
@@ -59,35 +57,12 @@ LINE_RE							(.*{LF_RE})
 	
 	return HEADER_CONTENT; 	 
 }
-	/*
-<HEADER>{LINE_RE} {
-	BEGIN(INITIAL);
-	printf("HEADER: [%s]\n",yytext);
-	
-	if (yyextra->linebreak==NULL)
-		yyextra->linebreak = strdup(_cmime_internal_determine_linebreak(yytext));
-	
-	cmime_flbi_check_boundary(yyextra,yytext);	
-	
-	yylval->string = cmime_string_strip(yytext);
-	
-	
-	return HEADER_LINE;
-}
-	
-{CONTINUATION_RE} {
-	printf("CONTINUES: [%s]\n",yytext);
-	strtok(yytext, "\n");
-	yylval->string = yytext;
-	return HEADER_CONTINUATION; 
-}
-	*/
 	
 {LF_RE} {
 	yyextra->gap = strdup(yytext); 
 	if (yyextra->boundary) 
 		BEGIN(GAP);
- 	 else
+	else
 		BEGIN(BODY);
 }
 

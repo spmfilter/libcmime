@@ -60,16 +60,7 @@ header:
 		$$ = h;
 	}
 ;
-	/*
-continuations:
-	HEADER_CONTINUATION {
-		printf("CONT2: [%s]\n",$1);
-	}
-	| continuations HEADER_CONTINUATION {
-		printf("CONT3: [%s]\n",$2);
-	}
-;	
-	*/
+
 parts:
 	part { cmime_list_append(msg->parts,$1); }
 	| parts part { cmime_list_append(msg->parts,$2); } 
@@ -81,6 +72,7 @@ part:
 		p = (CMimePart_T *)calloc((size_t)1, sizeof(CMimePart_T));
 		p->content = NULL;
 		cmime_part_set_content(p,$2);
+		free($2);
 		$$ = p; 
 		p->headers = $1;
 	}
@@ -101,7 +93,7 @@ mime_headers:
 mime_body:
 	LINE {
 		$$ = (char *)calloc((size_t)1,strlen($1) + sizeof(char));
-		strcat($$,$1);
+		strcat($$,$1); 
 	}
 	| mime_body LINE  {
 		$$ = (char *)realloc($$,strlen($$) + strlen($2) + sizeof(char));
