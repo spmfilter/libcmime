@@ -29,6 +29,8 @@
 extern "C" {
 #endif
 
+#include <stdlib.h>
+
 /*!
  * @struct CMimeHeader_T cmime_header.h
  * @brief A email header item

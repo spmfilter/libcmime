@@ -54,15 +54,36 @@ int main (int argc, char const *argv[]) {
 	char *out = NULL;
 	char *s = NULL;
 	
-	asprintf(&fname,"%s/%s",SAMPLES_DIR,test_files[21]);
+	CMimeListElem_T *e = NULL;
+	CMimeListElem_T *e2 = NULL;
+	CMimePart_T *p = NULL;
+	CMimePart_T *p2 = NULL;
+	
+	asprintf(&fname,"%s/%s",SAMPLES_DIR,test_files[14]);
 
 	msg = cmime_message_new();
 	cmime_message_from_file(&msg,fname);
 	free(fname);
-
 	out = cmime_message_to_string(msg);
 	
-	
+	printf("PARTS [%d]\n",msg->parts->size);
+
+	e = cmime_list_head(msg->parts);
+	while(e != NULL) {
+		p = (CMimePart_T *)cmime_list_data(e);
+		printf("SUBSIZE: [%d]\n",p->parts->size);
+		
+		if (p->parts->size > 0) {
+			e2 = cmime_list_head(p->parts);
+			while(e2 != NULL) {
+				p2 = (CMimePart_T *)cmime_list_data(e2);
+				e2 = e2->next;
+			}
+		}
+		
+		e = e->next;
+	}
+
 	asprintf(&s,"out_test.txt");
 	fp = fopen(s,"wb");
 	fwrite(out,strlen(out),1,fp);
@@ -71,13 +92,9 @@ int main (int argc, char const *argv[]) {
 	
 	free(out);
 	
-//	printf("GAP: [%s]\n",msg->gap);
-	
-//	printf("BOUNDARY: [%s]\n",msg->boundary);
 	cmime_message_free(msg);
 
 /*
-
 	CMimeMessage_T *msg = cmime_message_new();
 	char *s = NULL;
 	char *s2 = NULL;
@@ -199,6 +216,6 @@ int main (int argc, char const *argv[]) {
 		cmime_message_free(msg);
 		printf("passed!\n");
 	}
-*/
+	*/
 	return(0);
 }

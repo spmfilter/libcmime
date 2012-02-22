@@ -34,16 +34,37 @@
 #include "cmime_internal.h"
 #include "cmime_flbi.h"
 
+
+typedef enum _BoundaryType {
+	BOUNDARY_OPEN, 
+	BOUNDARY_CLOSE,
+} _BoundaryType_T;
+
 void _recipients_destroy(void *data) {
 	assert(data);
 	CMimeAddress_T *ca = (CMimeAddress_T *)data;
 	cmime_address_free(ca);
 }
 
-void _parts_destroy(void *data) {
-	assert(data);
-	CMimePart_T *p = (CMimePart_T *)data;
-	cmime_part_free(p);
+void _append_boundary(char **out, const char *boundary,const char *linebreak, _BoundaryType_T type) {
+	char *s = NULL;
+	if(boundary != NULL) {
+		if (type == BOUNDARY_OPEN)
+			asprintf(&s,"--%s%s",boundary,linebreak);
+		else if (type == BOUNDARY_CLOSE)
+			asprintf(&s,"--%s--%s",boundary,linebreak);
+		
+		(*out) = (char *)realloc((*out),strlen((*out)) + strlen(s) + sizeof(char));
+		strcat((*out),s);
+		free(s);
+	}
+}
+
+void _append_string(char **out, const char *s) {
+	if (s != NULL) {
+		(*out) = (char *)realloc((*out),strlen((*out)) + strlen(s) + sizeof(char));
+		strcat((*out),s);
+	}
 }
 
 CMimeMessage_T *cmime_message_new(void) {
@@ -63,8 +84,9 @@ CMimeMessage_T *cmime_message_new(void) {
 	message->boundary = NULL;
 	message->gap = NULL;
 	message->linebreak = NULL;
+	message->postface = NULL;
 
-	if (cmime_list_new(&message->parts,_parts_destroy)!=0) 
+	if (cmime_list_new(&message->parts,_cmime_internal_parts_destroy)!=0) 
 			return(NULL);
 
 	return(message);
@@ -87,6 +109,9 @@ void cmime_message_free(CMimeMessage_T *message) {
 	
 	if (message->linebreak!=NULL)
 		free(message->linebreak);
+	
+	if (message->postface!=NULL)
+		free(message->postface);
 	
 	cmime_list_free(message->parts);
 	
@@ -315,8 +340,10 @@ int cmime_message_from_file(CMimeMessage_T **message, const char *filename) {
 char *cmime_message_to_string(CMimeMessage_T *message) {
 	char *out = NULL;
 	CMimeListElem_T *e = NULL;
+	CMimeListElem_T *e2 = NULL;
 	CMimeHeader_T *h = NULL;
 	CMimePart_T *p = NULL;
+	CMimePart_T *sub_p = NULL;
 	char *s = NULL;
 	
 	assert(message);
@@ -333,36 +360,66 @@ char *cmime_message_to_string(CMimeMessage_T *message) {
 		e = e->next;
 	}
 
+	/*
 	if (message->gap != NULL) {
 		out = (char *)realloc(out,strlen(out) + strlen(message->gap) + sizeof(char));
 		strcat(out,message->gap);
 	}
-	
+	*/
+	_append_string(&out,message->gap);
+
 	e = cmime_list_head(message->parts);
 	while(e != NULL) {
 		p = (CMimePart_T *)cmime_list_data(e);
-		if (message->boundary != NULL) {
-			asprintf(&s,"--%s%s",message->boundary,message->linebreak);
-			out = (char *)realloc(out,strlen(out) + strlen(s) + sizeof(char));
-			strcat(out,s);
-			free(s);
-		}
+
+		_append_boundary(&out, message->boundary, message->linebreak, BOUNDARY_OPEN);
 		s = cmime_part_to_string(p);
 		if (s) {
+			_append_string(&out,s);
+			/*
 			out = (char *)realloc(out,strlen(out) + strlen(s) + sizeof(char));
-			strcat(out,s);
+			strcat(out,s);*/
 			free(s);
 		}
+
+		/* are there any sub parts? */
+		if (p->parts->size > 0) {
+			/* iterate sub mime parts */
+			e2 = cmime_list_head(p->parts);
+			while(e2 != NULL) {
+				sub_p = (CMimePart_T *)cmime_list_data(e2);
+
+				_append_boundary(&out, p->boundary, message->linebreak, BOUNDARY_OPEN);
+				s = cmime_part_to_string(sub_p);
+				if (s) {
+					_append_string(&out,s);
+				/*	out = (char *)realloc(out,strlen(out) + strlen(s) + sizeof(char));
+					strcat(out,s); */
+					free(s);
+				}
+				e2 = e2->next;
+			}
+
+			_append_boundary(&out, p->boundary,message->linebreak,BOUNDARY_CLOSE);
+
+			/*
+			if (p->postface != NULL) {
+				out = (char *)realloc(out,strlen(out) + strlen(p->postface) + sizeof(char));
+				strcat(out,p->postface);
+			}*/
+			_append_string(&out,p->postface);
+		} 
+		
 		e = e->next;
 	}
 	
-	if(message->boundary != NULL) {
-		asprintf(&s,"--%s--%s",message->boundary,message->linebreak);
-		out = (char *)realloc(out,strlen(out) + strlen(s) + sizeof(char));
-		strcat(out,s);
-		free(s);
-	}
-	
+	_append_boundary(&out, message->boundary,message->linebreak, BOUNDARY_CLOSE);
+	/*
+	if (message->postface != NULL) {
+		out = (char *)realloc(out,strlen(out) + strlen(message->postface) + sizeof(char));
+		strcat(out,message->postface);
+	}*/
+	_append_string(&out,message->postface);
 	return(out);
 }
 

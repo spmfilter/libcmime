@@ -72,7 +72,11 @@ CMimePart_T *cmime_part_new(void) {
 		return(NULL);
 
 	part->content = NULL;
-	
+	part->boundary = NULL;
+	part->postface = NULL;
+	if (cmime_list_new(&part->parts,_cmime_internal_parts_destroy)!=0)
+		return(NULL);
+
 	return(part);
 }
 
@@ -83,6 +87,14 @@ void cmime_part_free(CMimePart_T *part) {
 	
 	if (part->content != NULL)
 		free(part->content);
+	
+	if (part->boundary != NULL)
+		free(part->boundary);
+
+	if (part->postface != NULL)
+		free(part->postface);
+
+	cmime_list_free(part->parts);
 		
 	free(part);
 }
@@ -371,4 +383,11 @@ int cmime_part_from_string(CMimePart_T **part, const char *content) {
 	free(dlb);
 	
 	return(0);
+}
+
+void cmime_part_set_postface(CMimePart_T *part, const char *s) {
+	assert(part);
+	assert(s);
+	
+	part->postface = strdup(s);
 }

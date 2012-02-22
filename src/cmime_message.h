@@ -43,13 +43,14 @@ extern "C" {
 typedef struct {
 	CMimeAddress_T *sender; /**< sender of email */
 	CMimeList_T *recipients; /**< double linked list with recipients */
-	CMimeList_T *headers;
+	CMimeList_T *headers; /**< message header */
 	char *boundary; /**< message boundary */
 	time_t date; /**< date of email */
 	int tz_offset; /**< timezone offset */
 	char *gap; /**< gap between headers an mime parts */
 	CMimeList_T *parts; /**< mime parts */
-	char *linebreak;
+	char *linebreak; 
+	char *postface;
 } CMimeMessage_T;
 
 /*!

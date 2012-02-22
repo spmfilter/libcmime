@@ -28,9 +28,16 @@
 extern "C" {
 #endif
 
+#include <stdio.h>
+
 #include "cmime_message.h"
 #include "cmime_part.h"
 #include "cmime_parser.tab.h"
+
+typedef struct {
+	CMimeMessage_T *message;
+	char *sub_part_boundary;
+} CMimeYYExtra_T;
 
 //void yyrestart (FILE *input_file);
 int yyparse (void *scanner, CMimeMessage_T *msg); 
@@ -39,7 +46,11 @@ extern int yylex();
 void yyerror(YYLTYPE *yyllocp, void *scanner, CMimeMessage_T *msg, const char *s, ...);
 int cmime_scanner_scan_file(CMimeMessage_T **message, FILE *fp); 
 
-void cmime_flbi_check_boundary(CMimeMessage_T *msg, char *s);
+char *cmime_flbi_get_boundary(char *s);
+int cmime_flbi_match_boundary(const char *haystack);
+int cmime_flbi_cmp_boundary(const char *boundary, const char *haystack, const char *linebreak);
+void cmime_flbi_check_part_boundary(CMimePart_T *part);
+//int cmime_flbi_check_last_boundary(char *s);
 
 #ifdef __cplusplus
 }

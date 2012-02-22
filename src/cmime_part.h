@@ -41,6 +41,9 @@ extern "C" {
 typedef struct {
 	CMimeList_T *headers;
 	char *content; /**< content of mime part */
+	char *boundary;
+	CMimeList_T *parts; /**< mime parts */
+	char *postface;
 } CMimePart_T;
 
 /*!
@@ -127,7 +130,6 @@ char *cmime_part_get_content_id(CMimePart_T *part);
  * @param part a CMimePart_T object 
  * @param s mime part content
  */
-
 void cmime_part_set_content(CMimePart_T *part, const char *s);
 
 /*!
@@ -135,6 +137,10 @@ void cmime_part_set_content(CMimePart_T *part, const char *s);
  * @returns content of mime part
  */
 #define cmime_part_get_content(part) (part->content);
+
+
+void cmime_part_set_postface(CMimePart_T *part, const char *s);
+#define cmime_part_get_postface(part) (part->postface);
 
 /*!
  * @fn char *cmime_part_to_string(CMimePart_T *part)

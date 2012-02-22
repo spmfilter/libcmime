@@ -24,6 +24,7 @@
 #include "cmime_internal.h"
 #include "cmime_header.h"
 #include "cmime_string.h"
+#include "cmime_part.h"
 
 void _cmime_internal_header_destroy(void *data) {
 	assert(data);
@@ -112,4 +113,10 @@ CMimeHeader_T *_cmime_internal_get_linked_header(CMimeList_T *l, const char *key
 	}
 	
 	return(NULL);
+}
+
+void _cmime_internal_parts_destroy(void *data) {
+	assert(data);
+	CMimePart_T *p = (CMimePart_T *)data;
+	cmime_part_free(p);
 }
