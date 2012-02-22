@@ -68,46 +68,50 @@ header:
 
 parts:
 	part { 
-		printf("PART APPEND <-> [%s]\n",$1->boundary);
 		cmime_list_append(msg->parts,$1);
-		if ($1->boundary)
+		/*
+		printf("\n===================\n");
+		printf("part\n===================\n%s\n\n",cmime_part_to_string($1));
+		*/
+		if ($1->boundary) {
+			/*
+			printf("SWITCHING TO SUB\n");
+			*/
 			$$ = $1->parts;
-		else
+		} else {
+			/*
+			printf("SWITCHING TO MAIN\n");
+			*/
 			$$ = msg->parts; 
-	}
-	| parts part { 
-		printf("PARTS APPEND <-> [%s]\n",$2->boundary);
-	/*	cmime_list_append(msg->parts,$2); */
-		cmime_list_append($$,$2); 
-	} 
-	| parts part PART_END {
-		printf("PART END ohne postface\n");
-		CMimeListElem_T *e = NULL;
-		CMimePart_T *p = NULL;
-		e = cmime_list_head(msg->parts);
-		while(e != NULL) {
-			p = (CMimePart_T *)cmime_list_data(e);
-			if (cmime_flbi_cmp_boundary(p->boundary,$3,msg->linebreak)==2) {
-				printf("APPEND SUB\n");
-				cmime_list_append(p->parts,$2);
-				$$ = msg->parts; 
-				break;
-			}
-			e = e->next;
 		}
 	}
+	| parts part { 
+		cmime_list_append($$,$2); 
+		/*
+		printf("\n===================\n");
+		printf("parts part\n===================\n%s\n\n",cmime_part_to_string($2));
+		*/
+	} 
+	| parts part PART_END {
+		cmime_list_append($$,$2);
+		/* 
+		printf("\n===================\n");
+		printf("parts part PART_END\n===================\n%s\n\n",cmime_part_to_string($2));
+		*/
+	}
 	| parts part PART_END postface {
-		printf("PART END\n");
 		CMimeListElem_T *e = NULL;
 		CMimePart_T *p = NULL;
 		e = cmime_list_head(msg->parts);
 		while(e != NULL) {
 			p = (CMimePart_T *)cmime_list_data(e);
 			if (cmime_flbi_cmp_boundary(p->boundary,$3,msg->linebreak)==2) {
-				printf("APPEND SUB\n");
 				cmime_part_set_postface(p,$4);
-				printf("APPEND POSTFACE: [%s]\n",p->postface);
 				cmime_list_append(p->parts,$2);
+			/*
+				printf("\n===================\n");
+				printf("parts part PART_END postface\n===================\n%s\n\n",cmime_part_to_string($2));
+				printf("SWITCHING TO MAIN\n"); */
 				$$ = msg->parts; 
 				break;
 			}
@@ -125,9 +129,6 @@ part:
 		$$ = p; 
 		p->headers = $1;
 		cmime_flbi_check_part_boundary(p);
-		if (p->boundary != NULL) {
-			printf("THIS PART HAS SUBPARTS [%s]\n",p->boundary);
-		}
 	}
 ; 
 	
@@ -137,10 +138,8 @@ mime_headers:
 		cmime_list_new(&l,_cmime_internal_header_destroy);
 		cmime_list_append(l,$1);
 		$$ = l;
-/*		printf("HEADER NEW [%s] <-> [%s]\n",$1->name,cmime_header_get_value($1,0)); */
 	}
 	| mime_headers header { 
-/*		printf("HEADER APPEND [%s] <-> [%s]\n",$2->name,cmime_header_get_value($2,0)); */
 		cmime_list_append($1,$2); 
 	}
 ;

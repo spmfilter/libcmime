@@ -47,7 +47,7 @@ char test_files[54][10] = {
 };
 
 int main (int argc, char const *argv[]) {
-
+/*
 	CMimeMessage_T *msg = NULL;
 	FILE *fp = NULL;
 	char *fname = NULL;
@@ -93,8 +93,8 @@ int main (int argc, char const *argv[]) {
 	free(out);
 	
 	cmime_message_free(msg);
+*/
 
-/*
 	CMimeMessage_T *msg = cmime_message_new();
 	char *s = NULL;
 	char *s2 = NULL;
@@ -216,6 +216,6 @@ int main (int argc, char const *argv[]) {
 		cmime_message_free(msg);
 		printf("passed!\n");
 	}
-	*/
+	
 	return(0);
 }

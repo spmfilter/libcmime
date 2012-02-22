@@ -383,8 +383,8 @@ char *cmime_message_to_string(CMimeMessage_T *message) {
 		}
 
 		/* are there any sub parts? */
+	
 		if (p->parts->size > 0) {
-			/* iterate sub mime parts */
 			e2 = cmime_list_head(p->parts);
 			while(e2 != NULL) {
 				sub_p = (CMimePart_T *)cmime_list_data(e2);
@@ -393,8 +393,6 @@ char *cmime_message_to_string(CMimeMessage_T *message) {
 				s = cmime_part_to_string(sub_p);
 				if (s) {
 					_append_string(&out,s);
-				/*	out = (char *)realloc(out,strlen(out) + strlen(s) + sizeof(char));
-					strcat(out,s); */
 					free(s);
 				}
 				e2 = e2->next;
@@ -402,11 +400,6 @@ char *cmime_message_to_string(CMimeMessage_T *message) {
 
 			_append_boundary(&out, p->boundary,message->linebreak,BOUNDARY_CLOSE);
 
-			/*
-			if (p->postface != NULL) {
-				out = (char *)realloc(out,strlen(out) + strlen(p->postface) + sizeof(char));
-				strcat(out,p->postface);
-			}*/
 			_append_string(&out,p->postface);
 		} 
 		

@@ -74,6 +74,7 @@ POSTFACE_RE         (.*--{LF_RE})
 <GAP>{LINE_RE} {
 	if (cmime_flbi_cmp_boundary(yyextra->message->boundary,yytext,yyextra->message->linebreak)==1) {
 		BEGIN(MIME_PART);
+		printf("BEGIN PART [%s]\n",yytext);
 	} else {
 		yylval->string = yytext;
 		return GAP_LINE;
@@ -98,12 +99,14 @@ POSTFACE_RE         (.*--{LF_RE})
 }
 	
 <MIME_CONTENT>{LINE_RE} {
-	if (cmime_flbi_cmp_boundary(yyextra->message->boundary,yytext,yyextra->message->linebreak)==1)
+	if (cmime_flbi_cmp_boundary(yyextra->message->boundary,yytext,yyextra->message->linebreak)==1) {
 		BEGIN(MIME_PART);
-	else {
-		if (cmime_flbi_cmp_boundary(yyextra->sub_part_boundary,yytext,yyextra->message->linebreak)==1) 
+		printf("BEGIN CONTENT PART [%s]\n",yytext);
+	} else {
+		if (cmime_flbi_cmp_boundary(yyextra->sub_part_boundary,yytext,yyextra->message->linebreak)==1) {
 	 		BEGIN(MIME_PART);
-	 	else {
+	 		printf("BEGIN SUB PART [%s]\n",yytext);
+	 	} else {
 	 		yylval->string = yytext;
 
 			return LINE;
@@ -133,13 +136,13 @@ POSTFACE_RE         (.*--{LF_RE})
 	/*	
 <POSTFACE>{BODY_RE} {	
 	yylval->string = yytext; 
-	printf("POSTFACE: [%s]\n",yylval->string);
 	return POSTFACE_CONTENT;
 }
 	*/
 <POSTFACE>{LINE_RE} {
 	if (cmime_flbi_cmp_boundary(yyextra->message->boundary,yytext,yyextra->message->linebreak)==1) {
 		BEGIN(MIME_PART);
+		printf("BEGIN POSTFACE PART [%s]\n",yytext);
 	} else {
 		yylval->string = yytext;
 		return POSTFACE_LINE;
