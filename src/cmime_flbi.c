@@ -54,23 +54,42 @@ int cmime_flbi_match_boundary(const char *haystack) {
 	return(0);
 }
 
-int cmime_flbi_cmp_boundary(const char *boundary, const char *haystack, const char *linebreak) {
+int cmime_flbi_cmp_boundaries(CMimeYYExtra_T *yydata, const char *haystack) {
 	char *p = NULL;
-	asprintf(&p,"--%s%s",boundary,linebreak);
+	char **it = NULL;
+	
+	asprintf(&p,"--%s%s",yydata->message->boundary,yydata->message->linebreak);
 	if (strncmp(haystack,p,strlen(p)) == 0) {
 		free(p);
 		return(1);
-	}
-	
+	}	
 	free(p);
+
+	it = yydata->sub_part_boundaries;
+	while(*it!=NULL) {
+		asprintf(&p,"--%s",*it);
+		if (strncmp(haystack,p,strlen(p)) == 0) {
+			free(p);
+			return(2);
+		}
+		free(p);
+		it++;
+	}
+
+	return(0);
+}
+
+int cmime_flbi_cmp_closing_boundary(const char *boundary, const char *haystack) {
+	char *p = NULL;
 
 	asprintf(&p,"--%s--",boundary);
 	if (strncmp(haystack,p,strlen(p)) == 0) {
 		free(p);
-		return(2);
-	}
-	
+		return(1);
+	}	
 	free(p);
+
+
 
 	return(0);
 }
@@ -93,23 +112,19 @@ void cmime_flbi_check_part_boundary(CMimePart_T *part) {
 	}
 }
 
-/*
-int cmime_flbi_check_last_boundary(char *s) {
-	int in_boundary = 0;
-	
-	if (s!=NULL) {
-		while(*s!='\0') {
-			if ((*s)!='-') {
-				in_boundary = 1;
-				s++;
-			} else if ((in_boundary==1) && ((*s)=='-') && ((*s++)=='-')) {
-				return(1);
-			} else
-				s++;
-		}
+int cmime_flbi_strstr_boundary(CMimeYYExtra_T *yydata, const char *haystack) {
+	char **it = NULL;
+
+	if (strstr(haystack,yydata->message->boundary)) {
+		return(1);
+	} 
+
+	it = yydata->sub_part_boundaries;
+	while(*it != NULL) {
+		if (strstr(haystack,*it))
+			return(1);
+		it++;
 	}
-	
+
 	return(0);
 }
-
-*/

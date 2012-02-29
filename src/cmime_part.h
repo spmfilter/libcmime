@@ -44,6 +44,7 @@ typedef struct {
 	char *boundary;
 	CMimeList_T *parts; /**< mime parts */
 	char *postface;
+    void *prev;
 } CMimePart_T;
 
 /*!
