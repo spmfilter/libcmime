@@ -74,7 +74,6 @@ POSTFACE_RE         (.*--{LF_RE})
 <GAP>{LINE_RE} {
     if (cmime_flbi_cmp_boundaries(yyextra,yytext)==1) {
         BEGIN(MIME_PART);
-        //printf("BEGIN PART [%s]\n",yytext);
     } else {
         yylval->string = yytext;
         return GAP_LINE;
@@ -88,7 +87,6 @@ POSTFACE_RE         (.*--{LF_RE})
     
 <MIME_CONTENT>{POSTFACE_RE} {
     if (cmime_flbi_strstr_boundary(yyextra,yytext)==1) {
-        //printf("END [%s]\n",yytext);
         BEGIN(POSTFACE);
         yylval->string = cmime_string_chomp(yytext);
         return PART_END;
@@ -96,18 +94,11 @@ POSTFACE_RE         (.*--{LF_RE})
 }
     
 <MIME_CONTENT>{LINE_RE} {
-    switch(cmime_flbi_cmp_boundaries(yyextra,yytext)) {
-        case 1:
-            BEGIN(MIME_PART); 
-            //printf("BEGIN CONTENT PART [%s]\n",yytext);
-            break;
-        case 2:
-            BEGIN(MIME_PART);
-            //printf("BEGIN SUB PART [%s]\n",yytext);
-            break;
-        default:
-            yylval->string = yytext;
-            return LINE;
+    if (cmime_flbi_cmp_boundaries(yyextra,yytext)==1) {
+        BEGIN(MIME_PART); 
+    } else {
+        yylval->string = yytext;
+        return LINE;
     } 
 }
 
@@ -136,7 +127,6 @@ POSTFACE_RE         (.*--{LF_RE})
 <POSTFACE>{LINE_RE} {
     if (cmime_flbi_cmp_boundaries(yyextra,yytext)==1) {
         BEGIN(MIME_PART);
-        //printf("BEGIN POSTFACE PART [%s]\n",yytext);
     } else {
         yylval->string = yytext;
         return POSTFACE_LINE;

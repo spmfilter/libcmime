@@ -70,7 +70,7 @@ int cmime_flbi_cmp_boundaries(CMimeYYExtra_T *yydata, const char *haystack) {
 		asprintf(&p,"--%s",*it);
 		if (strncmp(haystack,p,strlen(p)) == 0) {
 			free(p);
-			return(2);
+			return(1);
 		}
 		free(p);
 		it++;
@@ -127,4 +127,32 @@ int cmime_flbi_strstr_boundary(CMimeYYExtra_T *yydata, const char *haystack) {
 	}
 
 	return(0);
+}
+
+char *cmime_flbi_get_parent_boundary(CMimeMessage_T *msg, const char *prev_parent) {
+	char *s = NULL;
+	CMimeListElem_T *e = NULL;
+	CMimePart_T *p = NULL;
+
+	s = msg->boundary;
+
+	e = cmime_list_tail(msg->parts);
+	while(e != NULL) {
+		p = (CMimePart_T *)cmime_list_data(e);
+		if (p->boundary) {
+			if (prev_parent != NULL) {
+				//printf("PREV [%s] <-> [%s]\n",prev_parent,p->boundary);
+				//if (strcmp(prev_parent,p->boundary)==0) {
+				//	s = p->boundary;
+				//	break;	
+				//}
+			} else {
+				s = p->boundary;
+				break;
+			}
+		}
+		e = e->prev;
+	}
+
+	return(s);
 }

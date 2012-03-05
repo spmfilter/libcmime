@@ -73,9 +73,10 @@ CMimePart_T *cmime_part_new(void) {
 
     part->content = NULL;
     part->boundary = NULL;
+    part->parent_boundary = NULL;
     part->postface = NULL;
-    if (cmime_list_new(&part->parts,_cmime_internal_parts_destroy)!=0)
-        return(NULL);
+ //   if (cmime_list_new(&part->parts,_cmime_internal_parts_destroy)!=0)
+ //       return(NULL);
 
     return(part);
 }
@@ -91,10 +92,13 @@ void cmime_part_free(CMimePart_T *part) {
     if (part->boundary != NULL)
         free(part->boundary);
 
+    if (part->parent_boundary != NULL)
+        free(part->parent_boundary);
+
     if (part->postface != NULL)
         free(part->postface);
 
-    cmime_list_free(part->parts);
+//    cmime_list_free(part->parts);
         
     free(part);
 }

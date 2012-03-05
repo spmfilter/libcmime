@@ -64,69 +64,116 @@ header:
 
 parts:
     part { 
+        //$1->parent_boundary = strdup(msg->boundary);
+        $1->parent_boundary = cmime_flbi_get_parent_boundary(msg,NULL);
         cmime_list_append(msg->parts,$1);
         
-        printf("\n===================\n");
-        printf("part\n===================\n[\n%s\n]\n\n",cmime_part_to_string($1));
+        printf("\n=========================================================\n");
+        printf("part\n");
+        printf("PARENT: [%s]\nBOUNDARY: [%s]\n",$1->parent_boundary,$1->boundary);
+        printf("=========================================================\n");
+        printf("[\n%s\n]\n\n",cmime_part_to_string($1));
 
-        if ($1->boundary) {
-            //printf("SWITCHING TO SUB\n");
-            
-            $$ = $1->parts;
-            $1->prev = (void *)msg->parts;
-        } else {
-            //printf("SWITCHING TO MAIN\n");
-            
-            $$ = msg->parts; 
-        }
+
+//        if ($1->boundary != NULL) {
+//            //printf("SWITCHING TO SUB\n");
+//            
+//            $$ = $1->parts;
+//            $1->prev = msg->parts;
+//        } else {
+//            //printf("SWITCHING TO MAIN\n");
+//            
+//            $$ = msg->parts; 
+//        }
+    //    printf("BOUND1: [%s]\n",$1->boundary);
     }
     | parts part { 
-        CMimeList_T *l = $$;
-        CMimeListElem_T *e = NULL;
-        e = cmime_list_tail(l);
-        CMimePart_T *p = NULL;
-        if (e!=NULL) {
-            p = (CMimePart_T *)cmime_list_data(e);
-            printf("PART SIZE:  [%d]\n",p->parts->size);
-            $2->prev = p->parts; 
-        } else {
-            $2->prev = msg->parts;
-        }
+        char *prev = NULL;
+        prev = ((CMimePart_T *)cmime_list_data(msg->parts->tail))->parent_boundary;
+        $2->parent_boundary = cmime_flbi_get_parent_boundary(msg,prev);
+        cmime_list_append(msg->parts,$2);
         
-        cmime_list_append($$,$2); 
+        printf("\n=========================================================\n");
+        printf("parts part\n");
+        printf("PARENT: [%s]\nBOUNDARY: [%s]\n",$2->parent_boundary,$2->boundary);
+        printf("=========================================================\n");
+        printf("[\n%s\n]\n\n",cmime_part_to_string($2));
+         
+//        if ($$->size > 0)
+//            l = $$;
+//        else 
+//            l = msg->parts;
+//
+//        CMimeListElem_T *e = NULL;
+//        e = cmime_list_tail(l);
+//        if (e != NULL) {
+//            CMimePart_T *p = NULL;
+//            p = (CMimePart_T *)cmime_list_data(e);
+//            printf("PARENT: [%s]\n",p->parent_boundary);
+//            //$2->parent_boundary = strdup(p->parent_boundary);
+//        } else 
+//            $2->parent_boundary = strdup(msg->boundary);
+//
+//        cmime_list_append($$,$2); 
+//        if ($2->boundary != NULL) {
+//            $2->prev = $$;
+//            $$ = $2 ->parts; 
+//        }
 
-        printf("\n===================\n");
-        printf("parts part\n===================\n[\n%s\n]\n\n",cmime_part_to_string($2));
         
+
+        
+    //    printf("BOUND2: [%s]\n",$2->boundary);
     } 
     | parts part PART_END {
-        cmime_list_append($$,$2);
-        printf("\n===================\n");
-        printf("parts part PART_END\n===================\n[\n%s\n]\n\n",cmime_part_to_string($2));
+        cmime_list_append(msg->parts,$2);
+        
+        $2->parent_boundary = (char *)calloc(strlen($3) - 2, sizeof(char *));
+        strncpy($2->parent_boundary,$3,strlen($3) - 2);
+        cmime_list_append(msg->parts,$2);
+        
+        printf("\n=========================================================\n");
+        printf("parts part PART_END\n");
+        printf("PART_END [%s]\n",$3);
+        printf("PARENT: [%s]\nBOUNDARY: [%s]\n",$2->parent_boundary,$2->boundary);
+        printf("=========================================================\n");
+        printf("[\n%s\n]\n\n",cmime_part_to_string($2));
+
+     //   printf("\n===================\n");
+     //   printf("parts part PART_END\n===================\n[\n%s\n]\n\n",cmime_part_to_string($2));
         
     }
     | parts part PART_END postface {
-        CMimeListElem_T *e = NULL;
-        CMimePart_T *p = NULL;
-        printf("P END: [%s]\n",$3);
-        
-        e = cmime_list_head($$);
-        while(e != NULL) {
-            p = (CMimePart_T *)cmime_list_data(e);
-            printf("P BOUND [%s] <-> [%s]\n",p->boundary,$3);
-            if (cmime_flbi_cmp_closing_boundary(p->boundary,$3)==1) {
-                cmime_part_set_postface(p,$4);
-                cmime_list_append(p->parts,$2);
-            
-                printf("\n===================\n");
-                printf("parts part PART_END postface\n===================\n[\n%s\n]\n\n",cmime_part_to_string($2));
+//        CMimeListElem_T *e = NULL;
+//        CMimePart_T *p = NULL;
+     //   printf("P END: [%s]\n",$3);
+        $2->parent_boundary = (char *)calloc(strlen($3) - 2, sizeof(char *));
+        strncpy($2->parent_boundary,$3,strlen($3) - 2);
+        cmime_list_append(msg->parts,$2);
+
+        printf("\n=========================================================\n");
+        printf("parts part PART_END postface\n");
+        printf("PART_END [%s]\n",$3);
+        printf("PARENT: [%s]\nBOUNDARY: [%s]\n",$2->parent_boundary,$2->boundary);
+        printf("=========================================================\n");
+        printf("[\n%s\n]\n\n",cmime_part_to_string($2));
+
+//        e = cmime_list_head($$);
+//        while(e != NULL) {
+//            p = (CMimePart_T *)cmime_list_data(e);
+//            if (cmime_flbi_cmp_closing_boundary(p->boundary,$3)==1) {
+//                cmime_part_set_postface(p,$4);
+
                 //printf("SWITCHING TO PREV\n"); 
                 //$$ = msg->parts; 
-                $$ = (CMimeList_T *)p->prev;
-                break;
-            }
-            e = e->next;
-        }
+                //printf("P SIZE: [%d]\n",p->parts->size);
+                //printf("PREV: [%s]\n",cmime_part_to_string(p));
+                //$$ = (CMimeList_T *)p->prev;
+//                $$ = p->parts;
+//                break;
+//            }
+//            e = e->next;
+//        }
         
     }
 ;
