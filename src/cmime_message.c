@@ -439,10 +439,8 @@ char *cmime_message_to_string(CMimeMessage_T *message) {
         
         if (p->last == 1) {
             _append_boundary(&out, p->parent_boundary, message->linebreak, BOUNDARY_CLOSE);
-            if (p->postface != NULL) {
-                printf("APPEND POSTFACE [%s]\n",p->postface); 
+            if (p->postface != NULL) 
                 _append_string(&out,p->postface);    
-            }
         }
 
         e = e->next;

@@ -129,25 +129,20 @@ int cmime_flbi_strstr_boundary(CMimeYYExtra_T *yydata, const char *haystack) {
 	return(0);
 }
 
-char *cmime_flbi_get_parent_boundary(CMimeMessage_T *msg, const char *prev_parent) {
+char *cmime_flbi_get_parent_boundary(CMimeMessage_T *msg, const char *search_parent) {
 	char *s = NULL;
 	CMimeListElem_T *e = NULL;
 	CMimePart_T *p = NULL;
 
-	s = msg->boundary;
-
-	e = cmime_list_tail(msg->parts);
+	e = cmime_list_head(msg->parts);
 	while(e != NULL) {
 		p = (CMimePart_T *)cmime_list_data(e);
 		if (p->boundary) {
-			if (prev_parent != NULL) {
-				if (strcmp(prev_parent,p->parent_boundary)==0) {
-					s = p->boundary;
+			if (search_parent != NULL) {
+				if ((strcmp(search_parent,p->boundary)==0)) {
+					s = p->parent_boundary;
 					break;	
 				}
-			} else {
-				s = p->boundary;
-				break;
 			}
 		}
 		e = e->prev;

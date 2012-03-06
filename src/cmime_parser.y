@@ -64,7 +64,8 @@ header:
 
 parts:
     part { 
-        $1->parent_boundary = strdup(cmime_flbi_get_parent_boundary(msg,NULL));
+        //$1->parent_boundary = strdup(cmime_flbi_get_parent_boundary(msg,NULL,NULL));
+        $1->parent_boundary = strdup(msg->boundary);
         cmime_list_append(msg->parts,$1);
         
         printf("\n=========================================================\n");
@@ -74,16 +75,23 @@ parts:
         printf("[\n%s\n]\n\n",cmime_part_to_string($1));
 
     }
-    | parts part { 
-        char *prev = NULL;
-        prev = ((CMimePart_T *)cmime_list_data(msg->parts->tail))->parent_boundary;
-        
-        $2->parent_boundary = strdup(cmime_flbi_get_parent_boundary(msg,prev));
+    | parts part {
+        char *s = NULL; 
+        CMimePart_T *p = ((CMimePart_T *)cmime_list_data(msg->parts->tail)); 
+        //prev = p->parent_boundary;
+        //$2->parent_boundary = strdup(cmime_flbi_get_parent_boundary(msg,p->parent_boundary,p->boundary));
+        if (p->boundary != NULL) 
+            $2->parent_boundary = strdup(p->boundary);
+        else {
+            $2->parent_boundary = strdup(cmime_flbi_get_parent_boundary(msg,p->parent_boundary));
+        }
+
         cmime_list_append(msg->parts,$2);
         
         printf("\n=========================================================\n");
         printf("parts part\n");
-        printf("PREV: [%s]\n",prev);
+        printf("PREV PARENT: [%s]\n",p->parent_boundary);
+        printf("PREV BOUNDARY: [%s]\n",p->boundary);
         printf("PARENT: [%s]\nBOUNDARY: [%s]\n",$2->parent_boundary,$2->boundary);
         printf("=========================================================\n");
         printf("[\n%s\n]\n\n",cmime_part_to_string($2));
@@ -91,8 +99,6 @@ parts:
 
     } 
     | parts part PART_END {
-        cmime_list_append(msg->parts,$2);
-        
         $2->parent_boundary = (char *)calloc(strlen($3) - 2, sizeof(char *));
         $3 += 2;
         strncpy($2->parent_boundary,$3,strlen($3) - 2);
