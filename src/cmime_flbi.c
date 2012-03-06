@@ -141,11 +141,10 @@ char *cmime_flbi_get_parent_boundary(CMimeMessage_T *msg, const char *prev_paren
 		p = (CMimePart_T *)cmime_list_data(e);
 		if (p->boundary) {
 			if (prev_parent != NULL) {
-				//printf("PREV [%s] <-> [%s]\n",prev_parent,p->boundary);
-				//if (strcmp(prev_parent,p->boundary)==0) {
-				//	s = p->boundary;
-				//	break;	
-				//}
+				if (strcmp(prev_parent,p->parent_boundary)==0) {
+					s = p->boundary;
+					break;	
+				}
 			} else {
 				s = p->boundary;
 				break;

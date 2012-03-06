@@ -45,6 +45,7 @@ typedef struct {
     char *parent_boundary;
 //	CMimeList_T *parts; /**< mime parts */
 	char *postface;
+    short int last;
 //    CMimeList_T *prev;
 } CMimePart_T;
 

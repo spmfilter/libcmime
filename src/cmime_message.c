@@ -381,7 +381,7 @@ char *cmime_message_to_string(CMimeMessage_T *message) {
     CMimeListElem_T *e = NULL;
     //CMimeListElem_T *e2 = NULL;
     CMimeHeader_T *h = NULL;
-    //CMimePart_T *p = NULL;
+    CMimePart_T *p = NULL;
     //CMimePart_T *sub_p = NULL;
     char *s = NULL;
     
@@ -402,20 +402,19 @@ char *cmime_message_to_string(CMimeMessage_T *message) {
     _append_string(&out,message->gap);
 
  //   _iter_parts(&out, message->parts, message, message->boundary);
+    e = cmime_list_head(message->parts);
+    while(e != NULL) {
+         p = (CMimePart_T *)cmime_list_data(e);
 
-    // e = cmime_list_head(message->parts);
-    // while(e != NULL) {
-        // p = (CMimePart_T *)cmime_list_data(e);
-
-        // _append_boundary(&out, message->boundary, message->linebreak, BOUNDARY_OPEN);
-        // s = cmime_part_to_string(p);
-        // if (s) {
-            // _append_string(&out,s);
+        _append_boundary(&out, p->parent_boundary, message->linebreak, BOUNDARY_OPEN);
+        s = cmime_part_to_string(p);
+         if (s) {
+            _append_string(&out,s);
             /*
             out = (char *)realloc(out,strlen(out) + strlen(s) + sizeof(char));
             strcat(out,s);*/
             // free(s);
-        // }
+        }
 
         /* are there any sub parts? */
     
@@ -438,15 +437,23 @@ char *cmime_message_to_string(CMimeMessage_T *message) {
             // _append_string(&out,p->postface);
         // } 
         
-        // e = e->next;
-    // }
+        if (p->last == 1) {
+            _append_boundary(&out, p->parent_boundary, message->linebreak, BOUNDARY_CLOSE);
+            if (p->postface != NULL) {
+                printf("APPEND POSTFACE [%s]\n",p->postface); 
+                _append_string(&out,p->postface);    
+            }
+        }
+
+        e = e->next;
+    }
     
     //_append_boundary(&out, message->boundary,message->linebreak, BOUNDARY_CLOSE);
-    /*
+    
     if (message->postface != NULL) {
         out = (char *)realloc(out,strlen(out) + strlen(message->postface) + sizeof(char));
         strcat(out,message->postface);
-    }*/
+    }
     _append_string(&out,message->postface);
     return(out);
 }

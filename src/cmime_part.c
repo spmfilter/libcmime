@@ -75,8 +75,7 @@ CMimePart_T *cmime_part_new(void) {
     part->boundary = NULL;
     part->parent_boundary = NULL;
     part->postface = NULL;
- //   if (cmime_list_new(&part->parts,_cmime_internal_parts_destroy)!=0)
- //       return(NULL);
+    part->last = 0;
 
     return(part);
 }
