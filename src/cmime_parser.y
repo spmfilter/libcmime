@@ -26,7 +26,7 @@
     CMimePart_T *p;
     CMimeList_T *l;
 }
-%token <string> HEADER_NAME HEADER_CONTENT GAP_LINE BODY_CONTENT LINE POSTFACE_LINE PART_END
+%token <string> HEADER_NAME HEADER_CONTENT GAP_LINE BODY_CONTENT LINE POSTFACE_LINE PART_END BOUNDARY
 
 %type <l> headers
 %type <l> mime_headers
@@ -63,74 +63,83 @@ header:
 ;
 
 parts:
-    part { 
+    BOUNDARY part { 
         //$1->parent_boundary = strdup(cmime_flbi_get_parent_boundary(msg,NULL,NULL));
-        $1->parent_boundary = strdup(msg->boundary);
-        cmime_list_append(msg->parts,$1);
+        //$2->parent_boundary = strdup(msg->boundary);
+        $2->parent_boundary = strdup($1);
+        cmime_list_append(msg->parts,$2);
         
         printf("\n=========================================================\n");
         printf("part\n");
-        printf("PARENT: [%s]\nBOUNDARY: [%s]\n",$1->parent_boundary,$1->boundary);
+        printf("BOUND: [%s]\n",$1);
+        printf("PARENT: [%s]\nBOUNDARY: [%s]\n",$2->parent_boundary,$2->boundary);
         printf("=========================================================\n");
-        printf("[\n%s\n]\n\n",cmime_part_to_string($1));
+        printf("[\n%s\n]\n\n",cmime_part_to_string($2));
 
     }
-    | parts part {
-        char *s = NULL; 
-        CMimePart_T *p = ((CMimePart_T *)cmime_list_data(msg->parts->tail)); 
+    | parts BOUNDARY part {
+        //char *s = NULL; 
+        //CMimePart_T *p = ((CMimePart_T *)cmime_list_data(msg->parts->tail)); 
+        
         //prev = p->parent_boundary;
         //$2->parent_boundary = strdup(cmime_flbi_get_parent_boundary(msg,p->parent_boundary,p->boundary));
-        if (p->boundary != NULL) 
-            $2->parent_boundary = strdup(p->boundary);
-        else {
-            $2->parent_boundary = strdup(cmime_flbi_get_parent_boundary(msg,p->parent_boundary));
-        }
+        
+        //if (p->boundary != NULL) 
+        //    $3->parent_boundary = strdup(p->boundary);
+        //else 
+        //    $3->parent_boundary = strdup(cmime_flbi_get_parent_boundary(msg,p->parent_boundary));
 
-        cmime_list_append(msg->parts,$2);
+        $3->parent_boundary = strdup($2);
+        cmime_list_append(msg->parts,$3);
         
         printf("\n=========================================================\n");
         printf("parts part\n");
-        printf("PREV PARENT: [%s]\n",p->parent_boundary);
-        printf("PREV BOUNDARY: [%s]\n",p->boundary);
-        printf("PARENT: [%s]\nBOUNDARY: [%s]\n",$2->parent_boundary,$2->boundary);
+        printf("BOUND: [%s]\n",$2);
+        //printf("PREV PARENT: [%s]\n",p->parent_boundary);
+        //printf("PREV BOUNDARY: [%s]\n",p->boundary);
+        printf("PARENT: [%s]\nBOUNDARY: [%s]\n",$3->parent_boundary,$3->boundary);
         printf("=========================================================\n");
-        printf("[\n%s\n]\n\n",cmime_part_to_string($2));
-
+        printf("[\n%s\n]\n\n",cmime_part_to_string($3));
 
     } 
-    | parts part PART_END {
-        $2->parent_boundary = (char *)calloc(strlen($3) - 2, sizeof(char *));
-        $3 += 2;
-        strncpy($2->parent_boundary,$3,strlen($3) - 2);
-        $2->last = 1;
-        cmime_list_append(msg->parts,$2);
+    | parts BOUNDARY part PART_END {
+        //$3->parent_boundary = (char *)calloc(strlen($4) - 2, sizeof(char *));
+        //$4 += 2;
+        //strncpy($3->parent_boundary,$4,strlen($4) - 2);
+        $3->parent_boundary = strdup($2);
+        $3->last = 1;
+        cmime_list_append(msg->parts,$3);
         
         printf("\n=========================================================\n");
         printf("parts part PART_END\n");
-        printf("PART_END [%s]\n",$3);
-        printf("PARENT: [%s]\nBOUNDARY: [%s]\n",$2->parent_boundary,$2->boundary);
+        printf("BOUND: [%s]\n",$2);
+        printf("PART_END [%s]\n",$4);
+        printf("PARENT: [%s]\nBOUNDARY: [%s]\n",$3->parent_boundary,$3->boundary);
         printf("=========================================================\n");
-        printf("[\n%s\n]\n\n",cmime_part_to_string($2));
+        printf("[\n%s\n]\n\n",cmime_part_to_string($3));
     }
-    | parts part PART_END postface {
-        $2->parent_boundary = (char *)calloc(strlen($3) - 2, sizeof(char *));
-        $3 += 2;
-        strncpy($2->parent_boundary,$3,strlen($3) - 2);
-        $2->last = 1;
-        $2->postface = strdup($4);
-        cmime_list_append(msg->parts,$2);
+    | parts BOUNDARY part PART_END postface {
+        //$2->parent_boundary = (char *)calloc(strlen($3) - 2, sizeof(char *));
+        //$3 += 2;
+        //strncpy($2->parent_boundary,$3,strlen($3) - 2);
+        $3->parent_boundary = strdup($2);
+        $3->last = 1;
+        $3->postface = strdup($5);
+        cmime_list_append(msg->parts,$3);
 
         printf("\n=========================================================\n");
         printf("parts part PART_END postface\n");
-        printf("PART_END [%s]\n",$3);
-        printf("PARENT: [%s]\nBOUNDARY: [%s]\n",$2->parent_boundary,$2->boundary);
+        printf("BOUND: [%s]\n",$2);
+        printf("PART_END [%s]\n",$4);
+        printf("PARENT: [%s]\nBOUNDARY: [%s]\n",$3->parent_boundary,$3->boundary);
         printf("=========================================================\n");
-        printf("[\n%s\n]\n\n",cmime_part_to_string($2));
+        printf("[\n%s\n]\n\n",cmime_part_to_string($3));
     }
 ;
     
 part:
     mime_headers mime_body {
+    //    printf("PARENT: [%s]\n",$1);
         CMimePart_T *p = cmime_part_new();
         cmime_part_set_content(p,$2);
         free($2);

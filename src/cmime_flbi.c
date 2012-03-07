@@ -67,7 +67,7 @@ int cmime_flbi_cmp_boundaries(CMimeYYExtra_T *yydata, const char *haystack) {
 
 	it = yydata->sub_part_boundaries;
 	while(*it!=NULL) {
-		asprintf(&p,"--%s",*it);
+		asprintf(&p,"--%s%s",*it,yydata->message->linebreak);
 		if (strncmp(haystack,p,strlen(p)) == 0) {
 			free(p);
 			return(1);
@@ -134,15 +134,17 @@ char *cmime_flbi_get_parent_boundary(CMimeMessage_T *msg, const char *search_par
 	CMimeListElem_T *e = NULL;
 	CMimePart_T *p = NULL;
 
+	s = msg->boundary;
+
 	e = cmime_list_head(msg->parts);
 	while(e != NULL) {
 		p = (CMimePart_T *)cmime_list_data(e);
 		if (p->boundary) {
 			if (search_parent != NULL) {
-				if ((strcmp(search_parent,p->boundary)==0)) {
+				if (strcmp(search_parent,p->boundary)==0) {
 					s = p->parent_boundary;
 					break;	
-				}
+				} 
 			}
 		}
 		e = e->prev;

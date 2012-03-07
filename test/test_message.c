@@ -45,24 +45,7 @@ char test_files[54][10] = {
     "m2012.txt","m2013.txt","m2014.txt","m2015.txt","m2016.txt",
     "m3001.txt","m3002.txt","m3003.txt","m3004.txt"
 };
-/*
-void _iter_parts(CMimeList_T *l) {
-    CMimeListElem_T *e = NULL;
-    CMimePart_T *p = NULL;
-    e = cmime_list_head(l);
-    while(e != NULL) {
-        p = (CMimePart_T *)cmime_list_data(e);
-        if (p != NULL) {
-            printf("PART: [%s]\n",cmime_part_to_string(p));
-            if (p->parts->size > 0) {
-                printf("ITERATING OVER SUBPARTS\n");
-                _iter_parts(p->parts);
-            } 
-        }
-        e = e->next;
-    }
-}
-*/
+
 int main (int argc, char const *argv[]) {
 
     CMimeMessage_T *msg = NULL;
@@ -70,13 +53,12 @@ int main (int argc, char const *argv[]) {
     char *fname = NULL;
     char *out = NULL;
     char *s = NULL;
-  /*  
-    CMimeListElem_T *e = NULL;
-    CMimeListElem_T *e2 = NULL;
-    CMimePart_T *p = NULL;
-    CMimePart_T *p2 = NULL;
-    */
-    asprintf(&fname,"%s/%s",SAMPLES_DIR,test_files[16]);
+    
+ //   CMimeListElem_T *e = NULL;
+ //   CMimeListElem_T *e2 = NULL;
+ //   CMimePart_T *p = NULL;
+ //  CMimePart_T *p2 = NULL;
+    asprintf(&fname,"%s/%s",SAMPLES_DIR,test_files[22]);
 
     msg = cmime_message_new();
     cmime_message_from_file(&msg,fname);
@@ -85,23 +67,7 @@ int main (int argc, char const *argv[]) {
     
     //printf("PARTS [%d]\n",msg->parts->size);
    // _iter_parts(msg->parts);
-/*
-    e = cmime_list_head(msg->parts);
-    while(e != NULL) {
-        p = (CMimePart_T *)cmime_list_data(e);
-        printf("SUBSIZE: [%d]\n",p->parts->size);
-        
-        if (p->parts->size > 0) {
-            e2 = cmime_list_head(p->parts);
-            while(e2 != NULL) {
-                p2 = (CMimePart_T *)cmime_list_data(e2);
-                e2 = e2->next;
-            }
-        }
-        
-        e = e->next;
-    }
-*/
+
 
  //   printf("OUT:\n---------------------------------------\n%s\n---------------------------------------\n",out);
     printf("PARTS: [%d]\n",msg->parts->size);
@@ -237,6 +203,6 @@ int main (int argc, char const *argv[]) {
         cmime_message_free(msg);
         printf("passed!\n");
     }
-    */
+*/    
     return(0);
 }
