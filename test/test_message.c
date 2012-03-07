@@ -58,7 +58,7 @@ int main (int argc, char const *argv[]) {
  //   CMimeListElem_T *e2 = NULL;
  //   CMimePart_T *p = NULL;
  //  CMimePart_T *p2 = NULL;
-    asprintf(&fname,"%s/%s",SAMPLES_DIR,test_files[22]);
+    asprintf(&fname,"%s/%s",SAMPLES_DIR,test_files[33]);
 
     msg = cmime_message_new();
     cmime_message_from_file(&msg,fname);
@@ -203,6 +203,6 @@ int main (int argc, char const *argv[]) {
         cmime_message_free(msg);
         printf("passed!\n");
     }
-*/    
+*/
     return(0);
 }

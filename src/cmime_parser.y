@@ -64,8 +64,6 @@ header:
 
 parts:
     BOUNDARY part { 
-        //$1->parent_boundary = strdup(cmime_flbi_get_parent_boundary(msg,NULL,NULL));
-        //$2->parent_boundary = strdup(msg->boundary);
         $2->parent_boundary = strdup($1);
         cmime_list_append(msg->parts,$2);
         
@@ -78,34 +76,18 @@ parts:
 
     }
     | parts BOUNDARY part {
-        //char *s = NULL; 
-        //CMimePart_T *p = ((CMimePart_T *)cmime_list_data(msg->parts->tail)); 
-        
-        //prev = p->parent_boundary;
-        //$2->parent_boundary = strdup(cmime_flbi_get_parent_boundary(msg,p->parent_boundary,p->boundary));
-        
-        //if (p->boundary != NULL) 
-        //    $3->parent_boundary = strdup(p->boundary);
-        //else 
-        //    $3->parent_boundary = strdup(cmime_flbi_get_parent_boundary(msg,p->parent_boundary));
-
         $3->parent_boundary = strdup($2);
         cmime_list_append(msg->parts,$3);
         
         printf("\n=========================================================\n");
         printf("parts part\n");
         printf("BOUND: [%s]\n",$2);
-        //printf("PREV PARENT: [%s]\n",p->parent_boundary);
-        //printf("PREV BOUNDARY: [%s]\n",p->boundary);
         printf("PARENT: [%s]\nBOUNDARY: [%s]\n",$3->parent_boundary,$3->boundary);
         printf("=========================================================\n");
         printf("[\n%s\n]\n\n",cmime_part_to_string($3));
 
     } 
     | parts BOUNDARY part PART_END {
-        //$3->parent_boundary = (char *)calloc(strlen($4) - 2, sizeof(char *));
-        //$4 += 2;
-        //strncpy($3->parent_boundary,$4,strlen($4) - 2);
         $3->parent_boundary = strdup($2);
         $3->last = 1;
         cmime_list_append(msg->parts,$3);
@@ -119,9 +101,6 @@ parts:
         printf("[\n%s\n]\n\n",cmime_part_to_string($3));
     }
     | parts BOUNDARY part PART_END postface {
-        //$2->parent_boundary = (char *)calloc(strlen($3) - 2, sizeof(char *));
-        //$3 += 2;
-        //strncpy($2->parent_boundary,$3,strlen($3) - 2);
         $3->parent_boundary = strdup($2);
         $3->last = 1;
         $3->postface = strdup($5);
@@ -139,7 +118,6 @@ parts:
     
 part:
     mime_headers mime_body {
-    //    printf("PARENT: [%s]\n",$1);
         CMimePart_T *p = cmime_part_new();
         cmime_part_set_content(p,$2);
         free($2);

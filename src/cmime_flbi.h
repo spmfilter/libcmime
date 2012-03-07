@@ -50,11 +50,8 @@ int cmime_scanner_scan_file(CMimeMessage_T **message, FILE *fp);
 char *cmime_flbi_get_boundary(char *s);
 int cmime_flbi_match_boundary(const char *haystack);
 int cmime_flbi_cmp_boundaries(CMimeYYExtra_T *yydata, const char *haystack);
-int cmime_flbi_cmp_closing_boundary(const char *boundary, const char *haystack);
 void cmime_flbi_check_part_boundary(CMimePart_T *part);
 int cmime_flbi_strstr_boundary(CMimeYYExtra_T *yydata, const char *haystack);
-
-char *cmime_flbi_get_parent_boundary(CMimeMessage_T *msg, const char *search_parent);
 
 #ifdef __cplusplus
 }
