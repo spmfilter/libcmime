@@ -50,9 +50,9 @@ void _append_boundary(char **out, const char *boundary,const char *linebreak, _B
     char *s = NULL;
     if(boundary != NULL) {
         if (type == BOUNDARY_OPEN)
-            asprintf(&s,"%s%s",boundary,linebreak);
+            asprintf(&s,"--%s%s",boundary,linebreak);
         else if (type == BOUNDARY_CLOSE)
-            asprintf(&s,"%s--%s",boundary,linebreak);
+            asprintf(&s,"--%s--%s",boundary,linebreak);
         
         (*out) = (char *)realloc((*out),strlen((*out)) + strlen(s) + sizeof(char));
         strcat((*out),s);

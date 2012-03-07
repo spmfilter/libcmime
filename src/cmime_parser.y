@@ -64,6 +64,7 @@ header:
 
 parts:
     BOUNDARY part { 
+        $1 += 2;
         $2->parent_boundary = strdup($1);
         cmime_list_append(msg->parts,$2);
         
@@ -76,6 +77,7 @@ parts:
 
     }
     | parts BOUNDARY part {
+        $2 += 2;
         $3->parent_boundary = strdup($2);
         cmime_list_append(msg->parts,$3);
         
@@ -88,6 +90,7 @@ parts:
 
     } 
     | parts BOUNDARY part PART_END {
+        $2 += 2;
         $3->parent_boundary = strdup($2);
         $3->last = 1;
         cmime_list_append(msg->parts,$3);
@@ -101,6 +104,7 @@ parts:
         printf("[\n%s\n]\n\n",cmime_part_to_string($3));
     }
     | parts BOUNDARY part PART_END postface {
+        $2 += 2;
         $3->parent_boundary = strdup($2);
         $3->last = 1;
         $3->postface = strdup($5);
