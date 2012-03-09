@@ -40,10 +40,8 @@ typedef struct {
 	int num_parts;
 } CMimeYYExtra_T;
 
-//void yyrestart (FILE *input_file);
 int yyparse (void *scanner, CMimeMessage_T *msg); 
 extern int yylex();
-//void yyerror(char *s,...);
 void yyerror(YYLTYPE *yyllocp, void *scanner, CMimeMessage_T *msg, const char *s, ...);
 int cmime_scanner_scan_file(CMimeMessage_T **message, FILE *fp); 
 
