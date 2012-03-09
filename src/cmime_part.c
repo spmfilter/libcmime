@@ -163,25 +163,25 @@ void cmime_part_set_content(CMimePart_T *part, const char *s) {
     part->content = strdup(s);
 }
 
-char *cmime_part_to_string(CMimePart_T *part) {
+char *cmime_part_to_string(CMimePart_T *part, const char *nl) {
     char *out = NULL;
     char *content = NULL; 
     char *ptemp = NULL;
     int with_headers = 0;
     CMimeListElem_T *e;
     CMimeHeader_T *h;
-    char *nl = NULL;
     
     assert(part);
 
     content = cmime_part_get_content(part);
-    if (content==NULL)
-        return(NULL);
-        
-    nl = _cmime_internal_determine_linebreak(content);  
-    if (nl == NULL)
-        nl = CRLF;
     
+    if (nl == NULL) {
+        if (content != NULL)
+            nl = _cmime_internal_determine_linebreak(content);  
+        else
+            nl = CRLF;
+    }
+
     out = (char *)calloc(1,sizeof(char));
     if (cmime_list_size(part->headers)!=0) {
         e = cmime_list_head(part->headers);
@@ -208,8 +208,10 @@ char *cmime_part_to_string(CMimePart_T *part) {
         strcat(out,nl);
     } 
 
-    out = (char *)realloc(out,strlen(out) + strlen(content) + 2);
-    strcat(out,content);
+    if (content != NULL) {
+        out = (char *)realloc(out,strlen(out) + strlen(content) + 2);
+        strcat(out,content);
+    }
     
     return(out);
 }

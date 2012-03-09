@@ -64,7 +64,7 @@ int main (int argc, char const *argv[]) {
 	s = cmime_part_get_content(part);	
 	assert(strcmp(s,test_content_string1)==0);
 	
-	out = cmime_part_to_string(part);
+	out = cmime_part_to_string(part,NULL);
 	cmime_part_free(part);
 	
 	/* now create a new mime part object from 
@@ -72,7 +72,7 @@ int main (int argc, char const *argv[]) {
 	part = cmime_part_new();
 	cmime_part_from_string(&part,out);
 
-	out2 = cmime_part_to_string(part);
+	out2 = cmime_part_to_string(part,NULL);
 	assert(strcmp(out,out2)==0);
 	free(out);
 	free(out2);
@@ -82,7 +82,7 @@ int main (int argc, char const *argv[]) {
 	asprintf(&s,"%s/c0001.txt",SAMPLES_DIR);
 	cmime_part_from_file(&part,s);
 	free(s);
-	out = cmime_part_to_string(part);
+	out = cmime_part_to_string(part,NULL);
 	assert(out);
 	free(out);
 		

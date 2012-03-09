@@ -41,6 +41,7 @@
 
 message:
     headers gap parts
+    | headers parts
     | headers BODY_CONTENT {
         CMimePart_T *p = cmime_part_new();
         cmime_part_set_content(p,$2);
@@ -55,6 +56,7 @@ headers:
     
 header:
     HEADER_NAME HEADER_CONTENT {
+//        printf("HEADER_NAME HEADER_CONTENT [%s]\n",$2);
         CMimeHeader_T *h = cmime_header_new();
         cmime_header_set_name(h,$1);
         cmime_header_set_value(h,$2,0);
@@ -73,7 +75,7 @@ parts:
         printf("BOUND: [%s]\n",$1);
         printf("PARENT: [%s]\nBOUNDARY: [%s]\n",$2->parent_boundary,$2->boundary);
         printf("=========================================================\n");
-        printf("[\n%s\n]\n\n",cmime_part_to_string($2));
+        printf("[\n%s\n]\n\n",cmime_part_to_string($2,msg->linebreak));
 
     }
     | parts BOUNDARY part {
@@ -86,7 +88,7 @@ parts:
         printf("BOUND: [%s]\n",$2);
         printf("PARENT: [%s]\nBOUNDARY: [%s]\n",$3->parent_boundary,$3->boundary);
         printf("=========================================================\n");
-        printf("[\n%s\n]\n\n",cmime_part_to_string($3));
+        printf("[\n%s\n]\n\n",cmime_part_to_string($3,msg->linebreak));
 
     } 
     | parts BOUNDARY part PART_END {
@@ -101,7 +103,7 @@ parts:
         printf("PART_END [%s]\n",$4);
         printf("PARENT: [%s]\nBOUNDARY: [%s]\n",$3->parent_boundary,$3->boundary);
         printf("=========================================================\n");
-        printf("[\n%s\n]\n\n",cmime_part_to_string($3));
+        printf("[\n%s\n]\n\n",cmime_part_to_string($3,msg->linebreak));
     }
     | parts BOUNDARY part PART_END postface {
         $2 += 2;
@@ -116,12 +118,20 @@ parts:
         printf("PART_END [%s]\n",$4);
         printf("PARENT: [%s]\nBOUNDARY: [%s]\n",$3->parent_boundary,$3->boundary);
         printf("=========================================================\n");
-        printf("[\n%s\n]\n\n",cmime_part_to_string($3));
+        printf("[\n%s\n]\n\n",cmime_part_to_string($3,msg->linebreak));
     }
 ;
     
 part:
-    mime_headers mime_body {
+    mime_headers {
+//        printf("MIME_HEADERS\n");
+        CMimePart_T *p = cmime_part_new();
+        $$ = p; 
+        p->headers = $1;
+        cmime_flbi_check_part_boundary(p);
+    }
+    | mime_headers mime_body {
+//        printf("MIME_HEADERS MIME_BODY\n");
         CMimePart_T *p = cmime_part_new();
         cmime_part_set_content(p,$2);
         free($2);
@@ -129,21 +139,51 @@ part:
         p->headers = $1;
         cmime_flbi_check_part_boundary(p);
     }
+//    | mime_headers BOUNDARY {
+//        printf("mime_headers BOUNDARY [%s]\n",$2);
+//        CMimePart_T *p = cmime_part_new();
+//        p->parent_boundary = strdup($2);
+//        $$ = p; 
+//        p->headers = $1;
+//        cmime_flbi_check_part_boundary(p);
+//    }
+
+
+
+//    | mime_headers mime_body BOUNDARY{
+//        printf("BOUND [%s]\n",$3);
+
+//        CMimePart_T *p = cmime_part_new();
+//        p->parent_boundary = strdup($3);
+//        printf("$3: [%s]\n",$3);
+//        cmime_part_set_content(p,$2);
+//        free($2);
+        
+//        $$ = p; 
+//        p->headers = $1;
+//        cmime_flbi_check_part_boundary(p);
+//    }
 ; 
     
 mime_headers: 
     header { 
+//        printf("header\n");
         CMimeList_T *l = NULL;
         cmime_list_new(&l,_cmime_internal_header_destroy);
         cmime_list_append(l,$1);
         $$ = l;
     }
-    | mime_headers header { 
+    | mime_headers header {
+//        printf("mime_headers headers\n");
         cmime_list_append($1,$2); 
     }
 ;
     
 mime_body:
+//    BOUNDARY {
+//        $$ = (char *)calloc((size_t)1,sizeof(char));
+//    }
+//    | LINE {
     LINE {
         $$ = (char *)calloc((size_t)1,strlen($1) + sizeof(char));
         strcat($$,$1); 

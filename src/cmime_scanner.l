@@ -53,13 +53,12 @@ POSTFACE_RE         (.*--{LF_RE})
         yyextra->message->linebreak = strdup(_cmime_internal_determine_linebreak(yytext));
     
     if (yyextra->message->boundary==NULL) {
-        if (cmime_flbi_match_boundary(yytext)==1)
+        if (cmime_flbi_match_boundary(yytext)==1) {
             yyextra->message->boundary = cmime_flbi_get_boundary(yytext);   
+        }
     }
 
     yylval->string = cmime_string_chomp(yytext);
-    
-    
     return HEADER_CONTENT;   
 }
     
@@ -75,6 +74,7 @@ POSTFACE_RE         (.*--{LF_RE})
     if (cmime_flbi_cmp_boundaries(yyextra,yytext)==1) {
         BEGIN(MIME_PART);
         yylval->string = cmime_string_chomp(yytext);
+//        printf("GAP [%s]\n",yylval->string);
         return BOUNDARY;
     } else {
         yylval->string = yytext;
@@ -102,6 +102,7 @@ POSTFACE_RE         (.*--{LF_RE})
 <MIME_CONTENT>{LINE_RE} {
     if (cmime_flbi_cmp_boundaries(yyextra,yytext)==1) {
         BEGIN(MIME_PART); 
+//        printf("HUPPI FLUPPI [%s]\n",yytext);
         yylval->string = cmime_string_chomp(yytext);
         return BOUNDARY;
     } else {
@@ -114,14 +115,18 @@ POSTFACE_RE         (.*--{LF_RE})
 <MIME_PART>{HEADERNAME_RE} {
     BEGIN(MIME_HEADER);
     yylval->string = strsep(&yytext,":");
+    
+//    printf("BEGIN MIME_HEADER [%s]\n",yylval->string);
     return HEADER_NAME;
 }
 
 <MIME_PART>{LF_RE} {
+//    printf("BEGIN MIME_CONTENT\n");
     BEGIN(MIME_CONTENT);
 }
 
 <MIME_HEADER>{HEADERBODY_RE} {
+//    printf("MIME_HEADER BODY [%s]\n",yytext);
     BEGIN(MIME_PART);
     yylval->string = cmime_string_chomp(yytext);
     if (cmime_flbi_match_boundary(yytext)==1)  {

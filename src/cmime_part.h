@@ -151,7 +151,7 @@ void cmime_part_set_postface(CMimePart_T *part, const char *s);
  * @param part a CMimePart_T object
  * @returns a newly allocated string with complete mime part
  */
-char *cmime_part_to_string(CMimePart_T *part);
+char *cmime_part_to_string(CMimePart_T *part, const char *nl);
 
 /*!
  * @fn int cmime_part_from_file(CMimePart_T **part, char *filename)

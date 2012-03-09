@@ -58,9 +58,10 @@ int main (int argc, char const *argv[]) {
  //   CMimeListElem_T *e2 = NULL;
  //   CMimePart_T *p = NULL;
  //  CMimePart_T *p2 = NULL;
-//    asprintf(&fname,"%s/%s",SAMPLES_DIR,test_files[35]);
+ //   asprintf(&fname,"%s/%s",SAMPLES_DIR,test_files[38]);
 
-    asprintf(&fname,"%s/%s",SAMPLES_DIR,test_files[10]);
+ //   asprintf(&fname,"%s/%s",SAMPLES_DIR,test_files[35]);
+    asprintf(&fname,"%s/%s",SAMPLES_DIR,test_files[37]);
     msg = cmime_message_new();
     cmime_message_from_file(&msg,fname);
     free(fname);

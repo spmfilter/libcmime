@@ -26,10 +26,12 @@
 
 char *cmime_flbi_get_boundary(char *s) {
 	char *boundary = NULL;	
+	char *p = NULL;
 	int pos = 0;
 
-	if (strcasestr(s,"boundary=")) {
-		s = strstr(s,"=");
+	p = strcasestr(s,"boundary=");
+	if (p != NULL) {
+		s = strstr(p,"=");
 		if (*++s=='"') 
 			s++;
 				
@@ -57,8 +59,9 @@ int cmime_flbi_match_boundary(const char *haystack) {
 int cmime_flbi_cmp_boundaries(CMimeYYExtra_T *yydata, const char *haystack) {
 	char *p = NULL;
 	char **it = NULL;
-	
+
 	asprintf(&p,"--%s%s",yydata->message->boundary,yydata->message->linebreak);
+//	printf("HAYSTACK [%s] P [%s] B: [%s]\n",haystack,p,yydata->message->boundary);
 	if (strncmp(haystack,p,strlen(p)) == 0) {
 		free(p);
 		return(1);
@@ -83,7 +86,7 @@ void cmime_flbi_check_part_boundary(CMimePart_T *part) {
 	CMimeListElem_T *e = NULL;
 	CMimeHeader_T *h = NULL;
 	char *bound = NULL;
-	
+
 	e = cmime_list_head(part->headers);
 	while(e != NULL) {
 		h = (CMimeHeader_T *)cmime_list_data(e);

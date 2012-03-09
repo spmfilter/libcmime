@@ -407,7 +407,7 @@ char *cmime_message_to_string(CMimeMessage_T *message) {
          p = (CMimePart_T *)cmime_list_data(e);
 
         _append_boundary(&out, p->parent_boundary, message->linebreak, BOUNDARY_OPEN);
-        s = cmime_part_to_string(p);
+        s = cmime_part_to_string(p,message->linebreak);
          if (s) {
             _append_string(&out,s);
             /*
