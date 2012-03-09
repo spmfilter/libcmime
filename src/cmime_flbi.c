@@ -58,7 +58,7 @@ int cmime_flbi_match_boundary(const char *haystack) {
 
 int cmime_flbi_cmp_boundaries(CMimeYYExtra_T *yydata, const char *haystack) {
 	char *p = NULL;
-	char **it = NULL;
+    int i;
 
 	asprintf(&p,"--%s%s",yydata->message->boundary,yydata->message->linebreak);
 	if (strncmp(haystack,p,strlen(p)) == 0) {
@@ -67,15 +67,13 @@ int cmime_flbi_cmp_boundaries(CMimeYYExtra_T *yydata, const char *haystack) {
 	}	
 	free(p);
 
-	it = yydata->sub_part_boundaries;
-	while(*it!=NULL) {
-		asprintf(&p,"--%s%s",*it,yydata->message->linebreak);
+    for(i=0;i < yydata->num_parts; i++) {
+		asprintf(&p,"--%s%s",yydata->sub_part_boundaries[i],yydata->message->linebreak);
 		if (strncmp(haystack,p,strlen(p)) == 0) {
 			free(p);
 			return(1);
 		}
 		free(p);
-		it++;
 	}
 
 	return(0);

@@ -168,8 +168,9 @@ int cmime_scanner_scan_file(CMimeMessage_T **message, FILE *fp) {
   
     for(i=0; i < extra->num_parts; i++) {
         if (extra->sub_part_boundaries[i]!=NULL)
-            free(extra->sub_part_boundaries);
+            free(extra->sub_part_boundaries[i]);
     }
+    free(extra->sub_part_boundaries);
     free(extra); 
 
     yylex_destroy(scanner);
