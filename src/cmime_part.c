@@ -96,8 +96,6 @@ void cmime_part_free(CMimePart_T *part) {
 
     if (part->postface != NULL)
         free(part->postface);
-
-//    cmime_list_free(part->parts);
         
     free(part);
 }

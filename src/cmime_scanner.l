@@ -154,7 +154,7 @@ int cmime_scanner_scan_file(CMimeMessage_T **message, FILE *fp) {
     extra = (CMimeYYExtra_T *)calloc((size_t)1, sizeof(CMimeYYExtra_T));
     extra->message = *message;
     extra->num_parts = 0;
-    extra->sub_part_boundaries = (char **)calloc(1, sizeof(char *));
+    extra->sub_part_boundaries = (char **)calloc((size_t)1, sizeof(char *));
 
     if(yylex_init_extra(extra,&scanner)) { 
         fprintf(stderr, "error: no scanning today\n"); 
@@ -165,13 +165,13 @@ int cmime_scanner_scan_file(CMimeMessage_T **message, FILE *fp) {
     yyparse(scanner,(*message));  
     
     extra->message = NULL;
-/*  
+  
     for(i=0; i < extra->num_parts; i++) {
         if (extra->sub_part_boundaries[i]!=NULL)
             free(extra->sub_part_boundaries);
     }
     free(extra); 
-*/
+
     yylex_destroy(scanner);
 
     return(0);

@@ -85,6 +85,7 @@ parts:
         $3->parent_boundary = strdup($2);
         $3->last = 1;
         $3->postface = strdup($5);
+        free($5);
         cmime_list_append(msg->parts,$3);
     }
 ;

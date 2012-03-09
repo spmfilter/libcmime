@@ -47,32 +47,19 @@ char test_files[54][10] = {
 };
 
 int main (int argc, char const *argv[]) {
-/*
+
     CMimeMessage_T *msg = NULL;
     FILE *fp = NULL;
     char *fname = NULL;
     char *out = NULL;
     char *s = NULL;
     
- //   CMimeListElem_T *e = NULL;
- //   CMimeListElem_T *e2 = NULL;
- //   CMimePart_T *p = NULL;
- //  CMimePart_T *p2 = NULL;
- //   asprintf(&fname,"%s/%s",SAMPLES_DIR,test_files[38]);
-
- //   asprintf(&fname,"%s/%s",SAMPLES_DIR,test_files[35]);
     asprintf(&fname,"%s/%s",SAMPLES_DIR,test_files[37]);
     msg = cmime_message_new();
     cmime_message_from_file(&msg,fname);
     free(fname);
     out = cmime_message_to_string(msg);
     
-    //printf("PARTS [%d]\n",msg->parts->size);
-   // _iter_parts(msg->parts);
-
-
- //   printf("OUT:\n---------------------------------------\n%s\n---------------------------------------\n",out);
-    printf("PARTS: [%d]\n",msg->parts->size);
     asprintf(&s,"out_test.txt");
     fp = fopen(s,"wb");
     fwrite(out,strlen(out),1,fp);
@@ -82,8 +69,8 @@ int main (int argc, char const *argv[]) {
     free(out);
     
     cmime_message_free(msg);
-*/
 
+/*
     CMimeMessage_T *msg = cmime_message_new();
     char *s = NULL;
     char *s2 = NULL;
@@ -205,6 +192,6 @@ int main (int argc, char const *argv[]) {
         cmime_message_free(msg);
         printf("passed!\n");
     }
-
+*/
     return(0);
 }

@@ -67,44 +67,6 @@ void _append_string(char **out, const char *s) {
     }
 }
 
-/*
-void _iter_parts(char **out, CMimeList_T *l, CMimeMessage_T *message, char *boundary) {
-    CMimeListElem_T *e = NULL;
-    CMimePart_T *p = NULL;
-    char *s = NULL;
-
-    printf("LIST SIZE: [%d]\n",l->size);
-
-    e = cmime_list_head(l);
-    while(e != NULL) {
-        p = (CMimePart_T *)cmime_list_data(e);
-        
-        _append_boundary(out, boundary, message->linebreak, BOUNDARY_OPEN);
-
-        if (p->boundary != NULL)
-            boundary = p->boundary;
-
-        s = cmime_part_to_string(p);
-        if (s) {
-            _append_string(out,s);
-            free(s);
-        }
-
-//        if (p->parts->size > 0) {
-            //if (p->boundary != NULL)
-           //     _iter_parts(out,p->parts, message, boundary);
-            //else
-             //   _iter_parts(out,p->parts, message, message->boundary);
-//        } 
-        
-        if (e->next == NULL) 
-            _append_boundary(out, boundary, message->linebreak, BOUNDARY_CLOSE);
-
-        e = e->next;
-    }
-}
-*/
-
 CMimeMessage_T *cmime_message_new(void) {
     CMimeMessage_T *message = NULL;
     
@@ -150,9 +112,8 @@ void cmime_message_free(CMimeMessage_T *message) {
     
     if (message->postface!=NULL)
         free(message->postface);
-    
-    // TODO: check frees
-    //cmime_list_free(message->parts);
+
+    cmime_list_free(message->parts);
     
     free(message);
 }
@@ -401,7 +362,6 @@ char *cmime_message_to_string(CMimeMessage_T *message) {
 
     _append_string(&out,message->gap);
 
- //   _iter_parts(&out, message->parts, message, message->boundary);
     e = cmime_list_head(message->parts);
     while(e != NULL) {
          p = (CMimePart_T *)cmime_list_data(e);
@@ -410,33 +370,9 @@ char *cmime_message_to_string(CMimeMessage_T *message) {
         s = cmime_part_to_string(p,message->linebreak);
          if (s) {
             _append_string(&out,s);
-            /*
-            out = (char *)realloc(out,strlen(out) + strlen(s) + sizeof(char));
-            strcat(out,s);*/
-            // free(s);
+            free(s);
         }
 
-        /* are there any sub parts? */
-    
-        // if (p->parts->size > 0) {
-            // e2 = cmime_list_head(p->parts);
-            // while(e2 != NULL) {
-                // sub_p = (CMimePart_T *)cmime_list_data(e2);
-// 
-                // _append_boundary(&out, p->boundary, message->linebreak, BOUNDARY_OPEN);
-                // s = cmime_part_to_string(sub_p);
-                // if (s) {
-                    // _append_string(&out,s);
-                    // free(s);
-                // }
-                // e2 = e2->next;
-            // }
-
-            // _append_boundary(&out, p->boundary,message->linebreak,BOUNDARY_CLOSE);
-// 
-            // _append_string(&out,p->postface);
-        // } 
-        
         if (p->last == 1) {
             _append_boundary(&out, p->parent_boundary, message->linebreak, BOUNDARY_CLOSE);
             if (p->postface != NULL) 
@@ -445,8 +381,6 @@ char *cmime_message_to_string(CMimeMessage_T *message) {
 
         e = e->next;
     }
-    
-    //_append_boundary(&out, message->boundary,message->linebreak, BOUNDARY_CLOSE);
     
     if (message->postface != NULL) {
         out = (char *)realloc(out,strlen(out) + strlen(message->postface) + sizeof(char));

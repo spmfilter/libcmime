@@ -43,10 +43,8 @@ typedef struct {
 	char *content; /**< content of mime part */
 	char *boundary;
     char *parent_boundary;
-//	CMimeList_T *parts; /**< mime parts */
 	char *postface;
     short int last;
-//    CMimeList_T *prev;
 } CMimePart_T;
 
 /*!

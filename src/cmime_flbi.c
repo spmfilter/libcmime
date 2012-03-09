@@ -61,7 +61,6 @@ int cmime_flbi_cmp_boundaries(CMimeYYExtra_T *yydata, const char *haystack) {
 	char **it = NULL;
 
 	asprintf(&p,"--%s%s",yydata->message->boundary,yydata->message->linebreak);
-//	printf("HAYSTACK [%s] P [%s] B: [%s]\n",haystack,p,yydata->message->boundary);
 	if (strncmp(haystack,p,strlen(p)) == 0) {
 		free(p);
 		return(1);
