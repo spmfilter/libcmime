@@ -1,5 +1,5 @@
 /* libcmime - A C mime library
- * Copyright (C) 2012 SpaceNet AG
+ * Copyright (C) 2012 SpaceNet AG and Werner Detter (werner@aloah-from-hell.de)
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -239,7 +239,6 @@ char *cmime_qp_encode(char *line_in, char *lt) {
 
 	return line_out;
 }
-
 
 char *cmime_qp_rm_charenc(char *line_in) {
 	char *line_out = NULL;
