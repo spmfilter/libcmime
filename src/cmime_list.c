@@ -26,7 +26,7 @@
 
 /* initializes a new empty doubly linked list */
 int cmime_list_new(CMimeList_T **list, void (*destroy)(void *data)) {
-	(*list) = (CMimeList_T *)calloc(1,sizeof(CMimeList_T));
+	(*list) = (CMimeList_T *)calloc((size_t)1,sizeof(CMimeList_T));
 	
 	if(*list == NULL) {
 		return(-1);

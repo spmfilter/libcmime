@@ -92,18 +92,26 @@ parts:
     
 part:
     mime_headers {
-        CMimePart_T *p = cmime_part_new();
-        $$ = p; 
+        CMimePart_T *p = NULL;
+        p = cmime_part_new();
+        // free allocated headers list, because we get a 
+        // new one
+        cmime_list_free(p->headers);
         p->headers = $1;
         cmime_flbi_check_part_boundary(p);
+        $$ = p;
     }
     | mime_headers mime_body {
-        CMimePart_T *p = cmime_part_new();
+        CMimePart_T *p = NULL;
+        p = cmime_part_new();
         cmime_part_set_content(p,$2);
         free($2);
-        $$ = p; 
+        // free allocated headers list, because we get a 
+        // new one
+        cmime_list_free(p->headers);
         p->headers = $1;
         cmime_flbi_check_part_boundary(p);
+        $$ = p;
     }
 ; 
     

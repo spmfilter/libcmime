@@ -176,7 +176,8 @@ char *cmime_part_to_string(CMimePart_T *part, const char *nl) {
     if (nl == NULL) {
         if (content != NULL)
             nl = _cmime_internal_determine_linebreak(content);  
-        else
+        
+        if (nl == NULL)
             nl = CRLF;
     }
 
