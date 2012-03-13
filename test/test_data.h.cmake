@@ -37,7 +37,7 @@ char test_string1_base64[] = "VGVzdCBzdHJpbmcgMQ==";
 char test_string2[] = "Test string 2";
 char test_string3[] = "Test string 3";
 char test_string4[] = "  Test string 3   ";
-char test_string5[] = "!§$%&/()=[]{}??##++<>";
+char test_string5[] = "!Â§$%&/()=[]{}??##++<>";
 char test_string5_base64[] = "IcKnJCUmLygpPVtde30/PyMjKys8Pg==";
 
 char header_string1[] = "X-Foo: foobar";
@@ -71,6 +71,9 @@ arcu. In enim justo, rhoncus ut, imperdiet a, venenatis vitae, justo. \
 Nullam dictum felis eu pede mollis pretium.";
 
 char test_boundary[] = "--Part_5-743799170";
+
+char quoted_printable_string1[] = "ü";
+char quoted_printable_string1_encoded[] = "ü";
 
 #ifdef __cplusplus
 }
