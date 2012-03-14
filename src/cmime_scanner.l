@@ -7,6 +7,7 @@
 %option yylineno
     
 %x HEADER
+%x RECIPIENT_LIST
 %x GAP
 %x BODY 
 %x MIME_PART

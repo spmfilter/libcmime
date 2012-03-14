@@ -71,16 +71,25 @@ void cmime_message_free(CMimeMessage_T *message);
  * @fn void cmime_message_set_sender(CMimeMessage_T *message, char *sender)
  * @brief Add sender to CMimeMessage_T object. If sender already exists,
  *   it will be overwritten.
- * @param message a CMimeMessate_T obect
+ * @param message a CMimeMessage_T obect
  * @param sender sender string
  */
 void cmime_message_set_sender(CMimeMessage_T *message, const char *sender);
 
 /*!
- * @def cmime_message_get_sender(message)
+ * @fn char *cmime_message_get_sender_string(CMimeMessage_T *message)
+ * @brief Get sender of a CMimeMessage_T object as string
+ * @param message a CMimeMessage_T object
  * @returns sender of message as CMimeAddress_T object
  */
-#define cmime_message_get_sender(message) (cmime_address_to_string(message->sender))
+//#define cmime_message_get_sender(message) (cmime_address_to_string(message->sender))
+char *cmime_message_get_sender_string(CMimeMessage_T *message);
+
+/*!
+ * @def cmime_message_get_sender(message)
+ * @returns sender of CMimeMessage_T object
+ */
+#define cmime_message_get_sender(message) (message->sender)
 
 /*!
  *

@@ -11,6 +11,7 @@
     #include "cmime_flbi.h"
     #include "cmime_part.h"
     #include "cmime_internal.h"
+    #include "cmime_string.h"
 %}
 
 %locations 
@@ -26,7 +27,7 @@
     CMimePart_T *p;
     CMimeList_T *l;
 }
-%token <string> HEADER_NAME HEADER_CONTENT GAP_LINE BODY_CONTENT LINE POSTFACE_LINE PART_END BOUNDARY
+%token <string> HEADER_NAME TO_HEADER HEADER_CONTENT GAP_LINE BODY_CONTENT LINE POSTFACE_LINE PART_END BOUNDARY
 
 %type <l> headers
 %type <l> mime_headers
@@ -37,6 +38,7 @@
 
 %type <string> mime_body
 %type <string> postface
+
 %%
 
 message:
@@ -56,10 +58,54 @@ headers:
     
 header:
     HEADER_NAME HEADER_CONTENT {
+        CMimeAddressType_T t = -1;
+        char *s = NULL;
+        char *it = NULL;
+        int in_name = 0;
+        int pos = 0;
         CMimeHeader_T *h = cmime_header_new();
         cmime_header_set_name(h,$1);
         cmime_header_set_value(h,$2,0);
         $$ = h;
+
+        /* got a header with message recipients? */
+        if (strcasecmp($1,"from")==0) {
+            cmime_message_set_sender(msg,$2);
+        } else if (strcasecmp($1,"to")==0) {
+            t = CMIME_ADDRESS_TYPE_TO;
+        } else if (strcasecmp($1,"cc")==0) {
+            t = CMIME_ADDRESS_TYPE_CC;
+        } else if (strcasecmp($1,"bcc")==0) {
+            t = CMIME_ADDRESS_TYPE_BCC;
+        }
+        
+        if (t != -1) {
+            it = $2;
+            s = (char *)calloc((size_t)1,sizeof(char));
+            while(*it != '\0') {
+                if ((*it == '"')||(*it == '\'')) {
+                    if (in_name == 0)
+                        in_name = 1;
+                    else 
+                        in_name = 0;
+                }
+                
+                if ((*it == ',') && (in_name == 0)) {
+                    cmime_message_add_recipient(msg,cmime_string_strip(s),t);
+                    free(s);
+                    s = (char *)calloc((size_t)1,sizeof(char));
+                    pos = 0;
+                    *it++;
+                } else {
+                    s = (char *)realloc(s,strlen(s) + sizeof(char) + sizeof(char));
+                    s[pos++] = *it++;
+                }
+            }
+            s[pos] = '\0';
+
+            cmime_message_add_recipient(msg,cmime_string_strip(s),t);
+            free(s);
+        }
     }
 ;
 

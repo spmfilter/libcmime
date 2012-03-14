@@ -129,6 +129,16 @@ void cmime_message_set_sender(CMimeMessage_T *message, const char *sender) {
     message->sender = ca;
 }
 
+//#define cmime_message_get_sender(message) (cmime_address_to_string(message->sender))
+char *cmime_message_get_sender_string(CMimeMessage_T *message) {
+    char *s = NULL;
+
+    if (message->sender != NULL)
+        s = cmime_address_to_string(message->sender);
+
+    return(s);
+}
+
 void cmime_message_set_message_id(CMimeMessage_T *message, const char *mid) {
     _cmime_internal_set_linked_header_value(message->headers,"Message-ID",mid);
 }
@@ -340,10 +350,8 @@ int cmime_message_from_file(CMimeMessage_T **message, const char *filename) {
 char *cmime_message_to_string(CMimeMessage_T *message) {
     char *out = NULL;
     CMimeListElem_T *e = NULL;
-    //CMimeListElem_T *e2 = NULL;
     CMimeHeader_T *h = NULL;
     CMimePart_T *p = NULL;
-    //CMimePart_T *sub_p = NULL;
     char *s = NULL;
     
     assert(message);

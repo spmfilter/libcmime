@@ -55,6 +55,7 @@ int main (int argc, char const *argv[]) {
     CMimeHeader_T *h = NULL;
     CMimeList_T *recipient_list = NULL;
     CMimeListElem_T *elem;
+    CMimeAddress_T *ca = NULL;
     int retval = 0;
     FILE *fp = NULL;
     FILE *fp2 = NULL;
@@ -68,7 +69,19 @@ int main (int argc, char const *argv[]) {
         i = cmime_message_from_file(&msg,fname);
         
         if (i == 0) {
-            printf("ok\n");
+            printf("Message summary:\n=========================================\n");
+            printf("Sender: [%s]\n",cmime_message_get_sender_string(msg));
+            printf("Recipients (%d):\n",msg->recipients->size);
+            elem = cmime_list_head(msg->recipients);
+            while(elem != NULL) {
+                ca = (CMimeAddress_T *)cmime_list_data(elem);
+                s = cmime_address_to_string(ca);
+                printf("- [%s]\n",s);
+                free(s);
+                elem = elem->next;
+            }
+            printf("Number of mime parts: [%d]\n",cmime_message_part_count(msg));
+            printf("=========================================\n");
         } else {
             printf("failed to open file [%s]\n",fname);
         } 
@@ -76,15 +89,14 @@ int main (int argc, char const *argv[]) {
         cmime_message_free(msg);
     } else {
         /* loop test_files */
-
         cmime_message_set_sender(msg,addr_string1);
-        s = cmime_message_get_sender(msg);
+        s = cmime_message_get_sender_string(msg);
         assert(strcmp(s,addr_string1)==0);
         free(s);
         
         // check if sender will be overwritten
         cmime_message_set_sender(msg,addr_string2);
-        s = cmime_message_get_sender(msg);
+        s = cmime_message_get_sender_string(msg);
         assert(strcmp(s,addr_string2)==0);
         free(s);
         
