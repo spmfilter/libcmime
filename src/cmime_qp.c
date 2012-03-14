@@ -168,7 +168,6 @@ char *cmime_qp_encode(char *line_in, char *lt) {
 
 	/* set line terminator in case there is none given */
 	if(lt == NULL) lt = CRLF;
-	printf("ZEILENUMBRUCH: [%s]\n", lt);
 	
 	line_s = NULL;
 	line_e = line_in;
@@ -219,9 +218,11 @@ char *cmime_qp_encode(char *line_in, char *lt) {
 			}
 
 			if (cur_line_len +charout_size >= 76) {
-				snprintf(op, out_remain, "%s=%s", paragraph, lt);
+				//snprintf(op, out_remain, "%s=%s", paragraph, lt);
+				snprintf(op, out_remain, "%s=\r\n", paragraph);
+
 				op += strlen(paragraph); 																	// +3; /** jump the output + =\r\n **/
-				out_remain += (strlen(paragraph)); 										// 	Was +3, updated to fix Outlook problems
+				out_remain -= (strlen(paragraph)); 										// 	Was +3, updated to fix Outlook problems
 				
 				/* reinitialize the paragraph */
 				paragraph[0] = '\0';
@@ -237,11 +238,11 @@ char *cmime_qp_encode(char *line_in, char *lt) {
 			cur_line_len += charout_size; 
 		}
 		/* for each char in the line to be converted */
-		printf("adding paragraph [%c] to output\n",paragraph);
+		//printf("adding paragraph [%c] to output\n",paragraph);
 
-		snprintf(op, out_remain, "%s\r\n", paragraph,lt);
-		op += (strlen(paragraph) +3);
-		out_remain -= (strlen(paragraph) +3);
+		snprintf(op, out_remain, "%s\r\n", paragraph);
+		op += (strlen(paragraph) +2);
+		out_remain -= (strlen(paragraph) +2);
 
 	} while ((line_e < in_data_limit) && (*line_e != '\0'));
 
