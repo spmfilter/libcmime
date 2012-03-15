@@ -81,7 +81,11 @@ int main (int argc, char const *argv[]) {
                 elem = elem->next;
             }
             printf("Number of mime parts: [%d]\n",cmime_message_part_count(msg));
-            printf("=========================================\n");
+            printf("=========================================\n\n");
+
+            msg_string = cmime_message_to_string(msg);
+            printf("%s\n",msg_string);
+            free(msg_string);
         } else {
             printf("failed to open file [%s]\n",fname);
         } 

@@ -350,21 +350,58 @@ int cmime_message_from_file(CMimeMessage_T **message, const char *filename) {
 char *cmime_message_to_string(CMimeMessage_T *message) {
     char *out = NULL;
     CMimeListElem_T *e = NULL;
+    CMimeListElem_T *r = NULL;
     CMimeHeader_T *h = NULL;
     CMimePart_T *p = NULL;
+    CMimeAddress_T *addr = NULL;
+    CMimeAddressType_T t = -1;
     char *s = NULL;
-    
+    char *s2 = NULL;
+
     assert(message);
     out = (char *)calloc(sizeof(char),sizeof(char));
     
     e = cmime_list_head(message->headers);
     while(e != NULL) {
         h = (CMimeHeader_T *)cmime_list_data(e);
-        s = cmime_header_to_string(h);
+        if (strcasecmp(h->name,"to")==0) 
+            t = CMIME_ADDRESS_TYPE_TO;
+        else if (strcasecmp(h->name,"cc")==0)
+            t = CMIME_ADDRESS_TYPE_CC;
+        else if (strcasecmp(h->name,"bcc")==0)
+            t = CMIME_ADDRESS_TYPE_BCC;
+
+
+        if (t != -1) {
+            asprintf(&s,"%s: ",h->name);
+            r = cmime_list_head(message->recipients);
+            while(r != NULL) {
+                addr = (CMimeAddress_T *)cmime_list_data(r);
+                if (addr->type == t) {
+                    s2 = cmime_address_to_string(addr);
+                    s = (char *)realloc(s,strlen(s) + strlen(s2) + sizeof(char));
+                    strcat(s,s2);    
+                }
+
+                if (r->next != NULL) {
+                    addr = (CMimeAddress_T *)cmime_list_data(r->next);
+                    if (addr->type == t) {
+                        s = (char *)realloc(s,strlen(s) + 1 + sizeof(char));
+                        strcat(s,",");
+                    }
+                }
+                r = r->next;
+            }
+            t = -1;
+        } else {
+            s = cmime_header_to_string(h);
+        }
+        
         out = (char *)realloc(out,strlen(out) + strlen(s) + strlen(message->linebreak) + sizeof(char));
         strcat(out,s);
         strcat(out,message->linebreak);
         free(s);
+        
         e = e->next;
     }
 

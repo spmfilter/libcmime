@@ -65,7 +65,7 @@ header:
         int pos = 0;
         CMimeHeader_T *h = cmime_header_new();
         cmime_header_set_name(h,$1);
-        cmime_header_set_value(h,$2,0);
+        
         $$ = h;
 
         /* got a header with message recipients? */
@@ -91,7 +91,7 @@ header:
                 }
                 
                 if ((*it == ',') && (in_name == 0)) {
-                    cmime_message_add_recipient(msg,cmime_string_strip(s),t);
+                    cmime_message_add_recipient(msg,s,t);
                     free(s);
                     s = (char *)calloc((size_t)1,sizeof(char));
                     pos = 0;
@@ -103,9 +103,10 @@ header:
             }
             s[pos] = '\0';
 
-            cmime_message_add_recipient(msg,cmime_string_strip(s),t);
+            cmime_message_add_recipient(msg,s,t);
             free(s);
-        }
+        } else 
+            cmime_header_set_value(h,$2,0);
     }
 ;
 
