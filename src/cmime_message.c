@@ -380,7 +380,8 @@ char *cmime_message_to_string(CMimeMessage_T *message) {
                 if (addr->type == t) {
                     s2 = cmime_address_to_string(addr);
                     s = (char *)realloc(s,strlen(s) + strlen(s2) + sizeof(char));
-                    strcat(s,s2);    
+                    strcat(s,s2);
+                    free(s2);    
                 }
 
                 if (r->next != NULL) {

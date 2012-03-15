@@ -27,8 +27,7 @@
 #include "../src/cmime_header.h"
 #include "../src/cmime_list.h"
 #include "../src/cmime_part.h"
-
-#include "../src/cmime_flbi.h"
+#include "../src/cmime_string.h"
 
 #include "test_data.h"
 
@@ -65,18 +64,20 @@ int main (int argc, char const *argv[]) {
     if (argc == 2) {
         /* use message path from command line argument */
         fname = strdup(argv[1]);
-        msg = cmime_message_new();
         i = cmime_message_from_file(&msg,fname);
-        
+        free(fname);        
         if (i == 0) {
             printf("Message summary:\n=========================================\n");
-            printf("Sender: [%s]\n",cmime_message_get_sender_string(msg));
+            s = cmime_message_get_sender_string(msg);
+            printf("Sender: [%s]\n",s);
+            free(s);
             printf("Recipients (%d):\n",msg->recipients->size);
             elem = cmime_list_head(msg->recipients);
             while(elem != NULL) {
                 ca = (CMimeAddress_T *)cmime_list_data(elem);
                 s = cmime_address_to_string(ca);
-                printf("- [%s]\n",s);
+                s2 = cmime_string_strip(s);
+                printf("- [%s]\n",s2);
                 free(s);
                 elem = elem->next;
             }
@@ -84,7 +85,7 @@ int main (int argc, char const *argv[]) {
             printf("=========================================\n\n");
 
             msg_string = cmime_message_to_string(msg);
-            printf("%s\n",msg_string);
+            //printf("%s\n",msg_string);
             free(msg_string);
         } else {
             printf("failed to open file [%s]\n",fname);
