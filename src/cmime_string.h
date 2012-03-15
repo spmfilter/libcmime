@@ -109,20 +109,6 @@ char *cmime_string_strip(char *s);
  */
 char *cmime_string_chomp(char *s);
 
-/*!
- * @fn char *cmime_string_strstr_last(const char *s1, const char *s2)
- * @brief Locate the last occurrence of the null-terminated string s2 in 
- *   the null-terminated string s1.
- * @param s1 string to search in
- * @param s2 string to search for
- * @returns If s2 is an empty string, s1 is returned; if s2 occurs nowhere 
- *   in s1, NULL is returned; otherwise a pointer to the first character of 
- *   the last occurrence of s2 is returned.
- */
-char *cmime_string_strstr_last(const char *s1, const char *s2);
-
-char *cmime_string_strsep_last(const char *s, const char *sep);
-
 #ifdef __cplusplus
 }
 #endif

@@ -99,6 +99,7 @@ header:
                 } else {
                     s = (char *)realloc(s,strlen(s) + sizeof(char) + sizeof(char));
                     s[pos++] = *it++;
+                    s[pos] = '\0';
                 }
             }
             s[pos] = '\0';

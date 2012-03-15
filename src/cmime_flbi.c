@@ -113,4 +113,3 @@ int cmime_flbi_strstr_boundary(CMimeYYExtra_T *yydata, const char *haystack) {
 
 	return(0);
 }
-
