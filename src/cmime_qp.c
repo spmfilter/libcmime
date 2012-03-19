@@ -237,10 +237,7 @@ char *cmime_qp_encode(char *line_in, char *lt) {
 			p++;
 			cur_line_len += charout_size; 
 		}
-		/* for each char in the line to be converted */
-		//printf("adding paragraph [%c] to output\n",paragraph);
-
-		snprintf(op, out_remain, "%s\r\n", paragraph);
+		snprintf(op, out_remain, "%s%s", paragraph,lt);
 		op += (strlen(paragraph) +2);
 		out_remain -= (strlen(paragraph) +2);
 

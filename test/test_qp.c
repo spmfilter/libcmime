@@ -1,5 +1,5 @@
 /* libcmime - A C mime library
- * Copyright (C) 2012 Werner Detter <werner@aloah-from-hell.de>
+ * Copyright (C) SpaceNet AG and Werner Detter <werner@aloah-from-hell.de>
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -14,7 +14,6 @@
  * You should have received a copy of the GNU Lesser General Public
  * License along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 #define _GNU_SOURCE
 
 #include <stdio.h>
@@ -25,86 +24,101 @@
 #include "../src/cmime_string.h"
 #include "test_data.h"
 
+void remove_output_file(char *filename) {
+		remove(filename);
+}
+
 int main (int argc, char const *argv[])	{
  
+ /* declarations */
  FILE *f1 = NULL;
+ FILE *f1_out = NULL;
+ FILE *f1_out_in = NULL;
+ char file1[] = "qp_iso.txt";
+ char file1_out[] = "qp_iso_out.txt";
+ char qp_encoded_string_iso[] = "H=E4tten H=FCte ein =DF im Namen, w=E4ren sie m=F6glicherweise keine H=FCte mehr";
+
  FILE *f2 = NULL;
- FILE *f3 = NULL;
+ FILE *f2_out = NULL;
+ FILE *f2_out_in = NULL;
+ char file2[] = "qp_utf8.txt";
+ char file2_out[] = "qp_utf8_out.txt";
+ char qp_encoded_string_utf8[] = "H=C3=A4tten H=C3=BCte ein =C3=9F im Namen, w=C3=A4ren sie m=C3=B6glicherweise keine H=C3=BCte mehr";
 
  char *fname = NULL;
- char *s = NULL;
+ char *si = NULL; // string in 
+ char *so = NULL; // string out
  char line[250];
-	char lt[]="\r\n";
- char file1[] = "qp_iso.txt";
- char file2[] = "qp_utf8.txt";
- char file3[] = "c0001.txt";
+ char lt[]="\r\n";
 
-
- printf("Bla\n");
- char qp_encoded_string_iso[] = "M=FCllermilch\r\n";
- char qp_encoded_string_utf8[] = "M=C3=BCllermilch\r\n";
-
-
- /* first we check the encoding from an ISO-8859-1 input file */
+ /** 
+  * first we check the encoding from an ISO-8859-1 input file 
+  * in the first run, we read out the input file, convert the 
+  * input string to QP and write the encoded string to output
+  * file. Subsequently the string in the output file needs to
+  * be verified, then the origin output-file is deleted 
+  */
  asprintf(&fname,"%s/%s",SAMPLES_DIR,file1);
-
  f1 = fopen(fname, "r");
- 
- while(fgets(line, 250, f1))
- {
+ while(fgets(line, 250, f1)) {
 		char *clean;
 		clean = cmime_string_chomp(line);
-		s = cmime_qp_encode(clean, lt);
-		printf("clan: [%s]\n", clean);
-		assert(strcmp(clean,qp_encoded_string_iso)==0);
+		si = cmime_qp_encode(clean, lt);
  }
  fclose(f1);
  free(fname);
-	free(s);
+	// write the encoded string to the temporary output file
+	asprintf(&fname,"%s/%s",SAMPLES_DIR,file1_out);
+	f1_out = fopen (fname, "w");
+	if (f1_out != NULL) { 
+		fprintf(f1_out,"%s",si);
+		fclose(f1_out);
+	}
+	free(si);
+	// read it out again
+	f1_out_in = fopen(fname, "r");
+	while(fgets(line, 250, f1_out_in))
+ {
+		so = cmime_string_chomp(line);
+ }
+ fclose(f1_out_in);
+	remove_output_file(fname);
+ free(fname);
+ // compare the strings 
+	assert(strcmp(so,qp_encoded_string_iso)==0);
 
- /* then we check the enconding from an UTF8 input file */
- /*
+
+	/** 
+ * we now do the same but for an utf8 encoded input string
+ */
  asprintf(&fname,"%s/%s",SAMPLES_DIR,file2);
  f2 = fopen(fname, "r");
- while(fgets(line, 250, f2))
- {
- 	char *clean = NULL;
- 	clean = cmime_string_chomp(line);
- 	printf("[%s]\n", line);
-		s = cmime_qp_encode(clean, lt);	
-		printf("[%s]", clean);
-		assert(strcmp(clean,qp_encoded_string_utf8)==0);
-		free(s);
-		free(clean);
+ while(fgets(line, 250, f2)) {
+		char *clean;
+		clean = cmime_string_chomp(line);
+		si = cmime_qp_encode(clean, lt);
  }
  fclose(f2);
- */
-
-
- /*
- asprintf(&fname,"%s/%s",SAMPLES_DIR,file3);
-
- f3 = fopen(fname, "r");
- while(fgets(line, 1000, f3))
+ free(fname);
+	// write the encoded string to the temporary output file
+	asprintf(&fname,"%s/%s",SAMPLES_DIR,file2_out);
+	f2_out = fopen (fname, "w");
+	if (f2_out != NULL) { 
+		fprintf(f2_out,"%s",si);
+		fclose(f2_out);
+	}
+	free(si);
+	// read it out again 
+	f2_out_in = fopen(fname, "r");
+	while(fgets(line, 250, f2_out_in))
  {
- 	
-
-		s = cmime_qp_encode(line, lt);
-		//printf("[%s]", qp_encoded_string_utf8);
-		printf("[%s]", s);
-		//assert(strcmp(s,qp_encoded_string_utf8)==0);
-		free(s);
+		so = cmime_string_chomp(line);
  }
- fclose(f3);
+ fclose(f2_out_in);
+ remove_output_file(fname);
+ free(fname);
+ // compare the strings 
+	assert(strcmp(so,qp_encoded_string_utf8)==0);
 
-        for (i = 0; i < strlen(inputline); i++)
-        {
-            if ( inputline[i] == '\n' || inputline[i] == '\r' )
-                inputline[i] = '\0';
-        }
-
- 	*/
-
- //free(fname);
 	return(0);
 }
