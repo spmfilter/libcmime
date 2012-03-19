@@ -1,5 +1,5 @@
 /* libcmime - A C mime library
- * Copyright (C) 2011 Axel Steiner <ast@treibsand.com>
+ * Copyright (C) 2012 SpaceNet AG and Axel Steiner <ast@treibsand.com>
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -18,8 +18,6 @@
 /*!
  * @file cmime_part.h
  * @brief Defines functions and structs for mime part handling
- *
- * ...
  *
  * @example test_part.c
  */

@@ -33,31 +33,31 @@
 
 /* Quoted-Printable translation-table */
 static unsigned char hexconv[256]={
-               20,   20,   20,   20,   20,   20,   20,   20,   20,   20,   20,   20,   20,   20,   20,   20,\
-               20,   20,   20,   20,   20,   20,   20,   20,   20,   20,   20,   20,   20,   20,   20,   20,\
-               20,   20,   20,   20,   20,   20,   20,   20,   20,   20,   20,   20,   20,   20,   20,   20,\
-                0,    1,    2,    3,    4,    5,    6,    7,    8,    9,   20,   20,   20,   20,   20,   20,\
-               20,   10,   11,   12,   13,   14,   15,   20,   20,   20,   20,   20,   20,   20,   20,   20,\
-               20,   20,   20,   20,   20,   20,   20,   20,   20,   20,   20,   20,   20,   20,   20,   20,\
-               20,   10,   11,   12,   13,   14,   15,   20,   20,   20,   20,   20,   20,   20,   20,   20,\
-               20,   20,   20,   20,   20,   20,   20,   20,   20,   20,   20,   20,   20,   20,   20,   20,\
-               20,   20,   20,   20,   20,   20,   20,   20,   20,   20,   20,   20,   20,   20,   20,   20,\
-               20,   20,   20,   20,   20,   20,   20,   20,   20,   20,   20,   20,   20,   20,   20,   20,\
-               20,   20,   20,   20,   20,   20,   20,   20,   20,   20,   20,   20,   20,   20,   20,   20,\
-               20,   20,   20,   20,   20,   20,   20,   20,   20,   20,   20,   20,   20,   20,   20,   20,\
-               20,   20,   20,   20,   20,   20,   20,   20,   20,   20,   20,   20,   20,   20,   20,   20,\
-               20,   20,   20,   20,   20,   20,   20,   20,   20,   20,   20,   20,   20,   20,   20,   20,\
-               20,   20,   20,   20,   20,   20,   20,   20,   20,   20,   20,   20,   20,   20,   20,   20,\
-               20,   20,   20,   20,   20,   20,   20,   20,   20,   20,   20,   20,   20,   20,   20,   20 \
+    20,   20,   20,   20,   20,   20,   20,   20,   20,   20,   20,   20,   20,   20,   20,   20,\
+    20,   20,   20,   20,   20,   20,   20,   20,   20,   20,   20,   20,   20,   20,   20,   20,\
+    20,   20,   20,   20,   20,   20,   20,   20,   20,   20,   20,   20,   20,   20,   20,   20,\
+    0,    1,    2,    3,    4,    5,    6,    7,    8,    9,   20,   20,   20,   20,   20,   20,\
+    20,   10,   11,   12,   13,   14,   15,   20,   20,   20,   20,   20,   20,   20,   20,   20,\
+    20,   20,   20,   20,   20,   20,   20,   20,   20,   20,   20,   20,   20,   20,   20,   20,\
+    20,   10,   11,   12,   13,   14,   15,   20,   20,   20,   20,   20,   20,   20,   20,   20,\
+    20,   20,   20,   20,   20,   20,   20,   20,   20,   20,   20,   20,   20,   20,   20,   20,\
+    20,   20,   20,   20,   20,   20,   20,   20,   20,   20,   20,   20,   20,   20,   20,   20,\
+    20,   20,   20,   20,   20,   20,   20,   20,   20,   20,   20,   20,   20,   20,   20,   20,\
+    20,   20,   20,   20,   20,   20,   20,   20,   20,   20,   20,   20,   20,   20,   20,   20,\
+    20,   20,   20,   20,   20,   20,   20,   20,   20,   20,   20,   20,   20,   20,   20,   20,\
+    20,   20,   20,   20,   20,   20,   20,   20,   20,   20,   20,   20,   20,   20,   20,   20,\
+    20,   20,   20,   20,   20,   20,   20,   20,   20,   20,   20,   20,   20,   20,   20,   20,\
+    20,   20,   20,   20,   20,   20,   20,   20,   20,   20,   20,   20,   20,   20,   20,   20,\
+    20,   20,   20,   20,   20,   20,   20,   20,   20,   20,   20,   20,   20,   20,   20,   20 \
 };
 
 char *cmime_qp_decode(char *line_in, int mode, char esc_char)  {
 
     char *line_out = NULL;
-    char c;                                                       /* output character */
-    int opos = 0;                                                 /* output positioning */
-    int ipos;                                                   	/* input positioning */
-    int len = strlen(line_in);                      							/* length of inputstring */
+    char c;                                                     /* output character */
+    int opos = 0;                                               /* output positioning */
+    int ipos;                                                   /* input positioning */
+    int len = strlen(line_in);                      			/* length of inputstring */
 
     /* we malloc size of line_in char as through decoding string just can get shorter, not longer */
     line_out = malloc(strlen(line_in)+1*sizeof(char));
@@ -141,9 +141,6 @@ char *cmime_qp_decode_multipart ( char *line_in) {
 	line_out = cmime_qp_decode(line_in, DECODE_QP_MODE_DEFAULT,'%');
 	return line_out;
 }
-
-
-
 
 char *cmime_qp_encode(char *line_in, char *lt) {
 
@@ -238,16 +235,13 @@ char *cmime_qp_encode(char *line_in, char *lt) {
 			cur_line_len += charout_size; 
 		}
 		snprintf(op, out_remain, "%s%s", paragraph,lt);
-		op += (strlen(paragraph) +2);
-		out_remain -= (strlen(paragraph) +2);
+		op += (strlen(paragraph) +3);
+		out_remain -= (strlen(paragraph) +3);
 
 	} while ((line_e < in_data_limit) && (*line_e != '\0'));
 
 	return line_out;
 }
-
-
-
 
 char *cmime_qp_rm_charenc(char *line_in) {
 	char *line_out = NULL;

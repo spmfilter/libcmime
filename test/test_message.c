@@ -81,6 +81,10 @@ int main (int argc, char const *argv[]) {
                 free(s);
                 elem = elem->next;
             }
+            printf("Mime Version: [%s]\n",cmime_message_get_mime_version(msg));
+            printf("Content ID: [%s]\n",cmime_message_get_content_id(msg));
+            printf("Content Type: [%s]\n",cmime_message_get_content_type(msg));
+            printf("Number of message headers: [%d]\n",msg->headers->size);
             printf("Number of mime parts: [%d]\n",cmime_message_part_count(msg));
             printf("=========================================\n\n");
 

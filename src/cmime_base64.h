@@ -1,5 +1,5 @@
 /* libcmime - A C mime library
- * Copyright (C) 2011 Axel Steiner <ast@treibsand.com>
+ * Copyright (C) 2012 SpaceNet AG and Axel Steiner <ast@treibsand.com>
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -19,7 +19,7 @@
  * @file cmime_base64.h
  * @brief Base64 functions
  *
- * ...
+ * This header is intended for use by any library or application, not only libcmime.
  *
  * @example test_base64.c
  */
@@ -30,6 +30,8 @@
 #ifdef __cplusplus
 extern "C" {
 #endif
+
+#include <stdio.h>
 
 /*! 
  * @fn void cmime_base64_encode_block(unsigned char in[3], unsigned char out[4], int len)
