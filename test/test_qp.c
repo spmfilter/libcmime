@@ -32,13 +32,13 @@ void remove_output_file(char *filename) {
 * char *file_src
 * char *file_tmp
 * char *file_res	file that contains string to to check against
-* int mode 1 eq encode, else decode
-* int rm_tmp_file 1 eq remove temporary file after processing
+* int mode	1 eq encode, else decode
+* int rm_tmp_file	1 eq remove temporary file after processing
 */
 void validate_qp(char *file_src, char *file_tmp, char *file_res, int mode, int rm_tmp_file) {
+	
 	char line[250];
  char lt[]="\r\n";
-
 	FILE *f1 = NULL;
 	FILE *f1_out = NULL;
 	FILE *f1_out_in = NULL;
@@ -77,7 +77,7 @@ void validate_qp(char *file_src, char *file_tmp, char *file_res, int mode, int r
  fclose(f1_out_in);
  if(rm_tmp_file == 1) remove_output_file(fname);
  free(fname);
- // now open the file that containts the result string
+ // now open the file that contains the result string
  asprintf(&fname,"%s/%s",SAMPLES_DIR,file_res);
  f2 = fopen(fname, "r");
  while(fgets(line, 250, f2)) {
@@ -85,7 +85,7 @@ void validate_qp(char *file_src, char *file_tmp, char *file_res, int mode, int r
  }
  fclose(f2);
  free(fname);
- // compare the strings 
+ // comparison
  printf("s1: [%s]\n", so);
  printf("res: [%s]\n", res);
 	assert(strcmp(so,res)==0);
@@ -94,22 +94,27 @@ void validate_qp(char *file_src, char *file_tmp, char *file_res, int mode, int r
 
 int main (int argc, char const *argv[])	{
  
+ /* validate encoding with iso input */
  char file1[] = "qp_iso_plain.txt";
  char file1_encoded[] = "qp_iso_encoded.txt";
  char file1_tmp[] = "qp_iso_plain_tmp.txt";
 
+ /* validate encoding with utf-8 input */
  char file2[] = "qp_utf8_plain.txt";
  char file2_encoded[] ="qp_utf8_encoded.txt";
  char file2_tmp[] = "qp_utf8_plain_tmp.txt";
 
+ /* validate decoding with iso input */
  char file3[] = "qp_iso_encoded.txt";
  char file3_decoded[] = "qp_iso_plain.txt";
  char file3_tmp[] = "qp_iso_encoded_tmp.txt";
 
+ /* validate decoding with utf-8 input */
  char file4[] = "qp_utf8_encoded.txt";
  char file4_decoded[] = "qp_utf8_plain.txt";
  char file4_tmp[] = "qp_utf8_encoded_tmp.txt";
 
+ /* really do something */
  validate_qp(file1,file1_tmp,file1_encoded, 1, 1);
  validate_qp(file2,file2_tmp,file2_encoded, 1, 1);
  validate_qp(file3,file3_tmp,file3_decoded, 0, 1);
