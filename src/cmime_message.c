@@ -84,7 +84,6 @@ CMimeMessage_T *cmime_message_new(void) {
     message->boundary = NULL;
     message->gap = NULL;
     message->linebreak = NULL;
-    message->postface = NULL;
 
     if (cmime_list_new(&message->parts,_cmime_internal_parts_destroy)!=0) 
             return(NULL);
@@ -110,9 +109,6 @@ void cmime_message_free(CMimeMessage_T *message) {
     if (message->linebreak!=NULL)
         free(message->linebreak);
     
-    if (message->postface!=NULL)
-        free(message->postface);
-
     cmime_list_free(message->parts);
     
     free(message);
@@ -428,11 +424,6 @@ char *cmime_message_to_string(CMimeMessage_T *message) {
         e = e->next;
     }
     
-    if (message->postface != NULL) {
-        out = (char *)realloc(out,strlen(out) + strlen(message->postface) + sizeof(char));
-        strcat(out,message->postface);
-    }
-    _append_string(&out,message->postface);
     return(out);
 }
 

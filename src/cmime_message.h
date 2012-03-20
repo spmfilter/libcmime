@@ -49,8 +49,7 @@ typedef struct {
     int tz_offset; /**< timezone offset */
     char *gap; /**< gap between headers an mime parts */
     CMimeList_T *parts; /**< mime parts */
-    char *linebreak; 
-    char *postface;
+    char *linebreak; /**< linebreak used by message */
 } CMimeMessage_T;
 
 /*!
