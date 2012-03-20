@@ -28,47 +28,43 @@ void remove_output_file(char *filename) {
 		remove(filename);
 }
 
-int main (int argc, char const *argv[])	{
- 
- /* declarations */
- FILE *f1 = NULL;
- FILE *f1_out = NULL;
- FILE *f1_out_in = NULL;
- char file1[] = "qp_iso.txt";
- char file1_out[] = "qp_iso_out.txt";
- char qp_encoded_string_iso[] = "H=E4tten H=FCte ein =DF im Namen, w=E4ren sie m=F6glicherweise keine H=FCte mehr";
 
- FILE *f2 = NULL;
- FILE *f2_out = NULL;
- FILE *f2_out_in = NULL;
- char file2[] = "qp_utf8.txt";
- char file2_out[] = "qp_utf8_out.txt";
- char qp_encoded_string_utf8[] = "H=C3=A4tten H=C3=BCte ein =C3=9F im Namen, w=C3=A4ren sie m=C3=B6glicherweise keine H=C3=BCte mehr";
-
- char *fname = NULL;
- char *si = NULL; // string in 
- char *so = NULL; // string out
- char line[250];
+/**
+* char *file_src
+* char *file_tmp (tmp file)
+* char *res_string (string to compare result with)
+* int mode (1 == encode, else decode)
+* int rm_tmp_file (remove temporary file after processing)
+*/
+void validate_qp(char *file_src, char *file_tmp, char *file_res, int mode, int rm_tmp_file) {
+	char line[250];
  char lt[]="\r\n";
 
- /** 
-  * first we check the encoding from an ISO-8859-1 input file 
-  * in the first run, we read out the input file, convert the 
-  * input string to QP and write the encoded string to output
-  * file. Subsequently the string in the output file needs to
-  * be verified, then the origin output-file is deleted 
-  */
- asprintf(&fname,"%s/%s",SAMPLES_DIR,file1);
+	FILE *f1 = NULL;
+	FILE *f1_out = NULL;
+	FILE *f1_out_in = NULL;
+	FILE *f2 = NULL;
+	char *fname = NULL;
+ char *si = NULL; 
+ char *so = NULL;
+ char *res = NULL;
+
+ asprintf(&fname,"%s/%s",SAMPLES_DIR,file_src);
  f1 = fopen(fname, "r");
+
  while(fgets(line, 250, f1)) {
 		char *clean;
 		clean = cmime_string_chomp(line);
-		si = cmime_qp_encode(clean, lt);
+		if(mode == 1) {
+			si = cmime_qp_encode(clean, lt);
+		} else {
+			si = cmime_qp_decode_text(clean);
+		}
  }
  fclose(f1);
  free(fname);
 	// write the encoded string to the temporary output file
-	asprintf(&fname,"%s/%s",SAMPLES_DIR,file1_out);
+	asprintf(&fname,"%s/%s",SAMPLES_DIR,file_tmp);
 	f1_out = fopen (fname, "w");
 	if (f1_out != NULL) { 
 		fprintf(f1_out,"%s",si);
@@ -82,43 +78,48 @@ int main (int argc, char const *argv[])	{
 		so = cmime_string_chomp(line);
  }
  fclose(f1_out_in);
-	remove_output_file(fname);
+ if(rm_tmp_file == 1) remove_output_file(fname);
  free(fname);
- // compare the strings 
-	assert(strcmp(so,qp_encoded_string_iso)==0);
 
-
-	/** 
- * we now do the same but for an utf8 encoded input string
- */
- asprintf(&fname,"%s/%s",SAMPLES_DIR,file2);
+ // no open the file that containts the result string
+ asprintf(&fname,"%s/%s",SAMPLES_DIR,file_res);
  f2 = fopen(fname, "r");
- while(fgets(line, 250, f2)) {
-		char *clean;
-		clean = cmime_string_chomp(line);
-		si = cmime_qp_encode(clean, lt);
+ while(fgets(line, 250, f2))
+ {
+		res = cmime_string_chomp(line);
  }
  fclose(f2);
  free(fname);
-	// write the encoded string to the temporary output file
-	asprintf(&fname,"%s/%s",SAMPLES_DIR,file2_out);
-	f2_out = fopen (fname, "w");
-	if (f2_out != NULL) { 
-		fprintf(f2_out,"%s",si);
-		fclose(f2_out);
-	}
-	free(si);
-	// read it out again 
-	f2_out_in = fopen(fname, "r");
-	while(fgets(line, 250, f2_out_in))
- {
-		so = cmime_string_chomp(line);
- }
- fclose(f2_out_in);
- remove_output_file(fname);
- free(fname);
+
  // compare the strings 
-	assert(strcmp(so,qp_encoded_string_utf8)==0);
+ printf("s1: [%s]\n", so);
+ printf("res: [%s]\n", res);
+	assert(strcmp(so,res)==0);
+}
+
+
+int main (int argc, char const *argv[])	{
+ 
+ char file1[] = "qp_iso_plain.txt";
+ char file1_encoded[] = "qp_iso_encoded.txt";
+ char file1_tmp[] = "qp_iso_plain_tmp.txt";
+
+ char file2[] = "qp_utf8_plain.txt";
+ char file2_encoded[] ="qp_utf8_encoded.txt";
+ char file2_tmp[] = "qp_utf8_plain_tmp.txt";
+
+ char file3[] = "qp_iso_encoded.txt";
+ char file3_decoded[] = "qp_iso_plain.txt";
+ char file3_tmp[] = "qp_iso_encoded_tmp.txt";
+
+ char file4[] = "qp_utf8_encoded.txt";
+ char file4_decoded[] = "qp_utf8_plain.txt";
+ char file4_tmp[] = "qp_utf8_encoded_tmp.txt";
+
+ validate_qp(file1,file1_tmp,file1_encoded, 1, 1);
+ validate_qp(file2,file2_tmp,file2_encoded, 1, 1);
+ validate_qp(file3,file3_tmp,file3_decoded, 0, 1);
+ validate_qp(file4,file4_tmp,file4_decoded, 0, 1);
 
 	return(0);
 }
