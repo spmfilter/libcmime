@@ -37,8 +37,6 @@ char test_string1_base64[] = "VGVzdCBzdHJpbmcgMQ==";
 char test_string2[] = "Test string 2";
 char test_string3[] = "Test string 3";
 char test_string4[] = "  Test string 3   ";
-char test_string5[] = "!Â§$%&/()=[]{}??##++<>";
-char test_string5_base64[] = "IcKnJCUmLygpPVtde30/PyMjKys8Pg==";
 
 char header_string1[] = "X-Foo: foobar";
 char header_string1_2[] = "X-Foo: raboof";
