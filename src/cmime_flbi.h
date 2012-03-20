@@ -15,12 +15,6 @@
  * License along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/*!
- * @file cmime_flbi.h
- * @brief -
- *
- */
-
 #ifndef _CMIME_FLBI_H
 #define _CMIME_FLBI_H
 
