@@ -28,13 +28,12 @@ void remove_output_file(char *filename) {
 		remove(filename);
 }
 
-
 /**
 * char *file_src
-* char *file_tmp (tmp file)
-* char *res_string (string to compare result with)
-* int mode (1 == encode, else decode)
-* int rm_tmp_file (remove temporary file after processing)
+* char *file_tmp
+* char *file_res	file that contains string to to check against
+* int mode 1 eq encode, else decode
+* int rm_tmp_file 1 eq remove temporary file after processing
 */
 void validate_qp(char *file_src, char *file_tmp, char *file_res, int mode, int rm_tmp_file) {
 	char line[250];
@@ -51,7 +50,6 @@ void validate_qp(char *file_src, char *file_tmp, char *file_res, int mode, int r
 
  asprintf(&fname,"%s/%s",SAMPLES_DIR,file_src);
  f1 = fopen(fname, "r");
-
  while(fgets(line, 250, f1)) {
 		char *clean;
 		clean = cmime_string_chomp(line);
@@ -73,24 +71,20 @@ void validate_qp(char *file_src, char *file_tmp, char *file_res, int mode, int r
 	free(si);
 	// read it out again
 	f1_out_in = fopen(fname, "r");
-	while(fgets(line, 250, f1_out_in))
- {
+	while(fgets(line, 250, f1_out_in)) {
 		so = cmime_string_chomp(line);
  }
  fclose(f1_out_in);
  if(rm_tmp_file == 1) remove_output_file(fname);
  free(fname);
-
- // no open the file that containts the result string
+ // now open the file that containts the result string
  asprintf(&fname,"%s/%s",SAMPLES_DIR,file_res);
  f2 = fopen(fname, "r");
- while(fgets(line, 250, f2))
- {
+ while(fgets(line, 250, f2)) {
 		res = cmime_string_chomp(line);
  }
  fclose(f2);
  free(fname);
-
  // compare the strings 
  printf("s1: [%s]\n", so);
  printf("res: [%s]\n", res);
