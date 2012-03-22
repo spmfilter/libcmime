@@ -945,12 +945,15 @@ dl.todo { border-color: #00C0E0; }
 dl.test { border-color: #3030E0; }
 dl.bug { border-color: #C08050; }
 
+#project {
+    float: left;
+    height: 80px;
+}
+
 #projectlogo {
     float: right;
-    text-align: center;
-    vertical-align: bottom;
     border-collapse: separate;
-    padding-top: 15px;
+    padding-top: 20px;
 }
  
 #projectlogo img { 
@@ -967,8 +970,7 @@ dl.bug { border-color: #C08050; }
     clear: both;
     float: left;
     font: 120% Tahoma, Arial,sans-serif;
-    margin: 0px;
-    padding: 0px;
+
 }
 
 #projectnumber {
@@ -979,7 +981,7 @@ dl.bug { border-color: #C08050; }
 
 #titlearea {
     padding: 20px;
-    margin: 0px;
+    margin: 0px 0px 0px 0px;
     border: 1px;
     height: 70px;
 }
