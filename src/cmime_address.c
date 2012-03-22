@@ -17,11 +17,6 @@
 
 #define _GNU_SOURCE
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <assert.h>
-
 #include "cmime_address.h"
 
 /* Creates a new CMIMEAddress_T object */

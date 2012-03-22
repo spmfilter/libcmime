@@ -37,12 +37,12 @@ extern "C" {
  */
 
 typedef struct {
-	CMimeList_T *headers;
+	CMimeList_T *headers; /**< Linked list with mime part headers */
 	char *content; /**< content of mime part */
-	char *boundary;
-    char *parent_boundary;
-	char *postface;
-    short int last;
+	char *boundary; /**< boundary for child parts */
+    char *parent_boundary; /**< boundary of parent part */
+	char *postface; /**< mime part postface */
+    short int last; /**< last mime part */
 } CMimePart_T;
 
 /*!
@@ -137,14 +137,26 @@ void cmime_part_set_content(CMimePart_T *part, const char *s);
  */
 #define cmime_part_get_content(part) (part->content);
 
-
+/*!
+ * @fn void cmime_part_set_postface(CMimePart_T *part, const char *s)
+ * @brief Set mime parts postface
+ * @param part a CMimePart_T object
+ * @param s postface string
+ */
 void cmime_part_set_postface(CMimePart_T *part, const char *s);
+
+/*!
+ * @def cmime_part_get_postface(part)
+ * @returns postface of mime part 
+ */
 #define cmime_part_get_postface(part) (part->postface);
 
 /*!
- * @fn char *cmime_part_to_string(CMimePart_T *part)
+ * @fn char *cmime_part_to_string(CMimePart_T *part, const char *nl)
  * @brief Return complete mime part as string
  * @param part a CMimePart_T object
+ * @param nl newline character which should be used. If NULL newline
+ *  character will be determined automatically.
  * @returns a newly allocated string with complete mime part
  */
 char *cmime_part_to_string(CMimePart_T *part, const char *nl);
@@ -152,7 +164,7 @@ char *cmime_part_to_string(CMimePart_T *part, const char *nl);
 /*!
  * @fn int cmime_part_from_file(CMimePart_T **part, char *filename)
  * @brief Create a CMimePart_T object from file
- * @param pat out param to return the new part
+ * @param part out param to return the new part
  * @param filename path to file
  * @returns 0 on success, -1 on stat error, -2 if not a regular file
  */

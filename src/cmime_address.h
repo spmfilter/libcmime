@@ -19,8 +19,6 @@
  * @file cmime_address.h
  * @brief Defines functions and structs for email address handling
  *
- * This header is intended for use by any library or application, not only libcmime.
- *
  * @example test_address.c
  */
 
@@ -30,15 +28,22 @@
 #ifdef __cplusplus
 extern "C" {
 #endif
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <assert.h>
+
+
 /*!
  * @enum CMimeAddressType_T 
  * @brief Possible types of email addresses
  */
 typedef enum _CMimeAddressType {
-	CMIME_ADDRESS_TYPE_TO, 
-	CMIME_ADDRESS_TYPE_CC,
-	CMIME_ADDRESS_TYPE_BCC,
-	CMIME_ADDRESS_TYPE_FROM,
+	CMIME_ADDRESS_TYPE_TO, /**< message recipient */
+	CMIME_ADDRESS_TYPE_CC, /**< message cc recipient */
+	CMIME_ADDRESS_TYPE_BCC, /**< nessage bcc recipient */
+	CMIME_ADDRESS_TYPE_FROM, /**< message sender */
 } CMimeAddressType_T;
 
 /*!
@@ -59,7 +64,7 @@ typedef struct {
 CMimeAddress_T *cmime_address_new(void);
 
 /*! 
- * @fn void cmime_address_set_name(CMimeAddress_T *ca, char *name)
+ * @fn void cmime_address_set_name(CMimeAddress_T *ca, const char *name)
  * @brief Set the display name of CMimeAdresse_T object
  * @param ca CMimeAddress_T pointer
  * @param name the display name for the address
@@ -67,7 +72,7 @@ CMimeAddress_T *cmime_address_new(void);
 void cmime_address_set_name(CMimeAddress_T *ca, const char *name);
 
 /*! 
- * @fn void cmime_address_set_email(CMimeAddress_T *ca, char *email)
+ * @fn void cmime_address_set_email(CMimeAddress_T *ca, const char *email)
  * @brief Set the email address of CMimeAdress_T object
  * @param ca CMimeAddress_T pointer
  * @param email email address
@@ -91,7 +96,7 @@ void cmime_address_set_type(CMimeAddress_T *ca, CMimeAddressType_T t);
 char *cmime_address_to_string(CMimeAddress_T *ca);
 
 /*! 
- * @fn CMimeAddress_T *cmime_address_parse_string(char *s)
+ * @fn CMimeAddress_T *cmime_address_parse_string(const char *s)
  * @brief Parse given string and create CMimeAddress_T object
  * @param s string to parse
  * @returns a newly allocated CMimeAddress_T object, or NULL on failure

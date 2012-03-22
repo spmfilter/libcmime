@@ -62,12 +62,12 @@ CMimeMessage_T *cmime_message_new(void);
 /*!
  * @fn void cmime_message_free(CMimeMessage_T *message)
  * @brief Free a CMimeMessage_T object 
- * @param ca CMimeMessage_T pointer
+ * @param message CMimeMessage_T pointer
  */
 void cmime_message_free(CMimeMessage_T *message);
 
 /*!
- * @fn void cmime_message_set_sender(CMimeMessage_T *message, char *sender)
+ * @fn void cmime_message_set_sender(CMimeMessage_T *message, const char *sender)
  * @brief Add sender to CMimeMessage_T object. If sender already exists,
  *   it will be overwritten.
  * @param message a CMimeMessage_T obect
@@ -91,7 +91,6 @@ char *cmime_message_get_sender_string(CMimeMessage_T *message);
 #define cmime_message_get_sender(message) (message->sender)
 
 /*!
- *
  * @fn void cmime_message_set_message_id(CMimeMessage_T *message, const char *mid)
  * @brief Set message id to CMimeMessage_T object, if alreay exists, value will 
  *   be overwritten.
@@ -101,7 +100,9 @@ char *cmime_message_get_sender_string(CMimeMessage_T *message);
 void cmime_message_set_message_id(CMimeMessage_T *message, const char *mid);
 
 /*!
- * @def cmime_message_get_message_id(message)
+ * @fn char *cmime_message_get_message_id(CMimeMessage_T *message)
+ * @brief Get MessageID of message object
+ * @param message a CMimeMessage_T object
  * @returns message id of CMimeMessage_T object
  */
 char *cmime_message_get_message_id(CMimeMessage_T *message);
@@ -119,7 +120,7 @@ int cmime_message_set_header(CMimeMessage_T *message, const char *header);
  * @fn CMimeHeader_T *cmime_message_get_header(CMimeMessage_T *message, const char *header)
  * @brief Get header for given key
  * @param message a CMimeMessage_T object
- * @param key key to search for
+ * @param header name of header to search for
  * @returns a CMImeHeader_T object, or NULL in case of error
  */
 CMimeHeader_T *cmime_message_get_header(CMimeMessage_T *message, const char *header);
@@ -248,7 +249,7 @@ char *cmime_message_get_date(CMimeMessage_T *message);
 int cmime_message_set_date_now(CMimeMessage_T *message);
 
 /*!
- * @fn void cmime_message_set_boundary(CMimeMessage_T *message, char *boundary)
+ * @fn void cmime_message_set_boundary(CMimeMessage_T *message, const char *boundary)
  * @brief Set message boundary
  * @param message a CMimeMessage_T object
  * @param boundary the boundary to set

@@ -29,7 +29,10 @@
 extern "C" {
 #endif
 
+#include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
+#include <assert.h>
 
 /*!
  * @struct CMimeHeader_T cmime_header.h
@@ -57,7 +60,7 @@ CMimeHeader_T *cmime_header_new(void);
 void cmime_header_free(CMimeHeader_T *header);
 
 /*!
- * @fn int cmime_header_set_name(CMimeHeader_T *header, char *name)
+ * @fn int cmime_header_set_name(CMimeHeader_T *header, const char *name)
  * @brief Set a header name, if aleready exists, name will be overwritten
  * @param header CMimeHeader_T pointer
  * @param name name of header
@@ -72,7 +75,7 @@ void cmime_header_set_name(CMimeHeader_T *header, const char *name);
 
 
 /*!
- * @fn int cmime_header_set_value(CMimeHeader_T *header, char *value)
+ * @fn void cmime_header_set_value(CMimeHeader_T *header, const char *value, int overwrite)
  * @brief Set/append a header value
  * @param header CMimeHeader_T pointer
  * @param value header value

@@ -17,11 +17,6 @@
 
 #define _GNU_SOURCE
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <assert.h>
-
 #include "cmime_internal.h"
 #include "cmime_header.h"
 

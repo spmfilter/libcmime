@@ -21,10 +21,6 @@
 
 #define _GNU_SOURCE
 
-#include <stdio.h>
-#include <string.h>
-#include <stdlib.h>
-
 #include "cmime_base64.h"
 
 /** translation table (RFC 1113) */

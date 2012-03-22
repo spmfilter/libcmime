@@ -37,7 +37,6 @@ extern "C" {
  */
 typedef struct _CMimeListElem {
 	void *data;  /**< pointer to element data */
-
 	struct _CMimeListElem *prev;  /**< pointer to previous element */
 	struct _CMimeListElem *next;  /**< pointer to next element */
 } CMimeListElem_T;

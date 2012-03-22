@@ -32,6 +32,8 @@ extern "C" {
 #endif
 
 #include <stdio.h>
+#include <string.h>
+#include <stdlib.h>
 
 /*! 
  * @fn void cmime_base64_encode_block(unsigned char in[3], unsigned char out[4], int len)
