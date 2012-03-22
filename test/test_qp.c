@@ -86,8 +86,6 @@ void validate_qp(char *file_src, char *file_tmp, char *file_res, int mode, int r
  fclose(f2);
  free(fname);
  // comparison
- printf("s1: [%s]\n", so);
- printf("res: [%s]\n", res);
 	assert(strcmp(so,res)==0);
 }
 
