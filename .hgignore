@@ -1,6 +1,6 @@
 syntax:glob
 build/*
-doc/*
+doc/html*
 .DS_Store
 src/cmime_config.h
 test/test_data.h
