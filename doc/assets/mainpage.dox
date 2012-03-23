@@ -1,0 +1,61 @@
+/*!
+ * @brief Documentation file for Mainpage, and defgroups.
+ * @author Axel Steiner <ast@treibsand.com>
+ * @file
+ */
+
+/*!
+ * 
+@mainpage Overview
+ 
+@section about What is libcmime?
+libcmime is a lightweight mime library, written in C. The library can
+be used for parsing and creation of mime messages and is designed to be 
+easy to use and integrate.
+
+@section features Features
+- Integrated unit tests.
+- Documentation is generated from source code by Doxygen
+
+@section reqiorements System requirements
+For proper compilation and functionality of libcmime, the following packages are REQUIRED:
+- cmake >= 2.6 (http://www.cmake.org/)
+- Flex >= 2.5.33 (http://flex.sourceforge.net/)
+- Bison >= 1.8 (http://www.gnu.org/software/bison/)
+
+@section install Install from source
+libcmime uses cmake instead of the autotools "configure" script. Cmake normally uses a separate build directory - follow these steps to configure, build and install this package from source:
+
+@code 
+tar xvfz libcmime-<VERSION>.tar.gz
+cd libcmime-<VERSION>
+mkdir build
+cd build
+cmake ../ <configure parameters>
+make
+make install
+@endcode
+
+Some systems require unusual options for compilation or linking that the 'cmake' script does not know 
+about. Run './cmake -h' for details on some of the pertinent environment variables. You can give 'cmake'
+initial values for configuration parameters by setting variables in the command line or in the environment.
+Here is an example:
+@code
+./cmake ../ -DPREFIX:STRING=/usr/local
+@endcode
+
+Instead of defining parameters on the command line you can also create a "build.properties"-file in the source of libcmime and define your configuration parameters there. Here is an example for a "build.properties"-file:
+
+@code
+set(PREFIX /opt)
+set(ENABLE_DEBUG TRUE)
+@endcode
+
+By default, 'make install' installs the library under '/usr/local/lib' and the include files under 
+'/usr/local/include'.  
+
+@section lists Mailing lists
+The developers mailing list (http://groups.google.com/group/libcmime-devel) is used for discussions 
+and questions about development with libcmime.
+
+*/

@@ -4,3 +4,7 @@ doc/html*
 .DS_Store
 src/cmime_config.h
 test/test_data.h
+libcmime.pc
+src/cmime_parser.tab.c
+src/cmime_parser.tab.h
+src/lex.yy.c

@@ -1,0 +1,64 @@
+WHAT IS LIBCMIME?
+-------------------------------------------------------------------------------
+
+libcmime is a lightweight mime library, written in C. The library can
+be used for parsing and creation of mime messages.
+
+REQUIREMENTS
+-------------------------------------------------------------------------------
+
+For proper compilation and functionality of libcmime, the following packages 
+are REQUIRED:
+
+  - cmake >= 2.6 (http://www.cmake.org/)
+  - Flex >= 2.5.33 (http://flex.sourceforge.net/)
+  - Bison >= 1.8 (http://www.gnu.org/software/bison/)
+
+
+WEB SITE
+-------------------------------------------------------------------------------
+
+The main libcmime site is here:
+
+        http://libcmime.spmfilter.org
+
+You'll find downloads, API documentation, etc.
+
+
+MAILING LISTS
+-------------------------------------------------------------------------------
+
+The developers mailing list (http://groups.google.com/group/libcmime-devel) is 
+used for discussions and questions about development with libcmime.
+
+        
+MERCURIAL REPOSITORY
+-------------------------------------------------------------------------------
+
+If you want to get the very latest version of libcmime direct from the
+source code repository then you can use mercurial:
+
+        hg clone http://www.spmfilter.org/hg/libcmime
+        
+See the download page for full details on all the ways to grab the
+source web-browsing of the mercurial repository, etc.:
+
+        http://libcmime.spmfilter.org/files
+
+
+LICENSE INFORMATION
+-------------------------------------------------------------------------------
+libcmime is Copyright (C) 2012 SpaceNet AG and Axel Steiner <ast@treibsand.com>
+ 
+This library is free software; you can redistribute it and/or
+modify it under the terms of the GNU Lesser General Public
+License as published by the Free Software Foundation; either
+version 3 of the License, or (at your option) any later version.
+
+This library is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+Lesser General Public License for more details.
+
+You should have received a copy of the GNU Lesser General Public
+License along with this program.  If not, see <http://www.gnu.org/licenses/>.

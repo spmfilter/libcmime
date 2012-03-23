@@ -74,8 +74,8 @@ p{margin:0 0 9px;font-family:"Helvetica Neue",Helvetica,Arial,sans-serif;font-si
 .lead{margin-bottom:18px;font-size:20px;font-weight:200;line-height:27px;}
 h1,h2,h3,h4,h5,h6{margin:0;font-family:inherit;font-weight:bold;color:inherit;text-rendering:optimizelegibility;}h1 small,h2 small,h3 small,h4 small,h5 small,h6 small{font-weight:normal;color:#999999;}
 h1{font-size:24px;line-height:36px;}h1 small{font-size:18px;}
-h2{font-size:18px;line-height:36px;}h2 small{font-size:18px;}
-h3{line-height:27px;font-size:18px;}h3 small{font-size:14px;}
+h2{font-size:16px;line-height:36px;}h2 small{font-size:18px;}
+h3{line-height:27px;font-size:12px;}h3 small{font-size:14px;}
 h4,h5,h6{line-height:18px;}
 h4{font-size:14px;}h4 small{font-size:12px;}
 h5{font-size:12px;}
@@ -746,7 +746,7 @@ pre.fragment {
     border: 1px solid #C4CFE5;
     background-color: #FBFCFD;
     padding: 4px 6px;
-    margin: 4px 8px 4px 2px;
+    margin: 10px 0px 10px 0px;
     overflow: auto;
     word-wrap: break-word;
     font-size:  9pt;
@@ -1172,3 +1172,9 @@ dl.citelist dd {
 }
 
 #navrow4 a:hover { color: #555555; text-decoration: underline; }
+
+h2 {
+    border-bottom: 1px solid #DDDDDD;
+    line-height: 24px;
+    margin-bottom: 10px;
+}
