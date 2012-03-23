@@ -29,11 +29,24 @@ set(LIBCMIME_SRC
 
 add_library(cmime SHARED ${LIBCMIME_SRC})
 target_link_libraries(cmime ${FLEX_LIBRARIES})
-set_property(TARGET cmime PROPERTY PUBLIC_HEADER cmime.h)
+set_property(TARGET cmime PROPERTY PUBLIC_HEADER cmime.h cmime_config.h)
+set_property(TARGET cmime PROPERTY PRIVATE_HEADER
+        cmime_address.h
+        cmime_base64.h
+        cmime_header.h
+        cmime_list_.h
+        cmime_message.h
+        cmime_part.h
+        cmime_qp.h
+        cmime_string.h
+        cmime_util.h
+)
+
 set_property(TARGET cmime PROPERTY VERSION ${CMIME_VERSION})
 set_property(TARGET cmime PROPERTY SOVERSION ${CMIME_VERSION})
 
 install(TARGETS cmime
 	LIBRARY DESTINATION lib
 	PUBLIC_HEADER DESTINATION include
+	PRIVATE_HEADER DESTINATION include/cmime
 )

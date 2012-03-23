@@ -17,6 +17,15 @@ easy to use and integrate.
 - Integrated unit tests.
 - Documentation is generated from source code by Doxygen
 
+@section download Getting libcmime
+
+You can download the sources at http://libcmime.spmfilter.org/files
+Development is done using <a href="http://mercurial.selenic.com/" target="_blank">Mercurial</a>
+@code
+$ hg clone http://www.spmfilter.org/hg/libcmime
+@endcode
+
+
 @section reqiorements System requirements
 For proper compilation and functionality of libcmime, the following packages are REQUIRED:
 - cmake >= 2.6 (http://www.cmake.org/)

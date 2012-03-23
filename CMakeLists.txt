@@ -65,6 +65,10 @@ configure_file(
 add_subdirectory(src)
 add_subdirectory(test)
 
+install(FILES ${CMAKE_CURRENT_SOURCE_DIR}/libcmime.pc
+    DESTINATION ${LIBDIR}/pkgconfig
+)
+
 set(ARCHIVE_NAME "${CMAKE_PROJECT_NAME}-${CMIME_VERSION}")
 set(CPACK_PACKAGE_NAME "libcmime")
 set(CPACK_PACKAGE_VENDOR "Axel Steiner <ast@treibsand.com>")
