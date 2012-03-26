@@ -13,10 +13,6 @@ libcmime is a lightweight mime library, written in C. The library can
 be used for parsing and creation of mime messages and is designed to be 
 easy to use and integrate.
 
-@section features Features
-- Integrated unit tests.
-- Documentation is generated from source code by Doxygen
-
 @section download Getting libcmime
 
 You can download the sources at http://libcmime.spmfilter.org/files
@@ -66,5 +62,8 @@ By default, 'make install' installs the library under '/usr/local/lib' and the i
 @section lists Mailing lists
 The developers mailing list (http://groups.google.com/group/libcmime-devel) is used for discussions 
 and questions about development with libcmime.
+
+@section license License
+libcmime is released under the <a href="http://www.gnu.org/licenses/lgpl.txt" target="_blank">LGPL</a>. This means (in short..) that you are free to use, change and distribute it.
 
 */

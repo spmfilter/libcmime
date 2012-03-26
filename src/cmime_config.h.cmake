@@ -15,6 +15,12 @@
  * License along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+/*!
+ * @file cmime_config.h
+ * @brief CMime's config constants. 
+ *
+ */
+
 #ifndef _CMIME_CONFIG_H
 #define _CMIME_CONFIG_H
 
@@ -22,12 +28,34 @@
 extern "C" {
 #endif
 
-/* cmime version */
+/*!
+ * @def CMIME_VERSION
+ * @returns CMime version
+ */
 #define CMIME_VERSION ${CMIME_VERSION_NUMBER}
+
+/*!
+ * @def CMIME_MAJOR_VERSION
+ * @returns CMime's major version
+ */
 #define CMIME_MAJOR_VERSION ${CMIME_MAJOR_VERSION}
+
+/*!
+ * @def CMIME_MINOR_VERSION
+ * @retuens CMime's minor version
+ */
 #define CMIME_MINOR_VERSION ${CMIME_MINOR_VERSION}
+
+/*!
+ * @def CMIME_MICRO_VERSION
+ * @returns CMime's micro version
+ */
 #define CMIME_MICRO_VERSION ${CMIME_MICRO_VERSION}
 
+/*!
+ * @def FILE_EXECUTABLE
+ * @returns path to the file binary
+ */
 #define FILE_EXECUTABLE "${FILE_EXECUTABLE} -b --mime"
 
 #ifdef __cplusplus

@@ -15,6 +15,11 @@
  * License along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+/*!
+ * @file cmime.h
+ * @brief Convenience header, which includes the rest of the CMime library. 
+ *
+ */
 
 #ifndef _CMIME_H
 #define _CMIME_H
@@ -38,4 +43,4 @@ extern "C" {
 }
 #endif
 
-#endif /* _CMIME_CONFIG_H */
+#endif /* _CMIME_H */

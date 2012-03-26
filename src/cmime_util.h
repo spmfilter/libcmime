@@ -15,6 +15,12 @@
  * License along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+/*!
+ * @file cmime_util.h
+ * @brief Defines utility functions
+ *
+ */
+
 #ifndef _CMIME_UTIL_H
 #define	_CMIME_UTIL_H
 
@@ -22,6 +28,12 @@
 extern "C" {
 #endif
 
+/*!
+ * @fn char *cmime_util_get_mimetype(const char *filename)
+ * @brief Get mimetype of file use the 'file' tool
+ * @param filename path to file
+ * @returns mimetype of file
+ */
 char *cmime_util_get_mimetype(const char *filename);
 
 #ifdef __cplusplus
