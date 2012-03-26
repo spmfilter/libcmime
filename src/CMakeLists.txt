@@ -1,6 +1,3 @@
-#BISON_TARGET(cmime_parser cmime_parser.y ${CMAKE_CURRENT_BINARY_DIR}/cmime_parser.tab.c)
-#FLEX_TARGET(cmime_scanner cmime_scanner.l ${CMAKE_CURRENT_BINARY_DIR}/lex.yy.c)
-
 BISON_TARGET(cmime_parser cmime_parser.y ${CMAKE_CURRENT_SOURCE_DIR}/cmime_parser.tab.c)
 FLEX_TARGET(cmime_scanner cmime_scanner.l ${CMAKE_CURRENT_SOURCE_DIR}/lex.yy.c)
 
@@ -29,12 +26,13 @@ set(LIBCMIME_SRC
 
 add_library(cmime SHARED ${LIBCMIME_SRC})
 target_link_libraries(cmime ${FLEX_LIBRARIES})
-set_property(TARGET cmime PROPERTY PUBLIC_HEADER cmime.h cmime_config.h)
+set_property(TARGET cmime PROPERTY PUBLIC_HEADER cmime.h )
 set_property(TARGET cmime PROPERTY PRIVATE_HEADER
         cmime_address.h
         cmime_base64.h
+        cmime_config.h 
         cmime_header.h
-        cmime_list_.h
+        cmime_list.h
         cmime_message.h
         cmime_part.h
         cmime_qp.h
