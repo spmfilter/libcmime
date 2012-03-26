@@ -29,7 +29,13 @@
 extern "C" {
 #endif
 
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <assert.h>
+#include <ctype.h>
 #include <time.h>
+#include <sys/stat.h>
 
 #include "cmime_address.h"
 #include "cmime_list.h"
@@ -302,6 +308,22 @@ int cmime_message_from_string(CMimeMessage_T **message, const char *content);
  * @returns number of mime parts
  */
 #define cmime_message_part_count(message) (message->parts->size)
+
+/*!
+ * @fn void cmime_message_set_subject(CMimeMessage_T *message, const char *subject)
+ * @brief Set message subject
+ * @param message a CMimeMessage_T object
+ * @param s the subject string
+ */
+void cmime_message_set_subject(CMimeMessage_T *message, const char *s);
+
+/*!
+ * @fn char *cmime_message_get_subject(CMimeMessage_T *message)
+ * @brief Get the subject string from CMimeMessage_T object
+ * @param message a CMimeMessage_T object
+ * @returns subject string
+ */
+char *cmime_message_get_subject(CMimeMessage_T *message);
 
 #ifdef __cplusplus
 }

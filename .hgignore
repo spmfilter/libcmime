@@ -8,3 +8,4 @@ libcmime.pc
 src/cmime_parser.tab.c
 src/cmime_parser.tab.h
 src/lex.yy.c
+build.properties

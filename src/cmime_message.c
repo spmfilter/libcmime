@@ -17,13 +17,7 @@
 
 #define _GNU_SOURCE
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <assert.h>
-#include <ctype.h>
-#include <time.h>
-#include <sys/stat.h>
+
 
 #include "cmime_address.h"
 #include "cmime_message.h"
@@ -357,6 +351,9 @@ char *cmime_message_to_string(CMimeMessage_T *message) {
     assert(message);
     out = (char *)calloc(sizeof(char),sizeof(char));
     
+    if (message->linebreak==NULL)
+        message->linebreak = strdup(CRLF);
+
     e = cmime_list_head(message->headers);
     while(e != NULL) {
         h = (CMimeHeader_T *)cmime_list_data(e);
@@ -393,7 +390,7 @@ char *cmime_message_to_string(CMimeMessage_T *message) {
         } else {
             s = cmime_header_to_string(h);
         }
-        
+    
         out = (char *)realloc(out,strlen(out) + strlen(s) + strlen(message->linebreak) + sizeof(char));
         strcat(out,s);
         strcat(out,message->linebreak);
@@ -447,3 +444,12 @@ int cmime_message_from_string(CMimeMessage_T **message, const char *content) {
     
     return(ret);
 }
+
+void cmime_message_set_subject(CMimeMessage_T *message, const char *s) {
+    _cmime_internal_set_linked_header_value(message->headers,"Subject",s);
+}
+
+char *cmime_message_get_subject(CMimeMessage_T *message) {
+    return(_cmime_internal_get_linked_header_value(message->headers,"Subject"));
+}
+
