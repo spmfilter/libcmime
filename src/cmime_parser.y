@@ -53,11 +53,11 @@ message:
         
 headers:
     header { 
-        if ($1->value != NULL)
+        if ($1 != NULL)
             cmime_list_append(msg->headers,$1); 
     }
     | headers header { 
-        if ($2->value != NULL)
+        if ($2 != NULL)
             cmime_list_append(msg->headers,$2); 
     }
 ;
@@ -69,10 +69,7 @@ header:
         char *it = NULL;
         int in_name = 0;
         int pos = 0;
-        CMimeHeader_T *h = cmime_header_new();
-        cmime_header_set_name(h,$1);
-        
-        $$ = h;
+        CMimeHeader_T *h = NULL;
 
         /* got a header with message recipients? */
         if (strcasecmp($1,"from")==0) {
@@ -112,8 +109,12 @@ header:
 
             cmime_message_add_recipient(msg,s,t);
             free(s);
-        } else 
+        } else {
+            h = cmime_header_new();
+            cmime_header_set_name(h,$1);
             cmime_header_set_value(h,$2,0);
+        }
+        $$ = h;
     }
 ;
 
