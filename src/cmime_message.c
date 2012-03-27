@@ -119,7 +119,6 @@ void cmime_message_set_sender(CMimeMessage_T *message, const char *sender) {
     message->sender = ca;
 }
 
-//#define cmime_message_get_sender(message) (cmime_address_to_string(message->sender))
 char *cmime_message_get_sender_string(CMimeMessage_T *message) {
     char *s = NULL;
 
@@ -137,10 +136,6 @@ char *cmime_message_get_message_id(CMimeMessage_T *message) {
     return(_cmime_internal_get_linked_header_value(message->headers,"Message-ID"));
 }
 
-/*
- * TODO: 
- * split header to name/value?!
- */
 int cmime_message_set_header(CMimeMessage_T *message, const char *header) {
     char *cp = NULL;
     char *tf = NULL;
@@ -453,3 +448,29 @@ char *cmime_message_get_subject(CMimeMessage_T *message) {
     return(_cmime_internal_get_linked_header_value(message->headers,"Subject"));
 }
 
+char *cmime_message_generate_message_id(void) {
+    char *mid = NULL;
+    char *hostname = NULL;
+    static const char base36[] = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+    int i,i2;
+    int pos = 0;
+
+    hostname = (char *)malloc(MAXHOSTNAMELEN);
+    gethostname(hostname,MAXHOSTNAMELEN);
+        
+    mid = (char *)malloc(20 + strlen(hostname));
+    srandom(time(NULL));
+    for(i=0; i < 2; i++) {
+        for (i2=0; i2<8; i2++) 
+            mid[pos++] = base36[random() % 36];
+        
+        if (i==0)
+            mid[pos++] = '.';
+        else
+            mid[pos++] = '@';
+    }
+    mid[pos] = '\0';
+    strcat(mid,hostname);
+    free(hostname);
+    return(mid);
+}

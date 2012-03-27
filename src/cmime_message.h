@@ -36,6 +36,8 @@ extern "C" {
 #include <ctype.h>
 #include <time.h>
 #include <sys/stat.h>
+#include <unistd.h>
+#include <sys/param.h>
 
 #include "cmime_address.h"
 #include "cmime_list.h"
@@ -324,6 +326,13 @@ void cmime_message_set_subject(CMimeMessage_T *message, const char *s);
  * @returns subject string
  */
 char *cmime_message_get_subject(CMimeMessage_T *message);
+
+/*!
+ * @fn char *cmime_message_generate_message_id(void)
+ * @brief Generate a message id
+ * @returns a newly allocated message id string
+ */
+char *cmime_message_generate_message_id(void);
 
 #ifdef __cplusplus
 }
