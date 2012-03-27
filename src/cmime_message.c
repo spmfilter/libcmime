@@ -129,7 +129,22 @@ char *cmime_message_get_sender_string(CMimeMessage_T *message) {
 }
 
 void cmime_message_set_message_id(CMimeMessage_T *message, const char *mid) {
-    _cmime_internal_set_linked_header_value(message->headers,"Message-ID",mid);
+    char *id = NULL;
+    int i;
+    int pos = 0;
+    if (mid[0] != '<') {
+        id = (char *)malloc(strlen(mid) + 4);
+        id[pos++] = '<';
+        for (i = 0; i < strlen(mid); i++) {
+            id[pos++] = mid[i];
+        }
+        id[pos++] = '>';
+        id[pos++] = '\0';
+    } else
+        id = strdup(mid);
+
+    _cmime_internal_set_linked_header_value(message->headers,"Message-ID",id);
+    free(id);
 }
 
 char *cmime_message_get_message_id(CMimeMessage_T *message) {
@@ -474,3 +489,13 @@ char *cmime_message_generate_message_id(void) {
     free(hostname);
     return(mid);
 }
+
+void cmime_message_add_generated_message_id(CMimeMessage_T *message) {
+    char *mid = NULL;
+
+    assert(message);
+    mid = cmime_message_generate_message_id();
+    cmime_message_set_message_id(message,mid);
+    free(mid);
+}
+

@@ -116,6 +116,20 @@ void cmime_message_set_message_id(CMimeMessage_T *message, const char *mid);
 char *cmime_message_get_message_id(CMimeMessage_T *message);
 
 /*!
+ * @fn char *cmime_message_generate_message_id(void)
+ * @brief Generate a message id
+ * @returns a newly allocated message id string
+ */
+char *cmime_message_generate_message_id(void);
+
+/*!
+ * @fn void cmime_message_add_generated_message_id(CMimeMessage_T *message)
+ * @brief Add a newly generated message id to a CMimeMessage_T object
+ * @param message a CMimeMessage_T object
+ */
+void cmime_message_add_generated_message_id(CMimeMessage_T *message);
+
+/*!
  * @fn int cmime_message_set_header(CMimeMessage_T *message, const char *header)
  * @brief Set a header to message object. If header already exists, it will be overwritten
  * @param message a CMimeMessage_T object
@@ -326,13 +340,6 @@ void cmime_message_set_subject(CMimeMessage_T *message, const char *s);
  * @returns subject string
  */
 char *cmime_message_get_subject(CMimeMessage_T *message);
-
-/*!
- * @fn char *cmime_message_generate_message_id(void)
- * @brief Generate a message id
- * @returns a newly allocated message id string
- */
-char *cmime_message_generate_message_id(void);
 
 #ifdef __cplusplus
 }
