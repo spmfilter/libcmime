@@ -112,7 +112,7 @@ int main (int argc, char const *argv[]) {
         // set message id
         cmime_message_set_message_id(msg,message_id_string);
         s = cmime_message_get_message_id(msg);
-        assert(strcmp(s,message_id_string)==0);
+        assert(strcmp(s,message_id_string_out)==0);
         
         // set a test header
         if (cmime_message_set_header(msg, header_string1)!=0) 

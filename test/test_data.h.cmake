@@ -49,6 +49,7 @@ char header_string2_key[] = "X-Test";
 char header_string2_value[] = "raboof";
 
 char message_id_string[] = "4DF9E5EB.6080300@foo.bar";
+char message_id_string_out[] = "<4DF9E5EB.6080300@foo.bar>";
 
 char mime_type_string1[] = "text/plain; charset=us-ascii";
 char mime_type_string2[] = "multipart/mixed";

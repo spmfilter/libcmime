@@ -52,8 +52,14 @@ message:
 ;
         
 headers:
-    header { cmime_list_append(msg->headers,$1); }
-    | headers header { cmime_list_append(msg->headers,$2); }
+    header { 
+        if ($1->value != NULL)
+            cmime_list_append(msg->headers,$1); 
+    }
+    | headers header { 
+        if ($2->value != NULL)
+            cmime_list_append(msg->headers,$2); 
+    }
 ;
     
 header:

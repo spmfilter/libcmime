@@ -191,6 +191,7 @@ int cmime_message_add_recipient(CMimeMessage_T *message, const char *recipient, 
     CMimeAddress_T *tca = NULL;
     char *s1 = NULL;
     char *s2 = NULL;
+    int found = 0;
     
     assert(message);
     assert(recipient);
@@ -202,7 +203,7 @@ int cmime_message_add_recipient(CMimeMessage_T *message, const char *recipient, 
         if (cmime_list_new(&message->recipients,_recipients_destroy)!=0) 
                 return(-1);
     }   
-    
+
     // check if given recipient already exists
     elem = cmime_list_head(message->recipients);
     while(elem != NULL) {
@@ -213,6 +214,7 @@ int cmime_message_add_recipient(CMimeMessage_T *message, const char *recipient, 
             s2 = cmime_address_to_string(ca);
             if (strcmp(s1,s2)==0) {
                 cmime_list_remove(message->recipients,elem,NULL);
+                found = 1;
                 break;
             }
             free(s1);
@@ -223,6 +225,22 @@ int cmime_message_add_recipient(CMimeMessage_T *message, const char *recipient, 
 
     if (cmime_list_append(message->recipients,ca)!=0)
         return(-1);
+
+    if (found == 0) {
+        switch(t) {
+            case CMIME_ADDRESS_TYPE_FROM:
+                break;
+            case CMIME_ADDRESS_TYPE_TO:
+                _cmime_internal_set_linked_header_value(message->headers, "To", NULL);
+                break;
+            case CMIME_ADDRESS_TYPE_CC:
+                _cmime_internal_set_linked_header_value(message->headers, "Cc", NULL);
+                break;  
+            case CMIME_ADDRESS_TYPE_BCC:
+                _cmime_internal_set_linked_header_value(message->headers, "Bcc", NULL);
+                break;  
+        }
+    }
 
     return(0);
 }
@@ -373,8 +391,7 @@ char *cmime_message_to_string(CMimeMessage_T *message) {
             t = CMIME_ADDRESS_TYPE_CC;
         else if (strcasecmp(h->name,"bcc")==0)
             t = CMIME_ADDRESS_TYPE_BCC;
-
-
+        
         if (t != -1) {
             asprintf(&s,"%s: ",h->name);
             r = cmime_list_head(message->recipients);

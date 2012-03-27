@@ -53,16 +53,17 @@ void _cmime_internal_set_linked_header_value(CMimeList_T *l, const char *key, co
 	
 	assert(l);
 	assert(key);
-	assert(value);
 	
-	ptemp = (char *)value;		
-	ptemp = cmime_string_strip(ptemp);
+	ptemp = (char *)value;
+	if (value != NULL)		
+		ptemp = cmime_string_strip(ptemp);
 
 	e = cmime_list_head(l);
 	while(e != NULL) {
 		h = (CMimeHeader_T *)cmime_list_data(e);
 		if (strcasecmp(cmime_header_get_name(h),key)==0) {
-			cmime_header_set_value(h,ptemp,1);
+			if (value!=NULL)
+				cmime_header_set_value(h,ptemp,1);
 			return;
 		}
 		e = e->next;
@@ -70,7 +71,8 @@ void _cmime_internal_set_linked_header_value(CMimeList_T *l, const char *key, co
 	
 	h = cmime_header_new();
 	cmime_header_set_name(h,key);
-	cmime_header_set_value(h,ptemp,0);
+	if (value != NULL)
+		cmime_header_set_value(h,ptemp,0);
 	cmime_list_append(l,h);
 	
 	return;
