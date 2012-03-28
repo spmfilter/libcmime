@@ -467,7 +467,13 @@ char *cmime_message_to_string(CMimeMessage_T *message) {
     }
 
 
-
+    /* check message gap */
+    if (message->gap == NULL) {
+        if (message->linebreak != NULL)
+            message->gap = strdup(message->linebreak);
+        else
+            message->gap = strdup(CRLF);
+    }
     _append_string(&out,message->gap);
 
     e = cmime_list_head(message->parts);
@@ -575,6 +581,14 @@ int cmime_message_set_body(CMimeMessage_T *message, const char *content) {
     p = cmime_part_new();    
     cmime_part_set_content(p,content);
     cmime_list_append(message->parts,p);
+
+    /* check message gap */
+    if (message->gap == NULL) {
+        if (message->linebreak != NULL)
+            message->gap = strdup(message->linebreak);
+        else
+            message->gap = strdup(CRLF);
+    }
 
     return(0);
 }
