@@ -382,6 +382,10 @@ char *cmime_message_to_string(CMimeMessage_T *message) {
     if (message->linebreak==NULL)
         message->linebreak = strdup(CRLF);
 
+    /* check message id, and append if necessary */
+    if (_cmime_internal_get_linked_header_value(message->headers,"Message-ID")==NULL) 
+        cmime_message_add_generated_message_id(message);
+
     e = cmime_list_head(message->headers);
     while(e != NULL) {
         h = (CMimeHeader_T *)cmime_list_data(e);
@@ -425,6 +429,8 @@ char *cmime_message_to_string(CMimeMessage_T *message) {
         
         e = e->next;
     }
+
+
 
     _append_string(&out,message->gap);
 
