@@ -36,6 +36,7 @@ set(CMIME_VERSION_NUMBER ${version_number})
 if(ENABLE_DEBUG)
     set(CMAKE_VERBOSE_MAKEFILE TRUE)
     add_definitions(-DDEBUG -g -O0 -Wall)
+    ENABLE_TESTING()
 endif(ENABLE_DEBUG)
 
 find_package(FLEX REQUIRED)
