@@ -301,6 +301,15 @@ char *cmime_message_generate_boundary(void);
 int cmime_message_from_file(CMimeMessage_T **message, const char *filename);
 
 /*!
+ * @fn int cmime_message_to_file(CMimeMessage_T *message, const char *filename)
+ * @brief Write CMimeMessage_T object to file
+ * @param message a CMimeMessage_T object
+ * @param filename path to file, which should be written
+ * @returns the number of items successfully written on success, -1 in case of error
+ */
+int cmime_message_to_file(CMimeMessage_T *message, const char *filename);
+
+/*!
  * @fn char *cmime_message_to_string(CMimeMessage_T *message) 
  * @brief Return a message object as string
  * @param message a CMimeMessage_T object 
@@ -340,6 +349,16 @@ void cmime_message_set_subject(CMimeMessage_T *message, const char *s);
  * @returns subject string
  */
 char *cmime_message_get_subject(CMimeMessage_T *message);
+
+
+/*!
+ * @fn int cmime_message_set_body(CMimeMessage_T *message, const char *body)
+ * @brief Set plain body to non multipart message.
+ * @param message a CMimeMessage_T object
+ * @param content body content
+ * @retuens 0 on sucess, -1 if message is multipart
+ */
+int cmime_message_set_body(CMimeMessage_T *message, const char *content);
 
 #ifdef __cplusplus
 }

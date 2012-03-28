@@ -374,6 +374,24 @@ int cmime_message_from_file(CMimeMessage_T **message, const char *filename) {
     return(ret);
 }
 
+int cmime_message_to_file(CMimeMessage_T *message, const char *filename) {
+    FILE *fp = NULL;
+    char *msg_string = NULL;
+    int ret = 0;
+
+    assert(message);
+    assert(filename);
+
+    msg_string = cmime_message_to_string(message);
+    if ((fp = fopen(filename,"wb"))==NULL)
+        return(-1);
+    ret = fwrite(msg_string,strlen(msg_string),1,fp);
+    if (fclose(fp) != 0)
+        return(-1);
+
+    return(ret);
+}
+
 char *cmime_message_to_string(CMimeMessage_T *message) {
     char *out = NULL;
     CMimeListElem_T *e = NULL;
@@ -540,3 +558,23 @@ void cmime_message_add_generated_message_id(CMimeMessage_T *message) {
     free(mid);
 }
 
+int cmime_message_set_body(CMimeMessage_T *message, const char *content) {
+    CMimePart_T *p = NULL;
+    assert(message);
+    assert(content);  
+
+    /* check if message object has a boundary and more the 1 mime parts */ 
+    if ((message->boundary != NULL) && (message->parts->size > 1))
+        return(-1);
+
+    if (message->parts->size == 1) {
+        p = (CMimePart_T *)cmime_list_pop_head(message->parts);
+        cmime_part_free(p);
+    }
+    
+    p = cmime_part_new();    
+    cmime_part_set_content(p,content);
+    cmime_list_append(message->parts,p);
+
+    return(0);
+}
