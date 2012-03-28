@@ -73,7 +73,7 @@ header:
 
         /* got a header with message recipients? */
         if (strcasecmp($1,"from")==0) {
-            cmime_message_set_sender(msg,$2);
+            t = CMIME_ADDRESS_TYPE_FROM;
         } else if (strcasecmp($1,"to")==0) {
             t = CMIME_ADDRESS_TYPE_TO;
         } else if (strcasecmp($1,"cc")==0) {
@@ -82,7 +82,7 @@ header:
             t = CMIME_ADDRESS_TYPE_BCC;
         }
         
-        if (t != -1) {
+        if ((t != -1) && (t != CMIME_ADDRESS_TYPE_FROM)) {
             it = $2;
             s = (char *)calloc((size_t)1,sizeof(char));
             while(*it != '\0') {
@@ -109,6 +109,8 @@ header:
 
             cmime_message_add_recipient(msg,s,t);
             free(s);
+        } else if (t == CMIME_ADDRESS_TYPE_FROM) {
+            cmime_message_set_sender(msg,$2);
         } else {
             h = cmime_header_new();
             cmime_header_set_name(h,$1);

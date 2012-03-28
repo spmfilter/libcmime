@@ -80,7 +80,10 @@ char *cmime_header_get_value(CMimeHeader_T *header,int pos) {
 	assert(header);
 	assert(pos <= header->count);
 	
-	return(header->value[pos]);
+	if (header->value != NULL)
+		return(header->value[pos]);
+	else
+		return(NULL);
 }
 
 char *cmime_header_to_string(CMimeHeader_T *header) {

@@ -111,12 +111,21 @@ void cmime_message_free(CMimeMessage_T *message) {
 /* Set sender of message */
 void cmime_message_set_sender(CMimeMessage_T *message, const char *sender) {
     CMimeAddress_T *ca = NULL;
+    char *s = NULL;
+
     assert(message);
-    
+    assert(sender);
+
     ca = cmime_address_parse_string(sender);
-    if (message->sender != NULL)
+    if (message->sender != NULL) {
         cmime_address_free(message->sender);
+        s = _cmime_internal_get_linked_header_value(message->headers, "From");
+        if (s != NULL)
+            free(s);
+    }
+    ca->type = CMIME_ADDRESS_TYPE_FROM;
     message->sender = ca;
+    _cmime_internal_set_linked_header_value(message->headers, "From", NULL);
 }
 
 char *cmime_message_get_sender_string(CMimeMessage_T *message) {
@@ -395,27 +404,36 @@ char *cmime_message_to_string(CMimeMessage_T *message) {
             t = CMIME_ADDRESS_TYPE_CC;
         else if (strcasecmp(h->name,"bcc")==0)
             t = CMIME_ADDRESS_TYPE_BCC;
-        
+        else if (strcasecmp(h->name,"from")==0)
+            t = CMIME_ADDRESS_TYPE_FROM;
+
         if (t != -1) {
             asprintf(&s,"%s: ",h->name);
-            r = cmime_list_head(message->recipients);
-            while(r != NULL) {
-                addr = (CMimeAddress_T *)cmime_list_data(r);
-                if (addr->type == t) {
-                    s2 = cmime_address_to_string(addr);
-                    s = (char *)realloc(s,strlen(s) + strlen(s2) + sizeof(char));
-                    strcat(s,s2);
-                    free(s2);    
-                }
-
-                if (r->next != NULL) {
-                    addr = (CMimeAddress_T *)cmime_list_data(r->next);
+            if (t == CMIME_ADDRESS_TYPE_FROM) {
+                s2 = cmime_address_to_string(message->sender);
+                s = (char *)realloc(s,strlen(s) + strlen(s2) + sizeof(char));
+                strcat(s,s2);
+                free(s2);    
+            } else {
+                r = cmime_list_head(message->recipients);
+                while(r != NULL) {
+                    addr = (CMimeAddress_T *)cmime_list_data(r);
                     if (addr->type == t) {
-                        s = (char *)realloc(s,strlen(s) + 1 + sizeof(char));
-                        strcat(s,",");
+                        s2 = cmime_address_to_string(addr);
+                        s = (char *)realloc(s,strlen(s) + strlen(s2) + sizeof(char));
+                        strcat(s,s2);
+                        free(s2);    
                     }
+
+                    if (r->next != NULL) {
+                        addr = (CMimeAddress_T *)cmime_list_data(r->next);
+                        if (addr->type == t) {
+                            s = (char *)realloc(s,strlen(s) + 1 + sizeof(char));
+                            strcat(s,",");
+                        }
+                    }
+                    r = r->next;
                 }
-                r = r->next;
             }
             t = -1;
         } else {
