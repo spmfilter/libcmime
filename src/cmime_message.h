@@ -42,6 +42,7 @@ extern "C" {
 #include "cmime_address.h"
 #include "cmime_list.h"
 #include "cmime_header.h"
+#include "cmime_part.h"
 
 
 /*!
@@ -350,7 +351,6 @@ void cmime_message_set_subject(CMimeMessage_T *message, const char *s);
  */
 char *cmime_message_get_subject(CMimeMessage_T *message);
 
-
 /*!
  * @fn int cmime_message_set_body(CMimeMessage_T *message, const char *body)
  * @brief Set plain body to non multipart message.
@@ -359,6 +359,15 @@ char *cmime_message_get_subject(CMimeMessage_T *message);
  * @retuens 0 on sucess, -1 if message is multipart
  */
 int cmime_message_set_body(CMimeMessage_T *message, const char *content);
+
+/*!
+ * @fn int cmime_message_append_part(CMimeMessage_T *message, CMimePart_T *part)
+ * @brief Append mime part to message object and generate boundary if necessary
+ * @param message a CMimeMessage_T object
+ * @param part a CMimePart_T part
+ * @returns 0 on success, -1 in case of error
+ */
+int cmime_message_append_part(CMimeMessage_T *message, CMimePart_T *part);
 
 #ifdef __cplusplus
 }

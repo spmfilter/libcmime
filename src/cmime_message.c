@@ -592,3 +592,19 @@ int cmime_message_set_body(CMimeMessage_T *message, const char *content) {
 
     return(0);
 }
+
+int cmime_message_append_part(CMimeMessage_T *message, CMimePart_T *part) {
+
+    assert(message);
+    assert(part);
+
+    if (message->parts->size > 1) {
+        cmime_list_append(message->parts,part);
+        return(0);
+    } else if (message->parts->size == 1) {
+        
+    }
+
+
+    return(0);
+}

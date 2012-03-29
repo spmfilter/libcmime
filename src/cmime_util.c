@@ -1,5 +1,5 @@
 /* libcmime - A C mime library
- * Copyright (C) 2011 Axel Steiner <ast@treibsand.com>
+ * Copyright (C) 2012 SpaceNet AG and Axel Steiner <ast@treibsand.com>
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -17,15 +17,9 @@
 
 #define _GNU_SOURCE
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <assert.h>
-
 #include "cmime_string.h"
 #include "cmime_config.h"
 #include "cmime_util.h"
-#include "cmime_internal.h"
 
 /* get the mimetype */
 char *cmime_util_get_mimetype(const char *filename) {
@@ -60,3 +54,80 @@ char *cmime_util_get_mimetype(const char *filename) {
 	}
 }
 
+CMimeInfo_T *cmime_util_info_new(void) {
+	CMimeInfo_T *mi = NULL;
+	mi = (CMimeInfo_T *)calloc((size_t)1,sizeof(CMimeInfo_T));
+	mi->mime_type =  NULL;
+	mi->mime_encoding = NULL;
+	return(mi);
+}
+
+void cmime_util_info_free(CMimeInfo_T *mi) {
+	assert(mi);
+
+	if (mi->mime_type != NULL)
+		free(mi->mime_type);
+	
+	if (mi->mime_encoding != NULL)
+		free(mi->mime_encoding);
+
+	free(mi); 
+}
+
+CMimeInfo_T *cmime_util_get_mime_info(const char *s) {
+	CMimeInfo_T *mi = NULL;
+	char *tempname = NULL;
+	char *combined = NULL;
+	char *t1 = NULL;
+	char *t2 = NULL;
+	FILE *fp = NULL;
+	int fd;
+	int len1, len2;
+
+	assert(s);
+
+	asprintf(&tempname,"%s/cmime_XXXXXX",P_tmpdir);
+    fd = mkstemp(tempname);
+    if (fd == -1) {
+    	perror("libcmime: error creating temporary file");
+		return(NULL);
+    }
+
+	fp = fdopen(fd,"wb");
+	if (fp == NULL) {
+		perror("libcmime: error opening temporary file");
+		free(tempname);
+		return(NULL);
+	}
+	if (fwrite(s,strlen(s),1,fp) <=0 ) {
+		fclose(fp);
+		free(tempname);
+		return(NULL);
+    }
+    fclose(fp);
+
+    combined = cmime_util_get_mimetype(tempname);
+    if (combined != NULL) {
+		mi = cmime_util_info_new();
+		len1 = strlen(combined);
+    	t1 = strchr(combined,';');
+    	len2 = strlen(t1);
+		mi->mime_type = (char *)calloc((len1 - len2) + sizeof(char),sizeof(char));
+		strncpy(mi->mime_type,combined,len1 - len2);
+
+		t2 = strchr(t1,'=');
+		t2++;
+		mi->mime_encoding = (char *)calloc(strlen(t2) + sizeof(char), sizeof(char));
+		strcpy(mi->mime_encoding,t2);
+		free(combined);
+    }
+    
+    
+    if (remove(tempname) != 0) {
+    	free(tempname);
+    	perror("libcmime: failed to remove temporary file");
+    	return(NULL);
+    }
+    free(tempname);
+	return(mi);
+}
