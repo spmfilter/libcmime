@@ -295,6 +295,13 @@ void cmime_message_set_boundary(CMimeMessage_T *message, const char *boundary);
 char *cmime_message_generate_boundary(void);
 
 /*!
+ * @fn void cmime_message_add_generated_boundary(CMimeMessage_T *message)
+ * @brief Add a newly generated boundary to a CMimeMessage_T object
+ * @param message a CMimeMessage_T object
+ */
+void cmime_message_add_generated_boundary(CMimeMessage_T *message);
+
+/*!
  * @fn int cmime_message_from_file(CMimeMessage_T **message, const char *filename)
  * @brief Parse given file and create a CMimeMessage_T object
  * @param message out param to return the new message object

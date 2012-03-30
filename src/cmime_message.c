@@ -320,6 +320,9 @@ int cmime_message_set_date_now(CMimeMessage_T *message) {
 }
 
 void cmime_message_set_boundary(CMimeMessage_T *message, const char *boundary) {
+    char *s = NULL;
+    char *nl = NULL;
+
     assert(message);
     assert(boundary);
     
@@ -327,6 +330,15 @@ void cmime_message_set_boundary(CMimeMessage_T *message, const char *boundary) {
         free(message->boundary);
         
     message->boundary = strdup(boundary);
+
+    if (message->linebreak)
+        nl = message->linebreak;
+    else
+        nl = CRLF;
+    
+    asprintf(&s,"multipart/mixed;%s\tboundary=\"%s\"",nl,message->boundary);
+    _cmime_internal_set_linked_header_value(message->headers,"Content-Type",s);
+    free(s);
 }
 
 char *cmime_message_generate_boundary(void) {
@@ -335,7 +347,7 @@ char *cmime_message_generate_boundary(void) {
     int i;
     static const char text[] = "abcdefghijklmnopqrstuvwxyz"
                                "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
-                                                         "0123456789._-=";
+                               "0123456789._-=";
 
     srand(time(NULL));
 
@@ -346,6 +358,16 @@ char *cmime_message_generate_boundary(void) {
     
     asprintf(&boundary,"--=_Part_%s",str);
     return(boundary);
+}
+
+void cmime_message_add_generated_boundary(CMimeMessage_T *message) {
+    char *bound = NULL;
+
+    assert(message);
+
+    bound = cmime_message_generate_boundary();
+    cmime_message_set_boundary(message,bound);
+    free(bound);
 }
 
 int cmime_message_from_file(CMimeMessage_T **message, const char *filename) {
@@ -618,6 +640,7 @@ int cmime_message_set_body(CMimeMessage_T *message, const char *content) {
 }
 
 int cmime_message_append_part(CMimeMessage_T *message, CMimePart_T *part) {
+    CMimeInfo_T *mi = NULL;
 
     assert(message);
     assert(part);
@@ -626,7 +649,8 @@ int cmime_message_append_part(CMimeMessage_T *message, CMimePart_T *part) {
         cmime_list_append(message->parts,part);
         return(0);
     } else if (message->parts->size == 1) {
-        
+        cmime_message_set_mime_version(message, "1.0");
+
     }
 
 
