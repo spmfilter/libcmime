@@ -23,111 +23,116 @@
 
 /* get the mimetype */
 char *cmime_util_get_mimetype(const char *filename) {
-	char *buf = NULL;
-	size_t st = 0;
-	FILE *fh = NULL;
-	char *command = NULL;
-	char *retval = NULL;
-	
-	assert(filename);
-	
-	/* build up the command string */
-	asprintf(&command,"%s %s",FILE_EXECUTABLE,filename);
+    char *buf = NULL;
+    size_t st = 0;
+    FILE *fh = NULL;
+    char *command = NULL;
+    char *retval = NULL;
+    
+    assert(filename);
+    
+    /* build up the command string */
+    asprintf(&command,"%s %s",FILE_EXECUTABLE,filename);
 
-	/* open the pipe and try to read command output */
-	fh = popen(command, "r");
-	if(fh == NULL) {
-		return(NULL);
-	}
-	free(command);
-	if(getline(&buf,&st,fh) > 0) {
-		/* copy command output from static buffer into string */
-		retval =  (char *)calloc(strlen(buf) + 1, sizeof(char));
-		buf = cmime_string_chomp(buf);
-		strncpy(retval, buf, strlen(buf));
-		free(buf);
-		fclose(fh);
-		return(retval);
-	} else {
-		fclose(fh);
-		return(NULL);
-	}
+    /* open the pipe and try to read command output */
+    fh = popen(command, "r");
+    if(fh == NULL) {
+        return(NULL);
+    }
+    free(command);
+    if(getline(&buf,&st,fh) > 0) {
+        /* copy command output from static buffer into string */
+        retval =  (char *)calloc(strlen(buf) + 1, sizeof(char));
+        buf = cmime_string_chomp(buf);
+        strncpy(retval, buf, strlen(buf));
+        free(buf);
+        fclose(fh);
+        return(retval);
+    } else {
+        fclose(fh);
+        return(NULL);
+    }
 }
 
 CMimeInfo_T *cmime_util_info_new(void) {
-	CMimeInfo_T *mi = NULL;
-	mi = (CMimeInfo_T *)calloc((size_t)1,sizeof(CMimeInfo_T));
-	mi->mime_type =  NULL;
-	mi->mime_encoding = NULL;
-	return(mi);
+    CMimeInfo_T *mi = NULL;
+    mi = (CMimeInfo_T *)calloc((size_t)1,sizeof(CMimeInfo_T));
+    mi->mime_type =  NULL;
+    mi->mime_encoding = NULL;
+    mi->combined = NULL;
+    return(mi);
 }
 
 void cmime_util_info_free(CMimeInfo_T *mi) {
-	assert(mi);
+    assert(mi);
 
-	if (mi->mime_type != NULL)
-		free(mi->mime_type);
-	
-	if (mi->mime_encoding != NULL)
-		free(mi->mime_encoding);
+    if (mi->mime_type != NULL)
+        free(mi->mime_type);
+    
+    if (mi->mime_encoding != NULL)
+        free(mi->mime_encoding);
 
-	free(mi); 
+    if (mi->combined != NULL)
+        free(mi->combined);
+
+    free(mi); 
 }
 
 CMimeInfo_T *cmime_util_get_mime_info(const char *s) {
-	CMimeInfo_T *mi = NULL;
-	char *tempname = NULL;
-	char *combined = NULL;
-	char *t1 = NULL;
-	char *t2 = NULL;
-	FILE *fp = NULL;
-	int fd;
-	int len1, len2;
+    CMimeInfo_T *mi = NULL;
+    char *tempname = NULL;
+    char *combined = NULL;
+    char *t1 = NULL;
+    char *t2 = NULL;
+    FILE *fp = NULL;
+    int fd;
+    int len1, len2;
 
-	assert(s);
+    assert(s);
 
-	asprintf(&tempname,"%s/cmime_XXXXXX",P_tmpdir);
+    asprintf(&tempname,"%s/cmime_XXXXXX",P_tmpdir);
     fd = mkstemp(tempname);
     if (fd == -1) {
-    	perror("libcmime: error creating temporary file");
-		return(NULL);
+        perror("libcmime: error creating temporary file");
+        return(NULL);
     }
 
-	fp = fdopen(fd,"wb");
-	if (fp == NULL) {
-		perror("libcmime: error opening temporary file");
-		free(tempname);
-		return(NULL);
-	}
-	if (fwrite(s,strlen(s),1,fp) <=0 ) {
-		fclose(fp);
-		free(tempname);
-		return(NULL);
+    fp = fdopen(fd,"wb");
+    if (fp == NULL) {
+        perror("libcmime: error opening temporary file");
+        free(tempname);
+        return(NULL);
+    }
+    if (fwrite(s,strlen(s),1,fp) <=0 ) {
+        fclose(fp);
+        free(tempname);
+        return(NULL);
     }
     fclose(fp);
 
     combined = cmime_util_get_mimetype(tempname);
     if (combined != NULL) {
-		mi = cmime_util_info_new();
-		len1 = strlen(combined);
-    	t1 = strchr(combined,';');
-    	len2 = strlen(t1);
-		mi->mime_type = (char *)calloc((len1 - len2) + sizeof(char),sizeof(char));
-		strncpy(mi->mime_type,combined,len1 - len2);
+        mi = cmime_util_info_new();
+        mi->combined = strdup(combined);
+        len1 = strlen(combined);
+        t1 = strchr(combined,';');
+        len2 = strlen(t1);
+        mi->mime_type = (char *)calloc((len1 - len2) + sizeof(char),sizeof(char));
+        strncpy(mi->mime_type,combined,len1 - len2);
 
-		t2 = strchr(t1,'=');
-		t2++;
-		mi->mime_encoding = (char *)calloc(strlen(t2) + sizeof(char), sizeof(char));
-		strcpy(mi->mime_encoding,t2);
-		free(combined);
+        t2 = strchr(t1,'=');
+        t2++;
+        mi->mime_encoding = (char *)calloc(strlen(t2) + sizeof(char), sizeof(char));
+        strcpy(mi->mime_encoding,t2);
+        free(combined);
     }
     
     
     if (remove(tempname) != 0) {
-    	free(tempname);
-    	perror("libcmime: failed to remove temporary file");
-    	return(NULL);
+        free(tempname);
+        perror("libcmime: failed to remove temporary file");
+        return(NULL);
     }
     free(tempname);
-	return(mi);
+    return(mi);
 }

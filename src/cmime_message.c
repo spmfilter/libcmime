@@ -364,13 +364,17 @@ int cmime_message_from_file(CMimeMessage_T **message, const char *filename) {
 
     fp = fopen(filename, "rb");
     if (fp == NULL) {
+        perror("libcmime: error opening file");
         return(-3);
     }
 
     ret = cmime_scanner_scan_file(message,fp);
     
-    fclose(fp);
-
+    if (fclose(fp)!=0) {
+        perror("libcmime: error closing file");
+        return(-1);
+    }
+    
     return(ret);
 }
 
@@ -383,12 +387,18 @@ int cmime_message_to_file(CMimeMessage_T *message, const char *filename) {
     assert(filename);
 
     msg_string = cmime_message_to_string(message);
-    if ((fp = fopen(filename,"wb"))==NULL)
+    if ((fp = fopen(filename,"wb"))==NULL) {
+        perror("libcmime: error writing file");
         return(-1);
-    ret = fwrite(msg_string,strlen(msg_string),1,fp);
-    if (fclose(fp) != 0)
-        return(-1);
-
+    }
+    if (msg_string != NULL) {
+        ret = fwrite(msg_string,strlen(msg_string),1,fp);
+        if (fclose(fp) != 0) {
+            perror("libcmime: error closing file");
+            return(-1);
+        }
+        free(msg_string);
+    }
     return(ret);
 }
 
@@ -507,15 +517,19 @@ int cmime_message_from_string(CMimeMessage_T **message, const char *content) {
     assert(content);
 
     fp = tmpfile();
-    if (fp == NULL) 
+    if (fp == NULL) {
+        perror("libcmime: error creating temporary file");
         return(-2);
-    
+    }
     if (fwrite(content,strlen(content),1,fp)==0)
         return(-3);
     
     rewind(fp);
     ret = cmime_scanner_scan_file(message,fp);  
-    fclose(fp);
+    if (fclose(fp)!=0) {
+        perror("libcmime: error closing file");
+        return(-1);
+    }
     
     return(ret);
 }
@@ -566,6 +580,8 @@ void cmime_message_add_generated_message_id(CMimeMessage_T *message) {
 
 int cmime_message_set_body(CMimeMessage_T *message, const char *content) {
     CMimePart_T *p = NULL;
+    CMimeInfo_T *mi = NULL;
+
     assert(message);
     assert(content);  
 
@@ -578,6 +594,14 @@ int cmime_message_set_body(CMimeMessage_T *message, const char *content) {
         cmime_part_free(p);
     }
     
+    mi = cmime_util_get_mime_info(content);
+    if (mi!=NULL) {
+        if (mi->combined != NULL)
+            cmime_message_set_content_type(message, mi->combined);
+
+        cmime_util_info_free(mi);
+    }
+
     p = cmime_part_new();    
     cmime_part_set_content(p,content);
     cmime_list_append(message->parts,p);

@@ -17,14 +17,6 @@
 
 #define _GNU_SOURCE
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <sys/stat.h>
-#include <assert.h>
-#include <libgen.h>
-#include <ctype.h>
-
 #include "cmime_message.h"
 #include "cmime_part.h"
 #include "cmime_util.h"
@@ -305,8 +297,10 @@ int cmime_part_from_file(CMimePart_T **part, char *filename) {
                     blocksout = 0;
                     } 
                 }
-                fclose(fp);
+                if (fclose(fp)!=0)
+                    perror("libcmime: error closing file");
             } else {
+                perror("libcmime: error opening file");
                 return (-3); /* failed to open file */
             }           
         } else {

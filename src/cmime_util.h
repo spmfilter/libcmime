@@ -41,6 +41,7 @@ extern "C" {
 typedef struct {
     char *mime_type; /**< a mime type */
     char *mime_encoding; /**< a mime encoding */
+    char *combined; /**< combined mime type/encoding */
 } CMimeInfo_T;
 
 /*!

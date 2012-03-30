@@ -38,11 +38,13 @@ extern "C" {
 #include <sys/stat.h>
 #include <unistd.h>
 #include <sys/param.h>
+#include <errno.h>
 
 #include "cmime_address.h"
 #include "cmime_list.h"
 #include "cmime_header.h"
 #include "cmime_part.h"
+#include "cmime_util.h"
 
 
 /*!
