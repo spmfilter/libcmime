@@ -60,11 +60,12 @@ void _rebuild_first_part(CMimeMessage_T *message) {
             s = cmime_part_get_content(p);
             mi = cmime_util_get_mime_info(s);
 
-            if (strcasecmp(mi->mime_encoding,"us-ascii")==0)
+            if (cmime_string_is_7bit(s)==0)
                 cmime_part_set_content_transfer_encoding(p, "7bit"); 
             else
-                /* TODO: decode to quoted printable? */
+                /* TODO: check other transfer encodings */
                 cmime_part_set_content_transfer_encoding(p, "8bit");
+            
 
             if (message->linebreak == NULL) {
                 nl = _cmime_internal_determine_linebreak(s);
@@ -77,8 +78,8 @@ void _rebuild_first_part(CMimeMessage_T *message) {
             cmime_part_set_content_type(p, content_type);
             free(content_type);
 
-            p->parent_boundary = strdup(message->boundary);
             p->last = 1;
+            cmime_util_info_free(mi);
         }
     }
 }
