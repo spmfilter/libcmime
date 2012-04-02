@@ -25,6 +25,7 @@
 #include "cmime_part.h"
 #include "cmime_internal.h"
 #include "cmime_flbi.h"
+#include "cmime_qp.h"
 
 
 typedef enum _BoundaryType {
@@ -58,6 +59,13 @@ void _rebuild_first_part(CMimeMessage_T *message) {
             p->parent_boundary = strdup(message->boundary);
             s = cmime_part_get_content(p);
             mi = cmime_util_get_mime_info(s);
+
+            if (strcasecmp(mi->mime_encoding,"us-ascii")==0)
+                cmime_part_set_content_transfer_encoding(p, "7bit"); 
+            else
+                /* TODO: decode to quoted printable? */
+                cmime_part_set_content_transfer_encoding(p, "8bit");
+
             if (message->linebreak == NULL) {
                 nl = _cmime_internal_determine_linebreak(s);
                 if (nl == NULL)
@@ -68,6 +76,7 @@ void _rebuild_first_part(CMimeMessage_T *message) {
             asprintf(&content_type,"%s;%s\tcharset=%s",mi->mime_type,message->linebreak,mi->mime_encoding);
             cmime_part_set_content_type(p, content_type);
             free(content_type);
+
             p->parent_boundary = strdup(message->boundary);
             p->last = 1;
         }

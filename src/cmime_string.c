@@ -17,11 +17,6 @@
 
 #define _GNU_SOURCE
 
-#include <stdlib.h>
-#include <string.h>
-#include <ctype.h>
-#include <assert.h>
-
 #include "cmime_string.h"
 
 char *cmime_string_strip(char *s) {
@@ -51,4 +46,18 @@ char *cmime_string_chomp(char *s) {
 	}
 
 	return(s);
+}
+
+int cmime_string_is_7bit(const char *s) {
+	const char *it = NULL;
+	assert(s);
+
+	it = s;
+	while(*it != '\0') {
+		if (((*it) > 127)||(*it < 0))
+			return(-1);
+		it++;
+	}
+
+	return(0);
 }

@@ -32,6 +32,11 @@
 extern "C" {
 #endif
 
+#include <stdlib.h>
+#include <string.h>
+#include <ctype.h>
+#include <assert.h>
+
 /*!
  * @fn char *cmime_string_strip(char *s)
  * @brief Strip leading/trailing spaces from string. 
@@ -51,6 +56,14 @@ char *cmime_string_strip(char *s);
  * @returns string with removed newline
  */
 char *cmime_string_chomp(char *s);
+
+/*!
+ * int cmime_string_is_7bit(const char *s)
+ * @brief Determine if given string is 7bit only or not
+ * @param s string to check
+ * @returns 0 if  string is 7bit, otherwise -1
+ */
+int cmime_string_is_7bit(const char *s);
 
 #ifdef __cplusplus
 }
