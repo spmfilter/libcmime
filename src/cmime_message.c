@@ -17,8 +17,6 @@
 
 #define _GNU_SOURCE
 
-
-
 #include "cmime_address.h"
 #include "cmime_message.h"
 #include "cmime_list.h"
@@ -38,6 +36,42 @@ void _recipients_destroy(void *data) {
     assert(data);
     CMimeAddress_T *ca = (CMimeAddress_T *)data;
     cmime_address_free(ca);
+}
+
+void _rebuild_first_part(CMimeMessage_T *message) {
+    CMimeListElem_T * e = NULL;
+    CMimePart_T *p = NULL;
+    CMimeInfo_T *mi = NULL;
+    char *s = NULL;
+    char *content_type = NULL;
+    char *nl = NULL;
+
+    if (message->parts->size == 1) {
+        cmime_message_set_mime_version(message, "1.0");
+        
+        if (message->boundary == NULL)
+            cmime_message_add_generated_boundary(message);
+           
+        e = cmime_list_head(message->parts);
+        p = (CMimePart_T *)cmime_list_data(e);
+        if (p->parent_boundary == NULL) {
+            p->parent_boundary = strdup(message->boundary);
+            s = cmime_part_get_content(p);
+            mi = cmime_util_get_mime_info(s);
+            if (message->linebreak == NULL) {
+                nl = _cmime_internal_determine_linebreak(s);
+                if (nl == NULL)
+                    nl = CRLF;
+
+                message->linebreak = strdup(nl);
+            }
+            asprintf(&content_type,"%s;%s\tcharset=%s",mi->mime_type,message->linebreak,mi->mime_encoding);
+            cmime_part_set_content_type(p, content_type);
+            free(content_type);
+            p->parent_boundary = strdup(message->boundary);
+            p->last = 1;
+        }
+    }
 }
 
 void _append_boundary(char **out, const char *boundary,const char *linebreak, _BoundaryType_T type) {
@@ -338,6 +372,8 @@ void cmime_message_set_boundary(CMimeMessage_T *message, const char *boundary) {
     
     asprintf(&s,"multipart/mixed;%s\tboundary=\"%s\"",nl,message->boundary);
     _cmime_internal_set_linked_header_value(message->headers,"Content-Type",s);
+
+    _rebuild_first_part(message);
     free(s);
 }
 
@@ -434,6 +470,7 @@ char *cmime_message_to_string(CMimeMessage_T *message) {
     CMimeAddressType_T t = -1;
     char *s = NULL;
     char *s2 = NULL;
+    int len = 0;
 
     assert(message);
     out = (char *)calloc(sizeof(char),sizeof(char));
@@ -514,17 +551,21 @@ char *cmime_message_to_string(CMimeMessage_T *message) {
 
         _append_boundary(&out, p->parent_boundary, message->linebreak, BOUNDARY_OPEN);
         s = cmime_part_to_string(p,message->linebreak);
-         if (s) {
+        if (s)
             _append_string(&out,s);
-            free(s);
-        }
 
         if (p->last == 1) {
+            len = strlen(s);
+            if ((s[len - 1] != '\r') || s[len - 1] != '\n')
+                _append_string(&out,message->linebreak);
+            
             _append_boundary(&out, p->parent_boundary, message->linebreak, BOUNDARY_CLOSE);
             if (p->postface != NULL) 
                 _append_string(&out,p->postface);    
         }
 
+        if (s)
+            free(s);
         e = e->next;
     }
     
@@ -640,7 +681,6 @@ int cmime_message_set_body(CMimeMessage_T *message, const char *content) {
 }
 
 int cmime_message_append_part(CMimeMessage_T *message, CMimePart_T *part) {
-    CMimeInfo_T *mi = NULL;
 
     assert(message);
     assert(part);
@@ -649,8 +689,7 @@ int cmime_message_append_part(CMimeMessage_T *message, CMimePart_T *part) {
         cmime_list_append(message->parts,part);
         return(0);
     } else if (message->parts->size == 1) {
-        cmime_message_set_mime_version(message, "1.0");
-
+        _rebuild_first_part(message);    
     }
 
 
