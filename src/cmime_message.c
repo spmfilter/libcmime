@@ -58,7 +58,7 @@ void _rebuild_first_part(CMimeMessage_T *message) {
         if (p->parent_boundary == NULL) {
             p->parent_boundary = strdup(message->boundary);
             s = cmime_part_get_content(p);
-            mi = cmime_util_get_mime_info(s);
+            mi = cmime_util_info_get(s);
 
             if (cmime_string_is_7bit(s)==0)
                 cmime_part_set_content_transfer_encoding(p, "7bit"); 
@@ -673,7 +673,7 @@ int cmime_message_set_body(CMimeMessage_T *message, const char *content) {
         cmime_part_free(p);
     }
     
-    mi = cmime_util_get_mime_info(content);
+    mi = cmime_util_info_get(content);
     if (mi!=NULL) {
         if (mi->combined != NULL)
             cmime_message_set_content_type(message, mi->combined);

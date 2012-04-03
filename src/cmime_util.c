@@ -78,7 +78,7 @@ void cmime_util_info_free(CMimeInfo_T *mi) {
     free(mi); 
 }
 
-CMimeInfo_T *cmime_util_get_mime_info(const char *s) {
+CMimeInfo_T *cmime_util_info_get(const char *s) {
     CMimeInfo_T *mi = NULL;
     char *tempname = NULL;
     char *combined = NULL;
