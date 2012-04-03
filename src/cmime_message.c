@@ -298,6 +298,34 @@ int cmime_message_add_recipient(CMimeMessage_T *message, const char *recipient, 
     return(0);
 }
 
+int cmime_message_add_recipient_to(CMimeMessage_T *message, const char *recipient) {
+    assert(message);
+    assert(recipient);
+    if(cmime_message_add_recipient(message, recipient, CMIME_ADDRESS_TYPE_TO) == 0) {
+        return(0);
+    } else {
+        return(-1);
+    }
+}
+int cmime_message_add_recipient_cc(CMimeMessage_T *message, const char *recipient) {
+    assert(message);
+    assert(recipient);
+    if(cmime_message_add_recipient(message, recipient, CMIME_ADDRESS_TYPE_CC) == 0) {
+        return(0);
+    } else {
+        return(-1);
+    }
+}
+int cmime_message_add_recipient_bcc(CMimeMessage_T *message, const char *recipient) {
+    assert(message);
+    assert(recipient);
+    if(cmime_message_add_recipient(message, recipient, CMIME_ADDRESS_TYPE_BCC) == 0) {
+        return(0);
+    } else {
+        return(-1);
+    }
+}
+
 void cmime_message_set_content_type(CMimeMessage_T *message, const char *s) {
     _cmime_internal_set_linked_header_value(message->headers,"Content-Type",s);
 }

@@ -160,6 +160,33 @@ CMimeHeader_T *cmime_message_get_header(CMimeMessage_T *message, const char *hea
  */
 int cmime_message_add_recipient(CMimeMessage_T *message, const char *recipient, CMimeAddressType_T t);
 
+/*!
+ * @fn int cmime_message_add_recipient_to(CMimeMessage_T *message, const char *recipient)
+ * @brief Add To recipient to message
+ * @param message a CMimeMessage_T object
+ * @param recipient a recipient string
+ * @returns 0 on success or -1 in case of error
+ */
+int cmime_message_add_recipient_to(CMimeMessage_T *message, const char *recipient);
+
+/*!
+ * @fn int cmime_message_add_recipient_to(CMimeMessage_T *message, const char *recipient)
+ * @brief Add Cc recipient to message
+ * @param message a CMimeMessage_T object
+ * @param recipient a recipient string
+ * @returns 0 on success or -1 in case of error
+ */
+int cmime_message_add_recipient_cc(CMimeMessage_T *message, const char *recipient);
+
+/*!
+ * @fn int cmime_message_add_recipient_to(CMimeMessage_T *message, const char *recipient)
+ * @brief Add Bcc recipient to message
+ * @param message a CMimeMessage_T object
+ * @param recipient a recipient string
+ * @returns 0 on success or -1 in case of error
+ */
+int cmime_message_add_recipient_bcc(CMimeMessage_T *message, const char *recipient);
+
 /*! 
  * @def cmime_message_get_recipients(message)
  * @returns CMimeList_T with recipients
