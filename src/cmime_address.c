@@ -55,8 +55,11 @@ char *cmime_address_to_string(CMimeAddress_T *ca) {
 	char *s = NULL;
 	
 	assert(ca);
-	
-	asprintf(&s,"%s <%s>",ca->name,ca->email);
+	if(ca->name != NULL) {
+		asprintf(&s,"%s <%s>",ca->name,ca->email);
+	} else {
+		asprintf(&s,"<%s>",ca->email);
+	}
 	
 	return(s);
 }
