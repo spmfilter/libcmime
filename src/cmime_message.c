@@ -790,21 +790,6 @@ void cmime_message_add_attachment(CMimeMessage_T *message, char *attachment) {
     cmime_list_append(message->parts,part);
 
 }
-/*
-void cmime_message_create_skeleton(CMimeMessage_T *message, const char *sender, const char *recipient, const char *subject) {
-    assert(message);
-    assert(sender);
-    assert(recipient);
-    assert(subject);
-    // set sender, recipient, date, subject
-    cmime_message_set_sender(message, sender);
-    cmime_message_add_recipient_to(message, recipient);
-    cmime_message_set_subject(message, subject);
-    cmime_message_set_date_now(message);
-    cmime_message_add_generated_message_id(message);
-}
-*/
-
 
 CMimeMessage_T *cmime_message_create_skeleton(const char *sender, const char *recipient, const char *subject){
     assert(sender);
