@@ -803,3 +803,32 @@ void cmime_message_create_skeleton(CMimeMessage_T *message, const char *sender, 
     cmime_message_set_date_now(message);
     cmime_message_add_generated_message_id(message);
 }
+
+int cmime_message_part_remove(CMimeMessage_T *message, CMimePart_T *part) {
+    int ret = 0;
+    CMimeListElem_T *elem = NULL;
+    CMimePart_T *p = NULL;
+    CMimePart_T *tf = NULL;
+    CMimePart_T *prev = NULL;
+
+    assert(message);
+    assert(part);
+
+    elem = cmime_list_head(message->parts);
+    while(elem != NULL) {
+        p = (CMimePart_T *)cmime_list_data(elem);
+        if (p == part) {
+            if (part->last == 1) {
+                prev = (CMimePart_T *)cmime_list_data(elem->prev);
+                prev->last = 1;
+            }
+            ret = cmime_list_remove(message->parts,elem,(void *)&tf);
+            break;
+        }
+        elem = elem->next;
+    }
+
+    cmime_part_free(tf);
+
+    return(ret);
+}

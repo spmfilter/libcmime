@@ -438,6 +438,8 @@ void cmime_message_add_attachment(CMimeMessage_T *message, char *attachment);
 void cmime_message_create_skeleton(CMimeMessage_T *message, const char *sender, const char *recipient, const char *subject);
 
 
+int cmime_message_part_remove(CMimeMessage_T *message, CMimePart_T *part);
+
 #ifdef __cplusplus
 }
 #endif
