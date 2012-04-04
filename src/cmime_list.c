@@ -16,12 +16,7 @@
  */
 
 #define _GNU_SOURCE
-
-#include <stdlib.h>
-#include <string.h>
-#include <stdlib.h>
-#include <assert.h>
-
+ 
 #include "cmime_list.h"
 
 /* initializes a new empty doubly linked list */

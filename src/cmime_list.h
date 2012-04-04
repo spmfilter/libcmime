@@ -31,6 +31,11 @@
 extern "C" {
 #endif
 
+#include <stdlib.h>
+#include <string.h>
+#include <stdlib.h>
+#include <assert.h>
+
 /*!
  * @struct CMimeListElem_T cmime_list.h
  * @brief An element of a CMimeList_T list

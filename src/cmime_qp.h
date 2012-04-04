@@ -32,6 +32,11 @@
 extern "C" {
 #endif
 
+#include <stdlib.h>
+#include <stdio.h>
+#include <string.h>
+#include <ctype.h>
+
 /*!
  * @fn char *cmime_qp_decode(char *line_in, int mode, char esc_char)
  * @brief decode string from quoted-printable 
