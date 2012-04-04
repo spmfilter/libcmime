@@ -428,14 +428,14 @@ int cmime_message_append_part(CMimeMessage_T *message, CMimePart_T *part);
 void cmime_message_add_attachment(CMimeMessage_T *message, char *attachment);
 
 /*!
- * @fn void cmime_message_create_skeletion(CMimeMessage_T *message, const char *sender, const char *recipient, const char *subject)
+ * @fn void cmime_message_create_skeletion( const char *sender, const char *recipient, const char *subject)
  * @brief create message skeleton with basic header information
- * @param message a CMimeMessage_T object
  * @param sender a from sender
  * @param recipient a to recipient
  * @param subject a subject string
+ * @returns CMimeMessage_T pointer
  */
-void cmime_message_create_skeleton(CMimeMessage_T *message, const char *sender, const char *recipient, const char *subject);
+CMimeMessage_T *cmime_message_create_skeleton(const char *sender, const char *recipient, const char *subject);
 
 /*!
  * @fn int cmime_message_part_remove(CMimeMessage_T *message, CMimePart_T *part)
