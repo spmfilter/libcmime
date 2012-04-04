@@ -384,6 +384,32 @@ int cmime_message_append_part(CMimeMessage_T *message, CMimePart_T *part);
  */
 void cmime_message_add_attachment(CMimeMessage_T *message, char *attachment);
 
+/*!
+ * @fn int cmime_message_add_recipient_to(CMimeMessage_T *message, const char *recipient)
+ * @brief Add To recipient to message
+ * @param message a CMimeMessage_T object
+ * @param recipient a recipient string
+ * @returns 0 on success or -1 in case of error
+ */
+int cmime_message_add_recipient_to(CMimeMessage_T *message, const char *recipient);
+
+/*!
+ * @fn int cmime_message_add_recipient_to(CMimeMessage_T *message, const char *recipient)
+ * @brief Add Cc recipient to message
+ * @param message a CMimeMessage_T object
+ * @param recipient a recipient string
+ * @returns 0 on success or -1 in case of error
+ */
+int cmime_message_add_recipient_cc(CMimeMessage_T *message, const char *recipient);
+
+/*!
+ * @fn int cmime_message_add_recipient_to(CMimeMessage_T *message, const char *recipient)
+ * @brief Add Bcc recipient to message
+ * @param message a CMimeMessage_T object
+ * @param recipient a recipient string
+ * @returns 0 on success or -1 in case of error
+ */
+int cmime_message_add_recipient_bcc(CMimeMessage_T *message, const char *recipient);
 
 #ifdef __cplusplus
 }
