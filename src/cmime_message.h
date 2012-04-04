@@ -406,7 +406,7 @@ void cmime_message_append_subject(CMimeMessage_T *message, const char *s);
  * @brief Set plain body to non multipart message.
  * @param message a CMimeMessage_T object
  * @param content body content
- * @retuens 0 on sucess, -1 if message is multipart
+ * @returns 0 on sucess, -1 if message is multipart
  */
 int cmime_message_set_body(CMimeMessage_T *message, const char *content);
 

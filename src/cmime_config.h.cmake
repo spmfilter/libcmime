@@ -42,7 +42,7 @@ extern "C" {
 
 /*!
  * @def CMIME_MINOR_VERSION
- * @retuens CMime's minor version
+ * @returns CMime's minor version
  */
 #define CMIME_MINOR_VERSION ${CMIME_MINOR_VERSION}
 
