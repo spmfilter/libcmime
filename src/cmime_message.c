@@ -548,13 +548,13 @@ char *cmime_message_to_string(CMimeMessage_T *message) {
                         s = (char *)realloc(s,strlen(s) + strlen(s2) + sizeof(char));
                         strcat(s,s2);
                         free(s2);    
-                    }
-
-                    if (r->next != NULL) {
-                        addr = (CMimeAddress_T *)cmime_list_data(r->next);
-                        if (addr->type == t) {
-                            s = (char *)realloc(s,strlen(s) + 1 + sizeof(char));
-                            strcat(s,",");
+			
+                        if (r->next != NULL) {
+                            addr = (CMimeAddress_T *)cmime_list_data(r->next);
+                            if (addr->type == t) {
+                                s = (char *)realloc(s,strlen(s) + 1 + sizeof(char));
+                                strcat(s,",");
+                            }
                         }
                     }
 
