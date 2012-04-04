@@ -548,13 +548,13 @@ char *cmime_message_to_string(CMimeMessage_T *message) {
                         s = (char *)realloc(s,strlen(s) + strlen(s2) + sizeof(char));
                         strcat(s,s2);
                         free(s2);    
-                    
-                        if (r->next != NULL) {
-                            addr = (CMimeAddress_T *)cmime_list_data(r->next);
-                            if (addr->type == t) {
-                                s = (char *)realloc(s,strlen(s) + 1 + sizeof(char));
-                                strcat(s,",");
-                            }
+                    }
+
+                    if (r->next != NULL) {
+                        addr = (CMimeAddress_T *)cmime_list_data(r->next);
+                        if (addr->type == t) {
+                            s = (char *)realloc(s,strlen(s) + 1 + sizeof(char));
+                            strcat(s,",");
                         }
                     }
 
@@ -744,6 +744,7 @@ int cmime_message_append_part(CMimeMessage_T *message, CMimePart_T *part) {
     return(0);
 }
 
+
 void cmime_message_add_attachment(CMimeMessage_T *message, char *attachment) {
 
     assert(message);
@@ -767,6 +768,23 @@ void cmime_message_add_attachment(CMimeMessage_T *message, char *attachment) {
     cmime_list_append(message->parts,part);
 
 }
+
+void cmime_message_create_skeleton(CMimeMessage_T *message, const char *sender, const char *recipient, const char *subject) {
+    assert(message);
+    assert(sender);
+    assert(recipient);
+    assert(subject);
+    /* set sender, recipient, date, subject */
+    cmime_message_set_sender(message, sender);
+    cmime_message_add_recipient_to(message, recipient);
+    cmime_message_set_subject(message, subject);
+    cmime_message_set_date_now(message);
+}
+
+
+
+
+
 
 
 
