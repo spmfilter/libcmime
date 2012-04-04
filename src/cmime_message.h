@@ -386,6 +386,22 @@ void cmime_message_set_subject(CMimeMessage_T *message, const char *s);
 char *cmime_message_get_subject(CMimeMessage_T *message);
 
 /*!
+ * @fn void cmime_message_prefix_subject(CMimeMessage_T *message, const char *s)
+ * @brief Get the subject string from CMimeMessage_T object
+ * @param message a CMimeMessage_T object
+ * @param s a prefix string for subject
+ */
+void cmime_message_prefix_subject(CMimeMessage_T *message, const char *s);
+
+/*!
+ * @fn void cmime_message_append_subject(CMimeMessage_T *message, const char *s)
+ * @brief Get the subject string from CMimeMessage_T object
+ * @param message a CMimeMessage_T object
+ * @param s a append string for subject
+ */
+void cmime_message_append_subject(CMimeMessage_T *message, const char *s);
+
+/*!
  * @fn int cmime_message_set_body(CMimeMessage_T *message, const char *body)
  * @brief Set plain body to non multipart message.
  * @param message a CMimeMessage_T object

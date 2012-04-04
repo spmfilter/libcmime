@@ -648,6 +648,28 @@ char *cmime_message_get_subject(CMimeMessage_T *message) {
     return(_cmime_internal_get_linked_header_value(message->headers,"Subject"));
 }
 
+void cmime_message_prefix_subject(CMimeMessage_T *message, const char *s) {
+    char *orig_subject = NULL;
+    char *new_subject = NULL;
+
+    orig_subject = cmime_message_get_subject(message);
+    asprintf(&new_subject, "%s %s", s, orig_subject);
+    cmime_message_set_subject(message, new_subject);
+    if(new_subject != NULL)
+        free(new_subject);
+}
+
+void cmime_message_append_subject(CMimeMessage_T *message, const char *s) {
+    char *orig_subject = NULL;
+    char *new_subject = NULL;
+
+    orig_subject = cmime_message_get_subject(message);
+    asprintf(&new_subject, "%s %s", orig_subject, s);
+    cmime_message_set_subject(message, new_subject);
+    if(new_subject != NULL)
+        free(new_subject);
+}
+
 char *cmime_message_generate_message_id(void) {
     char *mid = NULL;
     char *hostname = NULL;
@@ -779,14 +801,5 @@ void cmime_message_create_skeleton(CMimeMessage_T *message, const char *sender, 
     cmime_message_add_recipient_to(message, recipient);
     cmime_message_set_subject(message, subject);
     cmime_message_set_date_now(message);
+    cmime_message_add_generated_message_id(message);
 }
-
-
-
-
-
-
-
-
-
-
