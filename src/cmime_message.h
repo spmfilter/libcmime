@@ -381,17 +381,17 @@ void cmime_message_set_subject(CMimeMessage_T *message, const char *s);
  * @fn char *cmime_message_get_subject(CMimeMessage_T *message)
  * @brief Get the subject string from CMimeMessage_T object
  * @param message a CMimeMessage_T object
- * @returns subject string
+ * @returns subject string to append
  */
 char *cmime_message_get_subject(CMimeMessage_T *message);
 
 /*!
- * @fn void cmime_message_prefix_subject(CMimeMessage_T *message, const char *s)
+ * @fn void cmime_message_prepend_subject(CMimeMessage_T *message, const char *s)
  * @brief Get the subject string from CMimeMessage_T object
  * @param message a CMimeMessage_T object
- * @param s a prefix string for subject
+ * @param s string to prepend
  */
-void cmime_message_prefix_subject(CMimeMessage_T *message, const char *s);
+void cmime_message_prepend_subject(CMimeMessage_T *message, const char *s);
 
 /*!
  * @fn void cmime_message_append_subject(CMimeMessage_T *message, const char *s)

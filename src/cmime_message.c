@@ -648,7 +648,7 @@ char *cmime_message_get_subject(CMimeMessage_T *message) {
     return(_cmime_internal_get_linked_header_value(message->headers,"Subject"));
 }
 
-void cmime_message_prefix_subject(CMimeMessage_T *message, const char *s) {
+void cmime_message_prepend_subject(CMimeMessage_T *message, const char *s) {
     char *orig_subject = NULL;
     char *new_subject = NULL;
 
