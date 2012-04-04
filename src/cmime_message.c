@@ -586,8 +586,12 @@ char *cmime_message_to_string(CMimeMessage_T *message) {
 
     e = cmime_list_head(message->parts);
     while(e != NULL) {
-         p = (CMimePart_T *)cmime_list_data(e);
+        p = (CMimePart_T *)cmime_list_data(e);
 
+        len = strlen(out);
+        if ((out[len - 1] != '\r') || out[len - 1] != '\n')
+            _append_string(&out,message->linebreak);
+        
         _append_boundary(&out, p->parent_boundary, message->linebreak, BOUNDARY_OPEN);
         s = cmime_part_to_string(p,message->linebreak);
         if (s)
@@ -725,7 +729,7 @@ int cmime_message_append_part(CMimeMessage_T *message, CMimePart_T *part) {
     assert(message);
     assert(part);
 
-    if (message->parts->size > 1) {
+    if (message->parts->size >= 1) {
         elem = cmime_list_tail(message->parts);
         prev = cmime_list_data(elem);
         prev->last = 0;
@@ -750,7 +754,7 @@ void cmime_message_add_attachment(CMimeMessage_T *message, char *attachment) {
     CMimePart_T *prev = NULL;
 
     /* check if there is a previous part */
-    if (message->parts->size > 1) {
+    if (message->parts->size >= 1) {
         elem = cmime_list_tail(message->parts);
         prev = cmime_list_data(elem);
         prev->last = 0;
