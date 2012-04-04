@@ -380,10 +380,9 @@ int cmime_message_append_part(CMimeMessage_T *message, CMimePart_T *part);
  * @fn void cmime_message_add_attachment (CMimeMessage_T *message, char *filename)
  * @brief add attachment to message 
  * @param message a CMimeMessage_T object
- * @param filename pointer
+ * @param attachment a file pointer
  */
-int cmime_message_append_part(CMimeMessage_T *message, CMimePart_T *part);
-
+void cmime_message_add_attachment(CMimeMessage_T *message, char *attachment);
 
 
 #ifdef __cplusplus
