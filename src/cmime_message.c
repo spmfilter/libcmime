@@ -535,7 +535,7 @@ char *cmime_message_to_string(CMimeMessage_T *message) {
                             }
                         }   
                     }
-                    
+
                     r = r->next;
                 }
             }
@@ -712,3 +712,21 @@ int cmime_message_append_part(CMimeMessage_T *message, CMimePart_T *part) {
 
     return(0);
 }
+
+void cmime_message_add_attachment(CMimeMessage_T *message, char *attachment) {
+
+    assert(message);
+    assert(attachment);
+
+    CMimePart_T *part = cmime_part_new();
+    cmime_message_add_generated_boundary(message);
+    cmime_part_from_file(&part, attachment);
+    part->parent_boundary = strdup(message->boundary);
+    part->last = 1;
+    cmime_list_append(message->parts,part);
+}
+
+
+
+
+

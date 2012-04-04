@@ -405,6 +405,16 @@ int cmime_message_set_body(CMimeMessage_T *message, const char *content);
  */
 int cmime_message_append_part(CMimeMessage_T *message, CMimePart_T *part);
 
+/*!
+ * @fn void cmime_message_add_attachment (CMimeMessage_T *message, char *filename)
+ * @brief add attachment to message 
+ * @param message a CMimeMessage_T object
+ * @param filename pointer
+ */
+int cmime_message_append_part(CMimeMessage_T *message, CMimePart_T *part);
+
+
+
 #ifdef __cplusplus
 }
 #endif
