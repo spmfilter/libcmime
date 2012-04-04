@@ -433,11 +433,17 @@ void cmime_message_add_attachment(CMimeMessage_T *message, char *attachment);
  * @param message a CMimeMessage_T object
  * @param sender a from sender
  * @param recipient a to recipient
-	* @param subject a subject string
+ * @param subject a subject string
  */
 void cmime_message_create_skeleton(CMimeMessage_T *message, const char *sender, const char *recipient, const char *subject);
 
-
+/*!
+ * @fn int cmime_message_part_remove(CMimeMessage_T *message, CMimePart_T *part)
+ * @brief Remove a mime part from message
+ * @param message a CMimeMessage_T object
+ * @param part the mime part which should be removed
+ * @returns 0 on success, -1 in case of error
+ */ 
 int cmime_message_part_remove(CMimeMessage_T *message, CMimePart_T *part);
 
 #ifdef __cplusplus
