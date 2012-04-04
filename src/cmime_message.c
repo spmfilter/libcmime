@@ -117,8 +117,6 @@ CMimeMessage_T *cmime_message_new(void) {
     if (cmime_list_new(&message->recipients,_recipients_destroy)!=0) 
             return(NULL);
 
-    message->date = 0;
-    message->tz_offset = 0;
     message->boundary = NULL;
     message->gap = NULL;
     message->linebreak = NULL;
@@ -519,17 +517,16 @@ char *cmime_message_to_string(CMimeMessage_T *message) {
                         s2 = cmime_address_to_string(addr);
                         s = (char *)realloc(s,strlen(s) + strlen(s2) + sizeof(char));
                         strcat(s,s2);
-                        free(s2); 
-
-                        if (r->next != NULL) {
-                            addr = (CMimeAddress_T *)cmime_list_data(r->next);
-                            if (addr->type == t) {
-                                s = (char *)realloc(s,strlen(s) + 1 + sizeof(char));
-                                strcat(s,",");
-                            }
-                        }   
+                        free(s2);    
                     }
 
+                    if (r->next != NULL) {
+                        addr = (CMimeAddress_T *)cmime_list_data(r->next);
+                        if (addr->type == t) {
+                            s = (char *)realloc(s,strlen(s) + 1 + sizeof(char));
+                            strcat(s,",");
+                        }
+                    }
                     r = r->next;
                 }
             }

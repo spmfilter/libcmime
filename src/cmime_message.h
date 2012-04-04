@@ -56,8 +56,6 @@ typedef struct {
     CMimeList_T *recipients; /**< double linked list with recipients */
     CMimeList_T *headers; /**< message header */
     char *boundary; /**< message boundary */
-    time_t date; /**< date of email */
-    int tz_offset; /**< timezone offset */
     char *gap; /**< gap between headers an mime parts */
     CMimeList_T *parts; /**< mime parts */
     char *linebreak; /**< linebreak used by message */
@@ -159,33 +157,6 @@ CMimeHeader_T *cmime_message_get_header(CMimeMessage_T *message, const char *hea
  * @returns 0 on success or -1 in case of error
  */
 int cmime_message_add_recipient(CMimeMessage_T *message, const char *recipient, CMimeAddressType_T t);
-
-/*!
- * @fn int cmime_message_add_recipient_to(CMimeMessage_T *message, const char *recipient)
- * @brief Add To recipient to message
- * @param message a CMimeMessage_T object
- * @param recipient a recipient string
- * @returns 0 on success or -1 in case of error
- */
-int cmime_message_add_recipient_to(CMimeMessage_T *message, const char *recipient);
-
-/*!
- * @fn int cmime_message_add_recipient_to(CMimeMessage_T *message, const char *recipient)
- * @brief Add Cc recipient to message
- * @param message a CMimeMessage_T object
- * @param recipient a recipient string
- * @returns 0 on success or -1 in case of error
- */
-int cmime_message_add_recipient_cc(CMimeMessage_T *message, const char *recipient);
-
-/*!
- * @fn int cmime_message_add_recipient_to(CMimeMessage_T *message, const char *recipient)
- * @brief Add Bcc recipient to message
- * @param message a CMimeMessage_T object
- * @param recipient a recipient string
- * @returns 0 on success or -1 in case of error
- */
-int cmime_message_add_recipient_bcc(CMimeMessage_T *message, const char *recipient);
 
 /*! 
  * @def cmime_message_get_recipients(message)
