@@ -168,7 +168,7 @@ int cmime_message_add_recipient(CMimeMessage_T *message, const char *recipient, 
 int cmime_message_add_recipient_to(CMimeMessage_T *message, const char *recipient);
 
 /*!
- * @fn int cmime_message_add_recipient_to(CMimeMessage_T *message, const char *recipient)
+ * @fn int cmime_message_add_recipient_cc(CMimeMessage_T *message, const char *recipient)
  * @brief Add Cc recipient to message
  * @param message a CMimeMessage_T object
  * @param recipient a recipient string
@@ -177,7 +177,7 @@ int cmime_message_add_recipient_to(CMimeMessage_T *message, const char *recipien
 int cmime_message_add_recipient_cc(CMimeMessage_T *message, const char *recipient);
 
 /*!
- * @fn int cmime_message_add_recipient_to(CMimeMessage_T *message, const char *recipient)
+ * @fn int cmime_message_add_recipient_bcc(CMimeMessage_T *message, const char *recipient)
  * @brief Add Bcc recipient to message
  * @param message a CMimeMessage_T object
  * @param recipient a recipient string
