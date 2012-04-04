@@ -557,6 +557,7 @@ char *cmime_message_to_string(CMimeMessage_T *message) {
                             strcat(s,",");
                         }
                     }
+
                     r = r->next;
                 }
             }
@@ -745,11 +746,22 @@ void cmime_message_add_attachment(CMimeMessage_T *message, char *attachment) {
     assert(attachment);
 
     CMimePart_T *part = cmime_part_new();
+    CMimeListElem_T *elem = NULL;
+    CMimePart_T *prev = NULL;
+
+    /* check if there is a previous part */
+    if (message->parts->size > 1) {
+        elem = cmime_list_tail(message->parts);
+        prev = cmime_list_data(elem);
+        prev->last = 0;
+        
+    }
     cmime_message_add_generated_boundary(message);
     cmime_part_from_file(&part, attachment);
     part->parent_boundary = strdup(message->boundary);
     part->last = 1;
     cmime_list_append(message->parts,part);
+
 }
 
 
