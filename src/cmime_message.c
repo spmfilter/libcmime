@@ -244,6 +244,7 @@ int cmime_message_add_recipient(CMimeMessage_T *message, const char *recipient, 
     CMimeAddress_T *tca = NULL;
     char *s1 = NULL;
     char *s2 = NULL;
+    int found = 0;
     
     assert(message);
     assert(recipient);
@@ -256,52 +257,45 @@ int cmime_message_add_recipient(CMimeMessage_T *message, const char *recipient, 
                 return(-1);
     }   
 
+    // check if given recipient already exists
+    elem = cmime_list_head(message->recipients);
+    while(elem != NULL) {
+        tca = (CMimeAddress_T *)cmime_list_data(elem);
+        
+        if (cmime_address_get_type(tca) == t) {
+            s1 = cmime_address_to_string(tca);
+            s2 = cmime_address_to_string(ca);
+            if (strcmp(s1,s2)==0) {
+                cmime_list_remove(message->recipients,elem,NULL);
+                found = 1;
+                break;
+            }
+            free(s1);
+            free(s2);
+        }
+        elem = elem->next;
+    }
+
     if (cmime_list_append(message->recipients,ca)!=0)
         return(-1);
 
-    switch(t) {
-        case CMIME_ADDRESS_TYPE_FROM:
-            break;
-        case CMIME_ADDRESS_TYPE_TO:
-            _cmime_internal_set_linked_header_value(message->headers, "To", NULL);
-            break;
-        case CMIME_ADDRESS_TYPE_CC:
-            _cmime_internal_set_linked_header_value(message->headers, "Cc", NULL);
-            break;  
-        case CMIME_ADDRESS_TYPE_BCC:
-            _cmime_internal_set_linked_header_value(message->headers, "Bcc", NULL);
-            break;  
+    if (found == 0) {
+        switch(t) {
+            case CMIME_ADDRESS_TYPE_FROM:
+                break;
+            case CMIME_ADDRESS_TYPE_TO:
+                _cmime_internal_set_linked_header_value(message->headers, "To", NULL);
+                break;
+            case CMIME_ADDRESS_TYPE_CC:
+                _cmime_internal_set_linked_header_value(message->headers, "Cc", NULL);
+                break;  
+            case CMIME_ADDRESS_TYPE_BCC:
+                _cmime_internal_set_linked_header_value(message->headers, "Bcc", NULL);
+                break;  
+        }
     }
-    
-    return(0);
-}
 
-int cmime_message_add_recipient_to(CMimeMessage_T *message, const char *recipient) {
-    assert(message);
-    assert(recipient);
-    if(cmime_message_add_recipient(message, recipient, CMIME_ADDRESS_TYPE_TO) == 0) {
-        return(0);
-    } else {
-        return(-1);
-    }
-}
-int cmime_message_add_recipient_cc(CMimeMessage_T *message, const char *recipient) {
-    assert(message);
-    assert(recipient);
-    if(cmime_message_add_recipient(message, recipient, CMIME_ADDRESS_TYPE_CC) == 0) {
-        return(0);
-    } else {
-        return(-1);
-    }
-}
-int cmime_message_add_recipient_bcc(CMimeMessage_T *message, const char *recipient) {
-    assert(message);
-    assert(recipient);
-    if(cmime_message_add_recipient(message, recipient, CMIME_ADDRESS_TYPE_BCC) == 0) {
-        return(0);
-    } else {
-        return(-1);
-    }
+    return(0);
 }
 
 void cmime_message_set_content_type(CMimeMessage_T *message, const char *s) {
@@ -698,11 +692,16 @@ int cmime_message_set_body(CMimeMessage_T *message, const char *content) {
 }
 
 int cmime_message_append_part(CMimeMessage_T *message, CMimePart_T *part) {
-
+    CMimeListElem_T *elem = NULL;
+    CMimePart_T *prev = NULL;
     assert(message);
     assert(part);
 
     if (message->parts->size > 1) {
+        elem = cmime_list_tail(message->parts);
+        prev = cmime_list_data(elem);
+        prev->last = 0;
+        part->last = 1;
         cmime_list_append(message->parts,part);
         return(0);
     } else if (message->parts->size == 1) {
