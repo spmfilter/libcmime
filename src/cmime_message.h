@@ -61,18 +61,6 @@ typedef struct {
 } CMimeMessage_T;
 
 /*!
- * @enum CMimeMultipartType_T 
- * @brief Possible multipart mime subtypes
- */
-typedef enum _CMimeMultipartType {
-    CMIME_MULTIPART_MIXED, /**< multipart/mixed */
-    CMIME_MULTIPART_DIGEST, /**< multipart/digest */
-    CMIME_MULTIPART_MESSAGE, /**< message/rfc822 */
-    CMIME_MULTIPART_ALTERNATIVE, /**< multipart/alternative */
-    CMIME_MULTIPART_RELATED /**< multipart/related */
-} CMimeMultipartType_T;
-
-/*!
  * @fn CMimeMessage_T *cmime_message_new(void)
  * @brief Creates a new CMimeMessage_T object
  * @returns CMimeMessage_T pointer, or NULL on failure
@@ -457,9 +445,21 @@ CMimeMessage_T *cmime_message_create_skeleton(const char *sender, const char *re
  */ 
 int cmime_message_part_remove(CMimeMessage_T *message, CMimePart_T *part);
 
+/*!
+ * @enum CMimeMultipartType_T 
+ * @brief Possible multipart mime subtypes
+ */
+typedef enum _CMimeMultipartType {
+    CMIME_MULTIPART_MIXED, /**< multipart/mixed */
+    CMIME_MULTIPART_DIGEST, /**< multipart/digest */
+    CMIME_MULTIPART_MESSAGE, /**< message/rfc822 */
+    CMIME_MULTIPART_ALTERNATIVE, /**< multipart/alternative */
+    CMIME_MULTIPART_RELATED /**< multipart/related */
+} CMimeMultipartType_T;
+
 /*! 
  * @fn int cmime_part_add_child_part(CMimeMessage_T *message, CMimePart_T *part, CMimePart_T *child)
- * @brief Add a child part to given mimepart, set content type and generate a boundary if necessary
+ * @brief Add a child part to given mimepart, set content type and generate a boundary if necessary.
  * @param message a CMimeMessage_T object
  * @param part the parent mime part
  * @param child the child mime part, which should be added
@@ -467,6 +467,18 @@ int cmime_message_part_remove(CMimeMessage_T *message, CMimePart_T *part);
  * @returns 0 on success or -1 in case of error
  */
 int cmime_message_add_child_part(CMimeMessage_T *message, CMimePart_T *part, CMimePart_T *child, CMimeMultipartType_T subtype);
+
+/*!
+ * @def cmime_message_part_first(message)
+ * @returns returns the first mime part of message
+ */
+#define cmime_message_part_first(message) ((CMimePart_T *)cmime_list_head(message->parts)->data)
+
+/*!
+ * @def cmime_message_part_last(message)
+ * @returns returns the last mime part of message
+ */
+#define cmime_message_part_last(message) ((CMimePart_T *)cmime_list_tail(message->parts)->data)
 
 #ifdef __cplusplus
 }

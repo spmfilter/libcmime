@@ -883,8 +883,14 @@ int cmime_message_add_child_part(CMimeMessage_T *message, CMimePart_T *part, CMi
 
                 content_type = (char *)realloc(content_type,strlen(content_type) + strlen(s) + sizeof(char));
                 strcat(content_type,s);
+                free(s);
+                if (part->last == 1) {
+                    part->last = 0;
+                    child->last = 1;
+                }
 
                 cmime_part_set_content_type(part, content_type);
+                free(content_type);
                 if (cmime_list_insert_next(message->parts,elem,child)!=0)
                     return(-1);
                 
