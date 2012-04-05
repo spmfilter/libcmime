@@ -65,6 +65,7 @@ configure_file(
 
 add_subdirectory(src)
 add_subdirectory(test)
+add_subdirectory(examples)
 
 install(FILES ${CMAKE_CURRENT_SOURCE_DIR}/libcmime.pc
     DESTINATION ${LIBDIR}/pkgconfig
