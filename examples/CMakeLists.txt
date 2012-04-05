@@ -1,0 +1,2 @@
+add_executable(message_create message_create.c)
+target_link_libraries(message_create cmime)
