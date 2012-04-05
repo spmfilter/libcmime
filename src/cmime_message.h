@@ -485,3 +485,4 @@ int cmime_message_add_child_part(CMimeMessage_T *message, CMimePart_T *part, CMi
 #endif
 
 #endif /* _CMIME_MESSAGE_H */
+
