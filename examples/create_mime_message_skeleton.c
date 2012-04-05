@@ -6,10 +6,14 @@
 #include "../src/cmime_message.h"
 
 
-void usage(void) {
-	printf("\n\n");
-	printf("simple api demonstration. this one creates a new CMimeMessage_T object with the help of the cmime_message_create_skeleton\n");
-	printf("function. The output is written to stdout if no output file is specified with -f /path/to/output_file.txt\n\n");
+void usage() {
+	printf("\n");
+	printf("libcmime - simple api demonstration\n");
+	printf("-----------------------------------\n");
+	printf("demonstrates: creation of new CMimeMessage_T object with cmime_message_create_skeleton function.\n");
+	printf("output: output is written to stdout if no output file is specified (-f /path/to/out_file.txt)\n");
+	printf("\n");
+	exit(0);
 }
 
 
