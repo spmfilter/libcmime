@@ -3,3 +3,6 @@ target_link_libraries(create_mime_message cmime)
 
 add_executable(create_mime_message_skeleton create_mime_message_skeleton.c)
 target_link_libraries(create_mime_message_skeleton cmime)
+
+add_executable(create_mime_message_skeleton_add_attachment create_mime_message_skeleton_add_attachment.c)
+target_link_libraries(create_mime_message_skeleton_add_attachment cmime)
