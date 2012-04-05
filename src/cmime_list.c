@@ -164,7 +164,6 @@ int cmime_list_insert_prev(CMimeList_T *list, CMimeListElem_T *elem, void *data)
 	CMimeListElem_T *new = (CMimeListElem_T *)calloc(1,sizeof(CMimeListElem_T));
 	
 	assert(list);
-	assert(elem);
 	
 	if(new == NULL) {
 		return(-1);
