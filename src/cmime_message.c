@@ -588,10 +588,12 @@ char *cmime_message_to_string(CMimeMessage_T *message) {
     while(e != NULL) {
         p = (CMimePart_T *)cmime_list_data(e);
 
-        len = strlen(out);
-        if ((out[len - 1] != '\r') || out[len - 1] != '\n')
-            _append_string(&out,message->linebreak);
-        
+        if (e != cmime_list_head(message->parts)) {
+            len = strlen(out);
+            if ((out[len - 1] != '\r') || out[len - 1] != '\n')
+                _append_string(&out,message->linebreak);
+        }
+
         _append_boundary(&out, p->parent_boundary, message->linebreak, BOUNDARY_OPEN);
         s = cmime_part_to_string(p,message->linebreak);
         if (s)
