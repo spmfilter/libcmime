@@ -574,7 +574,6 @@ char *cmime_message_to_string(CMimeMessage_T *message) {
         e = e->next;
     }
 
-
     /* check message gap */
     if (message->gap == NULL) {
         if (message->linebreak != NULL)
@@ -835,3 +834,66 @@ int cmime_message_part_remove(CMimeMessage_T *message, CMimePart_T *part) {
 
     return(ret);
 }
+
+int cmime_message_add_child_part(CMimeMessage_T *message, CMimePart_T *part, CMimePart_T *child, CMimeMultipartType_T subtype) {
+    CMimeListElem_T *elem = NULL;
+    CMimePart_T *current_part = NULL;
+    char *boundary = NULL;
+    char *content_type = NULL;
+    char *nl = NULL;
+    char *s = NULL;
+
+    assert(message);
+    assert(part);
+    assert(child);
+
+    elem = cmime_list_head(message->parts);
+    while(elem != NULL) {
+        current_part = cmime_list_data(elem);
+        if (current_part == part) {
+            /* add a boundary, if not present */
+            if (part->boundary == NULL) {
+                if (message->linebreak)
+                    nl = message->linebreak;
+                else
+                    nl = CRLF;
+
+                switch(subtype) {
+                    case CMIME_MULTIPART_MIXED:
+                        asprintf(&content_type,"multipart/mixed;%s\t",nl);
+                        break;
+                    case CMIME_MULTIPART_DIGEST:
+                        asprintf(&content_type,"multipart/digest;%s\t",nl);
+                        break;
+                    case CMIME_MULTIPART_ALTERNATIVE:
+                        asprintf(&content_type,"multipart/alternative;%s\t",nl);
+                        break;
+                    case CMIME_MULTIPART_MESSAGE:
+                        asprintf(&content_type,"message/rfc822;%s\t",nl);
+                        break;
+                    default:
+                        asprintf(&content_type,"multipart/mixed;%s\t",nl);
+                        break;
+                }
+
+                boundary = cmime_message_generate_boundary();
+                asprintf(&s,"boundary=\"%s\"",boundary);
+                part->boundary = boundary;
+                child->parent_boundary = strdup(boundary);
+
+                content_type = (char *)realloc(content_type,strlen(content_type) + strlen(s) + sizeof(char));
+                strcat(content_type,s);
+
+                cmime_part_set_content_type(part, content_type);
+                if (cmime_list_insert_next(message->parts,elem,child)!=0)
+                    return(-1);
+                
+                return(0);
+            }
+        }
+        elem = elem->next;
+    }
+
+    return(-1);
+}
+

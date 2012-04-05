@@ -46,7 +46,6 @@ extern "C" {
 #include "cmime_part.h"
 #include "cmime_util.h"
 
-
 /*!
  * @struct CMimeMessage_T cmime_message.h
  * @brief Represents an email message
@@ -60,6 +59,18 @@ typedef struct {
     CMimeList_T *parts; /**< mime parts */
     char *linebreak; /**< linebreak used by message */
 } CMimeMessage_T;
+
+/*!
+ * @enum CMimeMultipartType_T 
+ * @brief Possible multipart mime subtypes
+ */
+typedef enum _CMimeMultipartType {
+    CMIME_MULTIPART_MIXED, /**< multipart/mixed */
+    CMIME_MULTIPART_DIGEST, /**< multipart/digest */
+    CMIME_MULTIPART_MESSAGE, /**< message/rfc822 */
+    CMIME_MULTIPART_ALTERNATIVE, /**< multipart/alternative */
+    CMIME_MULTIPART_RELATED /**< multipart/related */
+} CMimeMultipartType_T;
 
 /*!
  * @fn CMimeMessage_T *cmime_message_new(void)
@@ -445,6 +456,17 @@ CMimeMessage_T *cmime_message_create_skeleton(const char *sender, const char *re
  * @returns 0 on success, -1 in case of error
  */ 
 int cmime_message_part_remove(CMimeMessage_T *message, CMimePart_T *part);
+
+/*! 
+ * @fn int cmime_part_add_child_part(CMimeMessage_T *message, CMimePart_T *part, CMimePart_T *child)
+ * @brief Add a child part to given mimepart, set content type and generate a boundary if necessary
+ * @param message a CMimeMessage_T object
+ * @param part the parent mime part
+ * @param child the child mime part, which should be added
+ * @param subtype the multipart subtype
+ * @returns 0 on success or -1 in case of error
+ */
+int cmime_message_add_child_part(CMimeMessage_T *message, CMimePart_T *part, CMimePart_T *child, CMimeMultipartType_T subtype);
 
 #ifdef __cplusplus
 }
