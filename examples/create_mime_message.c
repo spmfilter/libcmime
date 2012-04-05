@@ -5,20 +5,19 @@
 #include <unistd.h>
 #include "../src/cmime_message.h"
 
-
 void usage() {
     printf("\n");
     printf("libcmime - simple api demonstration\n");
     printf("-----------------------------------\n");
-    printf("demonstrates: creation of new CMimeMessage_T object with cmime_message_create_skeleton function.\n");
+    printf("demonstrates: manual creation of new CMimeMessage_T mime message\n");
     printf("output: output is written to stdout if no output file is specified (-f /path/to/out_file.txt)\n");
     printf("\n");
     exit(0);
 }
 
 
-int main(int argc, char *argv[])
-{
+int main(int argc, char *argv[]) {
+
     // addresses can either be specified "just as an address" or like "John Doe <from@example.org>"
     char from[] = "from@example.org";
     char to[] = "to@example.org";
@@ -26,10 +25,8 @@ int main(int argc, char *argv[])
     char body[] = "some very interesting body line";
     char *file = NULL;
     char *out = NULL;
+    char *msgid = NULL;
     int option;
-
-    // initialization for new CMimeMessage_T object which is created by using cmime_message_create_skeleton
-    CMimeMessage_T *message = NULL;
 
     // check command line parameters
     while((option = getopt(argc,argv,"hf:")) != EOF) {
@@ -45,10 +42,27 @@ int main(int argc, char *argv[])
         }
     }
 
-    // create a basic skeletion with cmime_message_create_skeleton
-    message = cmime_message_create_skeleton(from,to,subject);
-    // add the body to object
-    cmime_message_set_body(message,body);
+
+    CMimeMessage_T *message = cmime_message_new();
+ 
+    // set the sender of the message
+    cmime_message_set_sender(message,from);
+
+    // add an recipient, this can also be done with cmime_message_add_recipient_to
+    cmime_message_add_recipient(message, to, CMIME_ADDRESS_TYPE_TO);
+
+    // set subject
+    cmime_message_set_subject(message, "This is an exmaple");
+
+    // generate date header
+    cmime_message_set_date_now(message);
+
+    // generate a message id and add it to our message
+    msgid = cmime_message_generate_boundary();
+    cmime_message_set_message_id(message, msgid);
+    
+    // add content to the body
+    cmime_message_set_body(message,"This is the message body");
 
     // assign the email to out or write it to file (depending on cli options)
     if(file != NULL) {
@@ -61,16 +75,18 @@ int main(int argc, char *argv[])
         out = cmime_message_to_string(message);
         printf("%s\n", out);
     }
-
+    
     // free the initialized object
     cmime_message_free(message);
 
     // some clean up
-    if(file != NULL)
-        free(file);
     if(out != NULL)
         free(out);
+    if(msgid != NULL)
+        free(msgid);
+    if(file != NULL)
+        free(file);
+    
 
     return (0);
 }
-

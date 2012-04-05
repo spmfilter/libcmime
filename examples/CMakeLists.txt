@@ -1,5 +1,5 @@
-add_executable(message_create message_create.c)
-target_link_libraries(message_create cmime)
+add_executable(create_mime_message create_mime_message.c)
+target_link_libraries(create_mime_message cmime)
 
 add_executable(create_mime_message_skeleton create_mime_message_skeleton.c)
 target_link_libraries(create_mime_message_skeleton cmime)
