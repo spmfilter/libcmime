@@ -25,91 +25,91 @@
 #include "cmime_flbi.h"
 
 char *cmime_flbi_get_boundary(char *s) {
-	char *boundary = NULL;	
-	char *p = NULL;
-	int pos = 0;
+    char *boundary = NULL;  
+    char *p = NULL;
+    int pos = 0;
 
-	p = strcasestr(s,"boundary=");
-	if (p != NULL) {
-		s = strstr(p,"=");
-		if (*++s=='"') 
-			s++;
-				
-		boundary = (char *)calloc(strlen(s) + sizeof(char),sizeof(char));
-		while(*s!='\0') {
-			if ((*s!=';') && (*s!='"'))
-				boundary[pos++] = *s;
-			else {
-				boundary[pos] = '\0';
-				break;
-			}
-			s++;
-		}
-	}
-	return boundary;
+    p = strcasestr(s,"boundary=");
+    if (p != NULL) {
+        s = strstr(p,"=");
+        if (*++s=='"') 
+            s++;
+                
+        boundary = (char *)calloc(strlen(s) + sizeof(char),sizeof(char));
+        while(*s!='\0') {
+            if ((*s!=';') && (*s!='"'))
+                boundary[pos++] = *s;
+            else {
+                boundary[pos] = '\0';
+                break;
+            }
+            s++;
+        }
+    }
+    return boundary;
 }
 
 int cmime_flbi_match_boundary(const char *haystack) {
-	if (strcasestr(haystack, "boundary="))
-		return(1);
-	
-	return(0);
+    if (strcasestr(haystack, "boundary="))
+        return(1);
+    
+    return(0);
 }
 
 int cmime_flbi_cmp_boundaries(CMimeYYExtra_T *yydata, const char *haystack) {
-	char *p = NULL;
+    char *p = NULL;
     int i;
 
-	asprintf(&p,"--%s%s",yydata->message->boundary,yydata->message->linebreak);
-	if (strncmp(haystack,p,strlen(p)) == 0) {
-		free(p);
-		return(1);
-	}	
-	free(p);
+    asprintf(&p,"--%s%s",yydata->message->boundary,yydata->message->linebreak);
+    if (strncmp(haystack,p,strlen(p)) == 0) {
+        free(p);
+        return(1);
+    }   
+    free(p);
 
     for(i=0;i < yydata->num_parts; i++) {
-		asprintf(&p,"--%s%s",yydata->sub_part_boundaries[i],yydata->message->linebreak);
-		if (strncmp(haystack,p,strlen(p)) == 0) {
-			free(p);
-			return(1);
-		}
-		free(p);
-	}
+        asprintf(&p,"--%s%s",yydata->sub_part_boundaries[i],yydata->message->linebreak);
+        if (strncmp(haystack,p,strlen(p)) == 0) {
+            free(p);
+            return(1);
+        }
+        free(p);
+    }
 
-	return(0);
+    return(0);
 }
 
 void cmime_flbi_check_part_boundary(CMimePart_T *part) {
-	CMimeListElem_T *e = NULL;
-	CMimeHeader_T *h = NULL;
-	char *bound = NULL;
+    CMimeListElem_T *e = NULL;
+    CMimeHeader_T *h = NULL;
+    char *bound = NULL;
 
-	e = cmime_list_head(part->headers);
-	while(e != NULL) {
-		h = (CMimeHeader_T *)cmime_list_data(e);
+    e = cmime_list_head(part->headers);
+    while(e != NULL) {
+        h = (CMimeHeader_T *)cmime_list_data(e);
 
-		bound = cmime_flbi_get_boundary(cmime_header_get_value(h,0));
-		if (bound != NULL) {
-			part->boundary = bound;
-			break;
-		}
-		e = e->next;
-	}
+        bound = cmime_flbi_get_boundary(cmime_header_get_value(h,0));
+        if (bound != NULL) {
+            part->boundary = bound;
+            break;
+        }
+        e = e->next;
+    }
 }
 
 int cmime_flbi_strstr_boundary(CMimeYYExtra_T *yydata, const char *haystack) {
-	char **it = NULL;
+    char **it = NULL;
 
-	if (strstr(haystack,yydata->message->boundary)) {
-		return(1);
-	} 
+    if (strstr(haystack,yydata->message->boundary)) {
+        return(1);
+    } 
 
-	it = yydata->sub_part_boundaries;
-	while(*it != NULL) {
-		if (strstr(haystack,*it))
-			return(1);
-		it++;
-	}
+    it = yydata->sub_part_boundaries;
+    while(*it != NULL) {
+        if (strstr(haystack,*it))
+            return(1);
+        it++;
+    }
 
-	return(0);
+    return(0);
 }

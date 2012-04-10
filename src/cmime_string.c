@@ -20,44 +20,44 @@
 #include "cmime_string.h"
 
 char *cmime_string_strip(char *s) {
-	assert(s);
+    assert(s);
 
-	char * e = s + strlen(s) - 1;
-	while(*s && isspace(*s)) s++;
-	while(e > s && isspace(*e)) *e-- = '\0';
+    char * e = s + strlen(s) - 1;
+    while(*s && isspace(*s)) s++;
+    while(e > s && isspace(*e)) *e-- = '\0';
 
-	return(s);
+    return(s);
 }
 
 char *cmime_string_chomp(char *s) {
-	char *p = NULL;
+    char *p = NULL;
 
-	switch(s[strlen(s)-1]) {
-		case '\n':
-			if((p = strrchr(s,'\r')) != NULL ) *p = '\0';
-			else *(p = strrchr(s,'\n')) = '\0';
-			break;
-		case '\r':
-			*(p = strrchr(s,'\r')) = '\0';
-			break;
-		case '\x0c':
-			*(p = strrchr(s,'\x0c')) = '\0';
-			break;
-	}
+    switch(s[strlen(s)-1]) {
+        case '\n':
+            if((p = strrchr(s,'\r')) != NULL ) *p = '\0';
+            else *(p = strrchr(s,'\n')) = '\0';
+            break;
+        case '\r':
+            *(p = strrchr(s,'\r')) = '\0';
+            break;
+        case '\x0c':
+            *(p = strrchr(s,'\x0c')) = '\0';
+            break;
+    }
 
-	return(s);
+    return(s);
 }
 
 int cmime_string_is_7bit(const char *s) {
-	const char *it = NULL;
-	assert(s);
+    const char *it = NULL;
+    assert(s);
 
-	it = s;
-	while(*it != '\0') {
-		if (((*it) > 127)||(*it < 0))
-			return(-1);
-		it++;
-	}
+    it = s;
+    while(*it != '\0') {
+        if (((*it) > 127)||(*it < 0))
+            return(-1);
+        it++;
+    }
 
-	return(0);
+    return(0);
 }

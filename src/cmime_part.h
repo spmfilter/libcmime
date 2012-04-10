@@ -162,7 +162,7 @@ void cmime_part_set_postface(CMimePart_T *part, const char *s);
 
 /*!
  * @fn char *cmime_part_to_string(CMimePart_T *part, const char *nl)
- * @brief Return complete mime part as string
+ * @brief Return complete mime part as string, inclusive all mime headers
  * @param part a CMimePart_T object
  * @param nl newline character which should be used. If NULL newline
  *  character will be determined automatically.

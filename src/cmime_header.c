@@ -21,86 +21,86 @@
 #include "cmime_header.h"
 
 CMimeHeader_T *cmime_header_new(void) {
-	CMimeHeader_T *h;
-	h = (CMimeHeader_T *)calloc((size_t)1,sizeof(CMimeHeader_T));
-	h->count = 0;
-	h->name =  NULL;
-	h->value = NULL;
-	return(h);
+    CMimeHeader_T *h;
+    h = (CMimeHeader_T *)calloc((size_t)1,sizeof(CMimeHeader_T));
+    h->count = 0;
+    h->name =  NULL;
+    h->value = NULL;
+    return(h);
 }
 
 void cmime_header_free(CMimeHeader_T *header) {
-	size_t i;
-	assert(header);
+    size_t i;
+    assert(header);
 
 
-	if (header->name != NULL)
-		free(header->name);
-		
-	for(i = 0; i < header->count; i++) {
-		if (header->value[i] != NULL) 
-			free(header->value[i]);
-	} 
-	free(header->value);
-	header->value = NULL;
-	free(header); 
+    if (header->name != NULL)
+        free(header->name);
+        
+    for(i = 0; i < header->count; i++) {
+        if (header->value[i] != NULL) 
+            free(header->value[i]);
+    } 
+    free(header->value);
+    header->value = NULL;
+    free(header); 
 }
 
 void cmime_header_set_name(CMimeHeader_T *header, const char *name) {
-	assert(header);
-	assert(name);
-	
-	if (header->name != NULL) 
-		free(header->name);
-	
-	header->name = strdup(name);
+    assert(header);
+    assert(name);
+    
+    if (header->name != NULL) 
+        free(header->name);
+    
+    header->name = strdup(name);
 }
 
 void cmime_header_set_value(CMimeHeader_T *header, const char *value, int overwrite) {
-	char **tmp = NULL;
-	size_t i;
-	assert(header);
-	assert(value);
-	
-	if (overwrite==1) {
-		for(i = 0; i < header->count; i++) {
-			if (header->value[i] != NULL) 
-				free(header->value[i]);
-		}
-		header->count = 0;
-	}
+    char **tmp = NULL;
+    size_t i;
+    assert(header);
+    assert(value);
+    
+    if (overwrite==1) {
+        for(i = 0; i < header->count; i++) {
+            if (header->value[i] != NULL) 
+                free(header->value[i]);
+        }
+        header->count = 0;
+    }
 
-	tmp = realloc(header->value, (sizeof( *tmp) * (header->count+1)));
-	tmp[header->count] = strdup(value);
-	header->value = tmp;
-	header->count++;
+    tmp = realloc(header->value, (sizeof( *tmp) * (header->count+1)));
+    tmp[header->count] = strdup(value);
+    header->value = tmp;
+    header->count++;
 }
 
 char *cmime_header_get_value(CMimeHeader_T *header,int pos) {
-	assert(header);
-	assert(pos <= header->count);
-	
-	if (header->value != NULL)
-		return(header->value[pos]);
-	else
-		return(NULL);
+    assert(header);
+    assert(pos <= header->count);
+    
+    if (header->value != NULL)
+        return(header->value[pos]);
+    else
+        return(NULL);
 }
 
 char *cmime_header_to_string(CMimeHeader_T *header) {
-	char *out = NULL;
-	int i = 0;
-	char *ptemp = NULL;
-	
-	assert(header);
+    char *out = NULL;
+    int i = 0;
+    char *ptemp = NULL;
+    
+    assert(header);
 
-	out = (char *)calloc(sizeof(char),sizeof(char));
-	for(i = 0; i < cmime_header_get_count(header); i++) {
-		asprintf(&ptemp,"%s: %s",cmime_header_get_name(header),cmime_header_get_value(header,i));
-			
-		out = (char *)realloc(out,strlen(out) + strlen(ptemp) + 1);
-		strcat(out,ptemp);
-		free(ptemp);
-	}
-	
-	return(out);
+    out = (char *)calloc(sizeof(char),sizeof(char));
+    for(i = 0; i < cmime_header_get_count(header); i++) {
+        asprintf(&ptemp,"%s: %s",cmime_header_get_name(header),cmime_header_get_value(header,i));
+            
+        out = (char *)realloc(out,strlen(out) + strlen(ptemp) + 1);
+        strcat(out,ptemp);
+        free(ptemp);
+    }
+    
+    return(out);
 }
