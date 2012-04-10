@@ -217,10 +217,10 @@ int cmime_part_from_file(CMimePart_T **part, char *filename) {
     int pos = 0;
     unsigned char in[3], out[4];
     char *ptemp = NULL;
-    
+
     assert((*part));
     assert(filename);
-    
+
     /* only regular files please */
     retval = stat(filename,&fileinfo);
     if (retval == 0) {

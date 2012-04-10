@@ -61,6 +61,18 @@ typedef struct {
 } CMimeMessage_T;
 
 /*!
+ * @enum CMimeMultipartType_T 
+ * @brief Possible multipart mime subtypes
+ */
+typedef enum _CMimeMultipartType {
+    CMIME_MULTIPART_MIXED, /**< multipart/mixed */
+    CMIME_MULTIPART_DIGEST, /**< multipart/digest */
+    CMIME_MULTIPART_MESSAGE, /**< message/rfc822 */
+    CMIME_MULTIPART_ALTERNATIVE, /**< multipart/alternative */
+    CMIME_MULTIPART_RELATED /**< multipart/related */
+} CMimeMultipartType_T;
+
+/*!
  * @fn CMimeMessage_T *cmime_message_new(void)
  * @brief Creates a new CMimeMessage_T object
  * @returns CMimeMessage_T pointer, or NULL on failure
@@ -444,18 +456,6 @@ CMimeMessage_T *cmime_message_create_skeleton(const char *sender, const char *re
  * @returns 0 on success, -1 in case of error
  */ 
 int cmime_message_part_remove(CMimeMessage_T *message, CMimePart_T *part);
-
-/*!
- * @enum CMimeMultipartType_T 
- * @brief Possible multipart mime subtypes
- */
-typedef enum _CMimeMultipartType {
-    CMIME_MULTIPART_MIXED, /**< multipart/mixed */
-    CMIME_MULTIPART_DIGEST, /**< multipart/digest */
-    CMIME_MULTIPART_MESSAGE, /**< message/rfc822 */
-    CMIME_MULTIPART_ALTERNATIVE, /**< multipart/alternative */
-    CMIME_MULTIPART_RELATED /**< multipart/related */
-} CMimeMultipartType_T;
 
 /*! 
  * @fn int cmime_part_add_child_part(CMimeMessage_T *message, CMimePart_T *part, CMimePart_T *child)

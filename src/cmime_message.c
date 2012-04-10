@@ -44,7 +44,7 @@ void _rebuild_first_part(CMimeMessage_T *message) {
     CMimePart_T *p = NULL;
     CMimeInfo_T *mi = NULL;
     char *s = NULL;
-    char *content_type = NULL;
+    char *s2 = NULL;
     char *nl = NULL;
 
     if (message->parts->size == 1) {
@@ -58,28 +58,33 @@ void _rebuild_first_part(CMimeMessage_T *message) {
         if (p->parent_boundary == NULL) {
             p->parent_boundary = strdup(message->boundary);
             s = cmime_part_get_content(p);
-            mi = cmime_util_info_get(s);
 
-            if (cmime_string_is_7bit(s)==0)
-                cmime_part_set_content_transfer_encoding(p, "7bit"); 
-            else
-                /* TODO: check other transfer encodings */
-                cmime_part_set_content_transfer_encoding(p, "8bit");
-            
+            s2 = cmime_message_get_content_type(message);
+            if (s2 != NULL) 
+                cmime_part_set_content_type(p,s2);
+            else {
+                if (message->linebreak == NULL) {
+                    nl = _cmime_internal_determine_linebreak(s);
+                    if (nl == NULL)
+                        nl = CRLF;
 
-            if (message->linebreak == NULL) {
-                nl = _cmime_internal_determine_linebreak(s);
-                if (nl == NULL)
-                    nl = CRLF;
-
-                message->linebreak = strdup(nl);
+                    message->linebreak = strdup(nl);
+                }
+                mi = cmime_util_info_get(s);
+                asprintf(&s2,"%s;%s\tcharset=%s",mi->mime_type,message->linebreak,mi->mime_encoding);
+                cmime_part_set_content_type(p, s2);
+                free(s2);
             }
-            asprintf(&content_type,"%s;%s\tcharset=%s",mi->mime_type,message->linebreak,mi->mime_encoding);
-            cmime_part_set_content_type(p, content_type);
-            free(content_type);
+
+            s2 = cmime_message_get_content_transfer_encoding(message);
+            if (s2 != NULL)
+                cmime_part_set_content_transfer_encoding(p, s2);
+            else {
+                if (cmime_string_is_7bit(s)==0)
+                    cmime_part_set_content_transfer_encoding(p, "7bit"); 
+            }
 
             p->last = 1;
-            cmime_util_info_free(mi);
         }
     }
 }
@@ -902,4 +907,3 @@ int cmime_message_add_child_part(CMimeMessage_T *message, CMimePart_T *part, CMi
 
     return(-1);
 }
-
