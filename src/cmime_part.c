@@ -24,6 +24,8 @@
 #include "cmime_base64.h"
 #include "cmime_string.h"
 #include "cmime_list.h"
+#include "cmime_qp.h"
+
 
 /* search for header value in pointer p 
  * and return value as newly allocated string */
@@ -312,6 +314,55 @@ int cmime_part_from_file(CMimePart_T **part, char *filename) {
     
     return(0);
 }
+
+int cmime_part_to_file(CMimePart_T **part, char *filename) {
+    struct stat fileinfo;
+    int retval = 0;
+    FILE *fp = NULL;
+    int encode = 0;
+    char *encoding = NULL;
+    char *decoded_str = NULL;
+
+    const char base64[] = "base64";
+    const char qp[] = "quoted-printable";
+
+    assert((*part));
+    assert(filename);
+
+    // check for encodings
+    encoding = cmime_part_get_content_transfer_encoding(*part);
+
+    if(encoding == NULL) {
+        asprintf(&decoded_str,"%s",(*part)->content);
+    } else {  
+        if(strcmp(encoding,qp)==0)
+            decoded_str = cmime_qp_decode_text((*part)->content);
+    
+        if(strcmp(encoding,base64)==0)
+            decoded_str = cmime_base64_decode_string((*part)->content);
+    }
+
+    if(stat(filename,&fileinfo)==0) {
+        if(S_ISREG(fileinfo.st_mode)) {
+            fp = fopen(filename, "w");
+            if(fp != NULL) {
+                fprintf(fp, "%s", decoded_str);
+                if (fclose(fp)!=0)
+                    perror("libcmime: error closing file");   
+            } else {
+                perror("libcmime: error opening file");
+                retval = -3; /* failed to open file */
+            }
+        } else { 
+            retval = -2; /* not regular file */
+        }
+    } else {
+        retval = -1; /* stat error */
+    }
+
+    return retval;
+}
+
 
 int cmime_part_from_string(CMimePart_T **part, const char *content) {
     char *ptemp = NULL;

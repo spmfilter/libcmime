@@ -12,3 +12,6 @@ target_link_libraries(create_mime_message_part_from_file cmime)
 
 add_executable(parse_mime_message parse_mime_message.c)
 target_link_libraries(parse_mime_message cmime)
+
+add_executable(save_attachment_to_file save_attachment_to_file.c)
+target_link_libraries(save_attachment_to_file cmime)
