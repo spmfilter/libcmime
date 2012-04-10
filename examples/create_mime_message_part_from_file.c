@@ -50,8 +50,10 @@ int main(int argc, char *argv[]) {
     if(attachment != NULL) {
 
         CMimeMessage_T *message = cmime_message_new();
-        CMimePart_T *mimep = cmime_part_new(); 
- 
+        CMimePart_T *part = cmime_part_new();
+        CMimeListElem_T *elem = NULL;
+        CMimePart_T *prev = NULL;
+        
         // set the sender of the message
         cmime_message_set_sender(message,from);
 
@@ -71,10 +73,18 @@ int main(int argc, char *argv[]) {
         // add content to the body
         cmime_message_set_body(message,"This is the message body");
 
-
         // add the attachment
-        cmime_part_from_file(&mimep, "/home/werner/space_logo.gif");
-    
+        /* check if there is a previous part */
+        if (message->parts->size >= 1) {
+            elem = cmime_list_tail(message->parts);
+            prev = cmime_list_data(elem);
+            prev->last = 0;
+        }
+        cmime_message_add_generated_boundary(message);
+        cmime_part_from_file(&part, attachment);
+        part->parent_boundary = strdup(message->boundary);
+        part->last = 1;
+        cmime_list_append(message->parts,part);
 
         // assign the email to out or write it to file (depending on cli options)
         if(file != NULL) {
@@ -102,6 +112,8 @@ int main(int argc, char *argv[]) {
         free(msgid);
     if(file != NULL)
         free(file);
+    if(attachment != NULL)
+        free(attachment);
     
 
     return retval;
