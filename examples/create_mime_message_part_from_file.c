@@ -12,7 +12,6 @@ void usage() {
     printf("demonstrates: manual creation of new CMimeMessage_T mime message. Furthermore the message is manually extended by an attachment\n");
     printf("output: output is written to stdout if no output file is specified (-f /path/to/out_file.txt)\n");
     printf("\n");
-    exit(0);
 }
 
 

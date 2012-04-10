@@ -9,3 +9,6 @@ target_link_libraries(create_mime_message_skeleton_add_attachment cmime)
 
 add_executable(create_mime_message_part_from_file create_mime_message_part_from_file.c)
 target_link_libraries(create_mime_message_part_from_file cmime)
+
+add_executable(parse_mime_message parse_mime_message.c)
+target_link_libraries(parse_mime_message cmime)
