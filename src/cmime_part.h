@@ -186,7 +186,7 @@ int cmime_part_from_file(CMimePart_T **part, char *filename);
  * @param filename path to out file
  * @returns 0 on success, -1 on stat error, -2 if not a regular file
  */
-int cmime_part_to_file(CMimePart_T **part, char *filename);
+int cmime_part_to_file(CMimePart_T *part, char *filename);
 
 /*!
  * @fn int cmime_part_from_string(CMimePart_T **part, const char *content)

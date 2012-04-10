@@ -16,6 +16,7 @@ int main(int argc, char *argv[]) {
     int retval = 0;
     char *in_file = NULL;
     char *out_file = NULL;
+    int ret;
     int i=0;
 
     char *s = NULL;
@@ -53,7 +54,8 @@ int main(int argc, char *argv[]) {
             elem = cmime_list_head(message->parts);
             while(elem != NULL) {
                 mp = (CMimePart_T *)cmime_list_data(elem);
-                cmime_part_to_file(&mp,out_file);
+                ret = cmime_part_to_file(mp,out_file);
+                printf("RET: [%d]\n",ret);
                 elem = elem->next;
                 break;
             }
