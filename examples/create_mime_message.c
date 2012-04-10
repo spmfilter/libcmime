@@ -21,8 +21,6 @@ int main(int argc, char *argv[]) {
     // addresses can either be specified "just as an address" or like "John Doe <from@example.org>"
     char from[] = "from@example.org";
     char to[] = "to@example.org";
-    char subject[] = "this is a subject";
-    char body[] = "some very interesting body line";
     char *file = NULL;
     char *out = NULL;
     char *msgid = NULL;

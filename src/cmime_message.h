@@ -19,7 +19,11 @@
  * @file cmime_message.h
  * @brief Defines functions and structs for message handling
  *
- * @example test_message.c
+ * @example create_message.c
+ * @example create_mime_message_part_from_file.c
+ * @example create_mime_message_skeleton.c
+ * @example create_mime_message_skeleton_add_attachment.c
+ * @example parse_mime_message.c
  */
 
 #ifndef _CMIME_MESSAGE_H
