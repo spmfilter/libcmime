@@ -1,0 +1,19 @@
+Source: libcmime
+Section: mail
+Priority: optional
+Maintainer: Werner Detter <werner@aloah-from-hell.de>
+Build-Depends: debhelper (>= 7), cmake, cdbs, flex, bison
+Homepage: http://libcmime.spmfilter.org/
+Standards-Version: 3.9.3
+
+Package: libcmime0.1.0
+Architecture: any
+Section: libs 
+Depends: ${shlibs:Depends}, ${misc:Depends}, cmake, bison, libbison-dev, flex
+Recommends:
+Description: libcmime - A C mime library
+ libcmime is a lightweight mime library, written in C. It attempts to be a 
+ general library for parsing and creating mime email messages and is 
+ designed to provide an easy to use and easy to integrate interface for 
+ developers. libcmime is a pretty fresh project so the library is still in 
+ beta state and there will be early and frequent releases. 
