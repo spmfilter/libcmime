@@ -67,7 +67,6 @@ int main(int argc, char *argv[]) {
             elem = cmime_list_head(message->parts);
             mp = (CMimePart_T *)cmime_list_data(elem);
             ret = cmime_part_to_file(mp,out_file);
-            printf("ret: [%d]\n",ret);
 
         } else {
             printf("failed opening file [%s]\n", in_file);

@@ -48,7 +48,7 @@ char *cmime_qp_decode(char *line_in, int mode, char esc_char)  {
     char c;                                                     /* output character */
     int opos = 0;                                               /* output positioning */
     int ipos;                                                   /* input positioning */
-    int len = strlen(line_in);                      			/* length of inputstring */
+    int len = strlen(line_in);                                  /* length of inputstring */
 
     /* we malloc size of line_in char as through decoding string just can get shorter, not longer */
     line_out = malloc(strlen(line_in)+1*sizeof(char));
@@ -94,12 +94,12 @@ char *cmime_qp_decode(char *line_in, int mode, char esc_char)  {
                     }
                 }
             } else {
-            		line_out[opos] = '\0';
+                    line_out[opos] = '\0';
                 /* if we're out of chars, quit */
                 break;
             }
         } else if (( c == '_') && (mode == DECODE_QP_MODE_ISO)) {
-        	/* RFC2047 says: if you encounter a '_' charactier in the ISO encoding then this must be converted to a space */
+            /* RFC2047 says: if you encounter a '_' charactier in the ISO encoding then this must be converted to a space */
           c = ' ';
         }
         /* put in the new character, converted or not */
@@ -116,166 +116,164 @@ char *cmime_qp_decode(char *line_in, int mode, char esc_char)  {
  * HELPERS for Decoding, so just passing the char pointer is necessary
  */
 char *cmime_qp_decode_text ( char *line_in) {
-	char *line_out = NULL;
-	line_out = cmime_qp_decode(line_in, DECODE_QP_MODE_DEFAULT,'=');
-	return line_out;
+    char *line_out = NULL;
+    line_out = cmime_qp_decode(line_in, DECODE_QP_MODE_DEFAULT,'=');
+    return line_out;
 }
 
 char *cmime_qp_decode_iso ( char *line_in) {
-	char *line_out = NULL;
-	line_out = cmime_qp_decode(line_in, DECODE_QP_MODE_DEFAULT,'=');
-	return line_out;
+    char *line_out = NULL;
+    line_out = cmime_qp_decode(line_in, DECODE_QP_MODE_DEFAULT,'=');
+    return line_out;
 }
 
 char *cmime_qp_decode_multipart ( char *line_in) {
-	char *line_out = NULL;
-	line_out = cmime_qp_decode(line_in, DECODE_QP_MODE_DEFAULT,'%');
-	return line_out;
+    char *line_out = NULL;
+    line_out = cmime_qp_decode(line_in, DECODE_QP_MODE_DEFAULT,'%');
+    return line_out;
 }
 
 char *cmime_qp_encode(char *line_in, char *lt) {
 
-	char *line_out = NULL; /* output array */
-	size_t line_out_s; 				/* size of output array */
-	char CRLF[]="\r\n"; 			/* line terminator, if none defined we use this one */
-	
-	char *line_s;
-	char *line_e;
-	char *p;
-	char *op;
-	char *pp; 
-	char paragraph[100];
-	size_t pp_remain = 100;
-	size_t out_remain;
-	char *in_data_limit = line_in + strlen(line_in); 	/**/
-	size_t cur_line_len = 0;
+    char *line_out = NULL; /* output array */
+    size_t line_out_s;              /* size of output array */
+    char CRLF[]="\r\n";             /* line terminator, if none defined we use this one */
+    
+    char *line_s;
+    char *line_e;
+    char *p;
+    char *op;
+    char *pp; 
+    char paragraph[100];
+    size_t pp_remain = 100;
+    size_t out_remain;
+    char *in_data_limit = line_in + strlen(line_in);    /**/
+    size_t cur_line_len = 0;
 
-	/* output array can only be 3 times size of line_in + 1 for \0 */
-	line_out_s = strlen(line_in)*3+1;
- line_out = malloc(line_out_s*sizeof(char));
+    /* output array can only be 3 times size of line_in + 1 for \0 */
+    line_out_s = strlen(line_in)*3+1;
+    line_out = malloc(line_out_s*sizeof(char));
 
-	/* set line terminator in case there is none given */
-	if(lt == NULL) lt = CRLF;
-	
-	line_s = NULL;
-	line_e = line_in;
-	
-	/* set the output buffer variables */
-	op = line_out;
-	out_remain = line_out_s;
+    /* set line terminator in case there is none given */
+    if(lt == NULL) lt = CRLF;
+    
+    line_s = NULL;
+    line_e = line_in;
+    
+    /* set the output buffer variables */
+    op = line_out;
+    out_remain = line_out_s;
 
-	do{
-		char charout[4];
-		int charout_size = 0;
+    do{
+        char charout[4];
+        int charout_size = 0;
 
-		if (line_e != '\0') {
-			if (line_s == NULL) {
-				line_s = line_in;
-			} else {
-				line_s = line_e;
-			}
+        if (line_e != '\0') {
+            if (line_s == NULL) {
+                line_s = line_in;
+            } else {
+                line_s = line_e;
+            }
 
-			line_e = strstr(line_s, lt);
-			if (line_e == NULL) {
-					/* no CLRF found */
-			  	line_e = line_in + strlen(line_in);
-			} else { 
-				line_e += strlen(lt);
-			}
-		}
+            line_e = strstr(line_s, lt);
+            if (line_e == NULL) {
+                    /* no CLRF found */
+                line_e = line_in + strlen(line_in);
+            } else { 
+                line_e += strlen(lt);
+            }
+        }
 
-		/* reinit paragraph */
-		paragraph[0] = '\0';
-		pp = paragraph;
-		pp_remain = sizeof(paragraph);
-		cur_line_len = 0;
+        /* reinit paragraph */
+        paragraph[0] = '\0';
+        pp = paragraph;
+        pp_remain = sizeof(paragraph);
+        cur_line_len = 0;
 
-		/* set p to point to the start of the new line that we have to encode */
-		p = line_s;
+        /* set p to point to the start of the new line that we have to encode */
+        p = line_s;
 
-		while ((p < line_e)) {
+        while ((p < line_e)) {
 
-			if (*p < ' ' || *p == '=' || *p > 126) {
-				/* encode as hex */
-				snprintf( charout, sizeof(charout), "=%02X", (unsigned char)*p);
-				charout_size = 3;
-			} else {
-				/* encode verbatim */
-				snprintf( charout, sizeof(charout), "%c", *p);
-				charout_size = 1;
-			}
+            if (*p < ' ' || *p == '=' || *p > 126) {
+                /* encode as hex */
+                snprintf( charout, sizeof(charout), "=%02X", (unsigned char)*p);
+                charout_size = 3;
+            } else {
+                /* encode verbatim */
+                snprintf( charout, sizeof(charout), "%c", *p);
+                charout_size = 1;
+            }
 
-			if (cur_line_len +charout_size >= 76) {
-				//snprintf(op, out_remain, "%s=%s", paragraph, lt);
-				snprintf(op, out_remain, "%s=\r\n", paragraph);
+            if (cur_line_len +charout_size >= 76) {
+                snprintf(op, out_remain, "%s=%s", paragraph, lt);
+                op += strlen(paragraph);                                                                    // +3; /** jump the output + =\r\n **/
+                out_remain -= (strlen(paragraph));                                      //  Was +3, updated to fix Outlook problems
+                
+                /* reinitialize the paragraph */
+                paragraph[0] = '\0';
+                pp_remain = sizeof(paragraph);
+                pp = paragraph;
+                cur_line_len=-1;
+            }
 
-				op += strlen(paragraph); 																	// +3; /** jump the output + =\r\n **/
-				out_remain -= (strlen(paragraph)); 										// 	Was +3, updated to fix Outlook problems
-				
-				/* reinitialize the paragraph */
-				paragraph[0] = '\0';
-				pp_remain = sizeof(paragraph);
-				pp = paragraph;
-				cur_line_len=-1;
-			}
+            snprintf(pp, pp_remain, "%s", charout);
+            pp += charout_size;
+            pp_remain -= charout_size;
+            p++;
+            cur_line_len += charout_size; 
+        }
+        snprintf(op, out_remain, "%s%s", paragraph,lt);
+        op += (strlen(paragraph) +2);
+        out_remain -= (strlen(paragraph) +2);
 
-			snprintf(pp, pp_remain, "%s", charout);
-			pp += charout_size;
-			pp_remain -= charout_size;
-			p++;
-			cur_line_len += charout_size; 
-		}
-		snprintf(op, out_remain, "%s%s", paragraph,lt);
-		op += (strlen(paragraph) +3);
-		out_remain -= (strlen(paragraph) +3);
+    } while ((line_e < in_data_limit) && (*line_e != '\0'));
 
-	} while ((line_e < in_data_limit) && (*line_e != '\0'));
-
-	return line_out;
+    return line_out;
 }
 
 char *cmime_qp_rm_charenc(char *line_in) {
-	char *line_out = NULL;
-	int ipos = 0;
-	int opos = 0;
-	int line_in_len = strlen(line_in);
+    char *line_out = NULL;
+    int ipos = 0;
+    int opos = 0;
+    int line_in_len = strlen(line_in);
 
-	line_out = malloc(strlen(line_in)+1*sizeof(char));
-	for(ipos=0; ipos<line_in_len; ipos++) {
-		if(line_in[ipos] == '=') {
-			int orig_ipos = ipos;
+    line_out = malloc(strlen(line_in)+1*sizeof(char));
+    for(ipos=0; ipos<line_in_len; ipos++) {
+        if(line_in[ipos] == '=') {
+            int orig_ipos = ipos;
 
-			if(line_in[ipos+1] == '?') {
-				ipos++;
-				
-				do {
-					ipos++;
-				} while (line_in[ipos] != '?');
+            if(line_in[ipos+1] == '?') {
+                ipos++;
+                
+                do {
+                    ipos++;
+                } while (line_in[ipos] != '?');
 
-				ipos++;
+                ipos++;
 
-				if(tolower(line_in[ipos]) == 'q' || tolower(line_in[ipos]) == 'b') {
-					ipos+=2;
-				
-					do {
-						line_out[opos] = line_in[ipos];
-						opos++;
-						ipos++;	
-					} while (line_in[ipos] != '?');
+                if(tolower(line_in[ipos]) == 'q' || tolower(line_in[ipos]) == 'b') {
+                    ipos+=2;
+                
+                    do {
+                        line_out[opos] = line_in[ipos];
+                        opos++;
+                        ipos++; 
+                    } while (line_in[ipos] != '?');
 
-					ipos++;
-					continue;
-				}
-			} else {
-				ipos = orig_ipos;
-				line_out[opos] = line_in[ipos];
-				opos++;
-			}
-		} else {	
-			line_out[opos] = line_in[ipos];
-			opos++;
-		}
-	}
-	line_out[opos++] = '\0';
-	 return line_out;
+                    ipos++;
+                    continue;
+                }
+            } else {
+                ipos = orig_ipos;
+                line_out[opos] = line_in[ipos];
+                opos++;
+            }
+        } else {    
+            line_out[opos] = line_in[ipos];
+            opos++;
+        }
+    }
+    line_out[opos++] = '\0';
+     return line_out;
 }
