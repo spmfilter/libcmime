@@ -17,10 +17,6 @@
 
 #define _GNU_SOURCE
 
-#include <stdlib.h>
-#include <string.h>
-#include <assert.h>
-
 #include "cmime_internal.h"
 #include "cmime_header.h"
 #include "cmime_string.h"
@@ -43,6 +39,34 @@ char *_cmime_internal_determine_linebreak(const char *s) {
         return(CR);
     else
         return(NULL);
+}
+
+
+char *_cmime_internal_determine_linebreak_from_file(const char *s) {
+    FILE *fp = NULL;
+    char line_in[512];
+    char *nl = NULL;
+
+    assert(s);
+
+    fp = fopen(s, "rb");
+    if (fp != NULL) {
+        while (fgets(line_in, 512, fp)!=NULL){
+            nl = _cmime_internal_determine_linebreak(line_in);
+            if (nl != NULL)
+                break;
+        }
+        if (fclose(fp)!=0)
+            perror("libcmime: error closing file");
+    } else {
+        perror("libcmime: error opening file");
+        return(NULL);
+    }
+
+    if (nl == NULL)
+        nl = CRLF;
+
+    return(nl);
 }
 
 /* replace or add a new linked header */

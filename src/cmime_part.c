@@ -219,6 +219,7 @@ int cmime_part_from_file(CMimePart_T **part, char *filename) {
     int pos = 0;
     unsigned char in[3], out[4];
     char *ptemp = NULL;
+    char *nl = NULL;
 
     assert((*part));
     assert(filename);
@@ -227,14 +228,16 @@ int cmime_part_from_file(CMimePart_T **part, char *filename) {
     retval = stat(filename,&fileinfo);
     if (retval == 0) {
         if(S_ISREG(fileinfo.st_mode)) {
+            nl = _cmime_internal_determine_linebreak_from_file(filename);
+
             ptemp = cmime_util_get_mimetype(filename);
             
             /* set default mime type if no one found */
             if(ptemp == NULL) {
-                asprintf(&ptemp,"%s%s",MIMETYPE_DEFAULT,CRLF);
+                asprintf(&ptemp,"%s%s",MIMETYPE_DEFAULT,nl);
             } else {
-                ptemp = (char *)realloc(ptemp,strlen(ptemp) + strlen(CRLF) + sizeof(char));
-                strcat(ptemp,CRLF);
+                ptemp = (char *)realloc(ptemp,strlen(ptemp) + strlen(nl) + sizeof(char));
+                strcat(ptemp,nl);
             }
 
             cmime_part_set_content_type((*part),ptemp);
@@ -242,14 +245,18 @@ int cmime_part_from_file(CMimePart_T **part, char *filename) {
             free(ptemp);
                     
             if (encode == 1)
-                asprintf(&ptemp,"base64%s",CRLF);
-            else 
-                asprintf(&ptemp,"7bit%s",CRLF);
-            
+                asprintf(&ptemp,"base64%s",nl);
+            else {
+                if (strstr(ptemp,"ascii")!=NULL)
+                    asprintf(&ptemp,"7bit%s",nl);
+                else
+                    asprintf(&ptemp,"8bit%s",nl);
+            }
+
             cmime_part_set_content_transfer_encoding((*part),ptemp);
             free(ptemp);
             
-            asprintf(&ptemp,"attachment; filename=%s%s",basename(filename),CRLF);
+            asprintf(&ptemp,"attachment; filename=%s%s",basename(filename),nl);
             cmime_part_set_content_disposition((*part),ptemp);      
             free(ptemp);
             
@@ -268,7 +275,7 @@ int cmime_part_from_file(CMimePart_T **part, char *filename) {
                             in[i] = 0;
                         }
                     }
-                    
+
                     if (len) {
                         if (encode == 0) {
                             (*part)->content = (char *)realloc((*part)->content,strlen((*part)->content) + sizeof(in) + sizeof(char) +1);
@@ -290,10 +297,11 @@ int cmime_part_from_file(CMimePart_T **part, char *filename) {
                     if(blocksout >= (LINE_LENGTH / 4) || feof(fp)) {
                         if(blocksout && (encode == 1)) {
                             /* if base64 data, we need to do a line break after LINE_LENGTH chars */
-                            (*part)->content = (char *)realloc((*part)->content,strlen((*part)->content) + strlen(CRLF) + sizeof(char));
-                            // TODO: add support for other line endings
-                            (*part)->content[pos++] = '\r';
-                            (*part)->content[pos++] = '\n';
+                            (*part)->content = (char *)realloc((*part)->content,strlen((*part)->content) + strlen(nl) + sizeof(char));
+                            
+                            for (i=0; i<strlen(nl);i++) {
+                                (*part)->content[pos++] = nl[i];    
+                            }
                             (*part)->content[pos] = '\0';
                         }
                     blocksout = 0;

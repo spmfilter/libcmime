@@ -22,7 +22,10 @@
 extern "C" {
 #endif
 
-#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <assert.h>
+
 #include "cmime_list.h"
 #include "cmime_message.h"
 #include "cmime_header.h"
@@ -45,6 +48,7 @@ extern "C" {
 
 void _cmime_internal_header_destroy(void *data);
 
+char *_cmime_internal_determine_linebreak_from_file(const char *s);
 char *_cmime_internal_determine_linebreak(const char *s);
 
 void _cmime_internal_set_linked_header_value(CMimeList_T *l, const char *key, const char *value);

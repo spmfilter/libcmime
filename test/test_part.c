@@ -83,6 +83,7 @@ int main (int argc, char const *argv[]) {
     cmime_part_from_file(&part,s);
     free(s);
     out = cmime_part_to_string(part,NULL);
+    printf("OUT: [%s]\n",out);
     assert(out);
     free(out);
         
