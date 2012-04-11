@@ -9,10 +9,9 @@ void usage() {
     printf("\n");
     printf("libcmime - simple api demonstration\n");
     printf("-----------------------------------\n");
-    printf("demonstrates: save CMimePart_T part of CMimeMessage_T object with cmime_part_to_file() to a file\n";
+    printf("demonstrates: save CMimePart_T part of CMimeMessage_T object with cmime_part_to_file() to a file\n");
     printf("required parameter: -i /path/to/in_file\n");
     printf("optional parameter: -o /path/to/out_file\n");
-
 }
 
 int main(int argc, char *argv[]) {

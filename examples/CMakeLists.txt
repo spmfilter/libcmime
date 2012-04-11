@@ -15,3 +15,6 @@ target_link_libraries(parse_mime_message cmime)
 
 add_executable(save_attachment_to_file save_attachment_to_file.c)
 target_link_libraries(save_attachment_to_file cmime)
+
+add_executable(append_and_prepend_subject append_and_prepend_subject.c)
+target_link_libraries(append_and_prepend_subject cmime)
