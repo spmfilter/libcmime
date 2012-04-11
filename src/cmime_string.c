@@ -54,10 +54,24 @@ int cmime_string_is_7bit(const char *s) {
 
     it = s;
     while(*it != '\0') {
-        if (((*it) > 127)||(*it < 0))
+        if (((*it) > (unsigned char) 127)||(*it < 0))
             return(-1);
         it++;
     }
 
     return(0);
 }
+
+int cmime_string_is_8bit(const char *s) {
+    const char *it = NULL;
+
+    assert(s);
+    it = s;
+    while(*it != '\0') {
+        if ((*it) > (unsigned char) 127)
+            return(0);
+    }
+        
+    return(-1);
+}
+

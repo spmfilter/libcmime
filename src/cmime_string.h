@@ -65,6 +65,14 @@ char *cmime_string_chomp(char *s);
  */
 int cmime_string_is_7bit(const char *s);
 
+/*!
+ * int cmime_string_is_8bit(const char *s)
+ * @brief Determine if given string contains 8bit characters
+ * @param s string to check
+ * @returns 0 if string contains 8bit characters, otherwise -1
+ */
+int cmime_string_is_8bit(const char *s);
+
 #ifdef __cplusplus
 }
 #endif
