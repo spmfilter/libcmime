@@ -321,6 +321,7 @@ int cmime_part_to_file(CMimePart_T *part, char *filename) {
     char *encoding = NULL;
     char *decoded_str = NULL;
 
+    // todo: extend for x-uuencode
     const char base64[] = "base64";
     const char qp[] = "quoted-printable";
 
@@ -329,17 +330,16 @@ int cmime_part_to_file(CMimePart_T *part, char *filename) {
 
     // check for encodings
     encoding = cmime_part_get_content_transfer_encoding(part);
-
+    
     if(encoding == NULL) {
         asprintf(&decoded_str,"%s",part->content);
-    } else {  
-        if(strcmp(encoding,qp)==0)
-            decoded_str = cmime_qp_decode_text(part->content);
-    
-        if(strcmp(encoding,base64)==0)
-            decoded_str = cmime_base64_decode_string(part->content);
+    } else if (strcmp(encoding,qp)==0) {
+        decoded_str = cmime_qp_decode_text(part->content);
+    } else if (strcmp(encoding,base64)==0) {
+        decoded_str = cmime_base64_decode_string(part->content);  
+    } else {
+        asprintf(&decoded_str,"%s",part->content);
     }
-
     fp = fopen(filename, "wb");
     if(fp != NULL) {
         fwrite(decoded_str,strlen(decoded_str),1,fp);
@@ -347,8 +347,14 @@ int cmime_part_to_file(CMimePart_T *part, char *filename) {
             perror("libcmime: error closing file");   
     } else {
         perror("libcmime: error opening file");
-        retval = -3; /* failed to open file */
+        retval = -3; /* failed to open file */ 
     }
+
+    // some cleanup
+    if(encoding!=NULL)
+        free(encoding);
+    if(decoded_str!=NULL)
+        free(decoded_str);
 
     return retval;
 }

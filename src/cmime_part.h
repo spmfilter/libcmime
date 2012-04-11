@@ -180,11 +180,11 @@ char *cmime_part_to_string(CMimePart_T *part, const char *nl);
 int cmime_part_from_file(CMimePart_T **part, char *filename);
 
 /*!
- * @fn int cmime_part_to_file(CMimePart_T **part, char *filename)
+ * @fn int cmime_part_to_file(CMimePart_T *part, char *filename)
  * @brief Create a file from CMimePart_T object
  * @param part CMimePart_T object
  * @param filename path to out file
- * @returns 0 on success, -1 on stat error, -2 if not a regular file
+ * @returns 0 on success, -1 on error
  */
 int cmime_part_to_file(CMimePart_T *part, char *filename);
 
