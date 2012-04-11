@@ -1,0 +1,45 @@
+Installation Instructions
+*************************
+
+Basic Installation
+===================
+
+libcmime uses cmake instead of the autotools "configure" script. CMake normally 
+uses a separate build directory - follow these steps to configure, build and 
+install this package from source:
+
+tar xvfz libcmime-<VERSION>.tar.gz
+cd libcmime-<VERSION>
+mkdir build
+cd build
+cmake ../ <configure parameters>
+make
+make install
+
+
+Configure Parameters
+=====================
+
+Some systems require unusual options for compilation or linking that the
+`cmake' script does not know about.  Run `./cmake -h' for details on some of
+the pertinent environment variables.
+
+You can give `cmake' initial values for configuration parameters by setting 
+variables in the command line or in the environment. Here is an example:
+
+	./cmake ../ -DPREFIX:STRING=/usr/local
+
+Instead of defining parameters on the command line you can also create 
+the file "build.properties" in the source and define your configuration
+parameters there. Here is an example for "build.properties":
+
+
+	set(PREFIX /usr/local)
+	set(ENABLE_DEBUG TRUE)
+
+
+Installation Names
+==================
+
+By default, 'make install' installs the library under '/usr/local/lib' and the 
+include files under '/usr/local/include'.
