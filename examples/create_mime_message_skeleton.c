@@ -13,7 +13,6 @@ void usage() {
     printf("demonstrates: creation of new CMimeMessage_T object with cmime_message_create_skeleton function.\n");
     printf("output: output is written to stdout if no output file is specified (-f /path/to/out_file.txt)\n");
     printf("\n");
-    exit(0);
 }
 
 

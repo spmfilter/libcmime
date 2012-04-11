@@ -9,6 +9,10 @@ void usage() {
     printf("\n");
     printf("libcmime - simple api demonstration\n");
     printf("-----------------------------------\n");
+    printf("demonstrates: save CMimePart_T part of CMimeMessage_T object with cmime_part_to_file() to a file\n";
+    printf("required parameter: -i /path/to/in_file\n");
+    printf("optional parameter: -o /path/to/out_file\n");
+
 }
 
 int main(int argc, char *argv[]) {
@@ -45,7 +49,8 @@ int main(int argc, char *argv[]) {
         i = cmime_message_from_file(&message,in_file);
         if(i == 0) {
 
-            /* normally we would go through all the parts like follows   
+            /* normally we would go through all the parts like follows */
+            /*
             elem = cmime_list_head(message->parts);
             elem = elem->next;
             while(elem != NULL) {

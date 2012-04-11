@@ -14,7 +14,6 @@ void usage() {
     printf("output: output is written to stdout if no output file is specified\n");
     printf("required parameter: -a /path/to/attachment\n");
     printf("optional parameter: -f /path/to/out_file\n");
-    exit(0);
 }
 
 
