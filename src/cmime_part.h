@@ -176,9 +176,11 @@ char *cmime_part_to_string(CMimePart_T *part, const char *nl);
  * @brief Create a CMimePart_T object from file
  * @param part out param to return the new part
  * @param filename path to file
+ * @param nl newline character which should be used. If NULL newline
+ *  character will be determined automatically.
  * @returns 0 on success, -1 on stat error, -2 if not a regular file
  */
-int cmime_part_from_file(CMimePart_T **part, char *filename);
+int cmime_part_from_file(CMimePart_T **part, char *filename, const char *nl);
 
 /*!
  * @fn int cmime_part_to_file(CMimePart_T *part, char *filename)

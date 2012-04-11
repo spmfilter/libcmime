@@ -67,12 +67,20 @@ CMimeInfo_T *cmime_util_info_new(void);
 void cmime_util_info_free(CMimeInfo_T *mi);
 
 /*!
- * @fn CMimeInfo_T *cmime_util_info_get(const char *s)
+ * @fn CMimeInfo_T *cmime_util_info_get_from_string(const char *s)
  * @brief Get mime type and encoding from given string
  * @param s a string to check
  * @returns a newly allocated CMimeInfo_T object, or NULL on failure
  */
-CMimeInfo_T *cmime_util_info_get(const char *s);
+CMimeInfo_T *cmime_util_info_get_from_string(const char *s);
+
+/*!
+ * @fn CMimeInfo_T *cmime_util_info_get_from_file(const char *filename)
+ * @brief Get mime type and encoding from file
+ * @param filename file to check
+ * @returns a newly allocated CMimeInfo_T object, or NULL on failure
+ */
+CMimeInfo_T *cmime_util_info_get_from_file(const char *filename);
 
 #ifdef __cplusplus
 }

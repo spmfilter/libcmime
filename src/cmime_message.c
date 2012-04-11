@@ -70,7 +70,7 @@ void _rebuild_first_part(CMimeMessage_T *message) {
 
                     message->linebreak = strdup(nl);
                 }
-                mi = cmime_util_info_get(s);
+                mi = cmime_util_info_get_from_string(s);
                 asprintf(&s2,"%s;%s\tcharset=%s",mi->mime_type,message->linebreak,mi->mime_encoding);
                 cmime_part_set_content_type(p, s2);
                 free(s2);
@@ -726,7 +726,7 @@ int cmime_message_set_body(CMimeMessage_T *message, const char *content) {
         cmime_part_free(p);
     }
     
-    mi = cmime_util_info_get(content);
+    mi = cmime_util_info_get_from_string(content);
     if (mi!=NULL) {
         if (mi->combined != NULL)
             cmime_message_set_content_type(message, mi->combined);
@@ -788,7 +788,7 @@ void cmime_message_add_attachment(CMimeMessage_T *message, char *attachment) {
         
     }
     cmime_message_add_generated_boundary(message);
-    cmime_part_from_file(&part, attachment);
+    cmime_part_from_file(&part, attachment,message->linebreak);
     part->parent_boundary = strdup(message->boundary);
     part->last = 1;
     cmime_list_append(message->parts,part);

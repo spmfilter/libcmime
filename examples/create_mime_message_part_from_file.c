@@ -20,8 +20,6 @@ int main(int argc, char *argv[]) {
     // addresses can either be specified "just as an address" or like "John Doe <from@example.org>"
     char from[] = "from@example.org";
     char to[] = "to@example.org";
-    char subject[] = "this is a subject";
-    char body[] = "some very interesting body line";
     char *file = NULL;
     char *out = NULL;
     char *msgid = NULL;
@@ -80,7 +78,7 @@ int main(int argc, char *argv[]) {
             prev->last = 0;
         }
         cmime_message_add_generated_boundary(message);
-        cmime_part_from_file(&part, attachment);
+        cmime_part_from_file(&part, attachment,message->linebreak);
         part->parent_boundary = strdup(message->boundary);
         part->last = 1;
         cmime_list_append(message->parts,part);

@@ -208,7 +208,7 @@ char *cmime_part_to_string(CMimePart_T *part, const char *nl) {
     return(out);
 }
 
-int cmime_part_from_file(CMimePart_T **part, char *filename) {
+int cmime_part_from_file(CMimePart_T **part, char *filename, const char *nl) {
     struct stat fileinfo;
     int retval = 0;
     FILE *fp = NULL;
@@ -219,7 +219,7 @@ int cmime_part_from_file(CMimePart_T **part, char *filename) {
     int pos = 0;
     unsigned char in[3], out[4];
     char *ptemp = NULL;
-    char *nl = NULL;
+    CMimeInfo_T *mi = NULL;
 
     assert((*part));
     assert(filename);
@@ -228,35 +228,37 @@ int cmime_part_from_file(CMimePart_T **part, char *filename) {
     retval = stat(filename,&fileinfo);
     if (retval == 0) {
         if(S_ISREG(fileinfo.st_mode)) {
-            nl = _cmime_internal_determine_linebreak_from_file(filename);
-
-            ptemp = cmime_util_get_mimetype(filename);
+            if (nl == NULL) 
+                nl = _cmime_internal_determine_linebreak_from_file(filename);
             
-            /* set default mime type if no one found */
-            if(ptemp == NULL) {
-                asprintf(&ptemp,"%s%s",MIMETYPE_DEFAULT,nl);
-            } else {
-                ptemp = (char *)realloc(ptemp,strlen(ptemp) + strlen(nl) + sizeof(char));
-                strcat(ptemp,nl);
-            }
-
+            mi = cmime_util_info_get_from_file(filename);
+            if (strcmp(mi->mime_encoding,"binary")==0) 
+                asprintf(&ptemp,"%s;%s\tname=%s%s",mi->mime_type,nl,basename(filename),nl);
+            else 
+                asprintf(&ptemp,"%s;%s\tcharset=%s%s",mi->mime_type,nl,mi->mime_encoding,nl);
+            
+            cmime_util_info_free(mi);
             cmime_part_set_content_type((*part),ptemp);
             encode = (strncmp(ptemp,MIMETYPE_TEXT_PLAIN,strlen(MIMETYPE_TEXT_PLAIN)) == 0) ? 0 : 1;
-            free(ptemp);
+            
                     
-            if (encode == 1)
+            if (encode == 1) {
+                free(ptemp);
                 asprintf(&ptemp,"base64%s",nl);
-            else {
-                if (strstr(ptemp,"ascii")!=NULL)
+            } else {
+                if (strstr(ptemp,"ascii")!=NULL) {
+                    free(ptemp);
                     asprintf(&ptemp,"7bit%s",nl);
-                else
+                } else {
+                    free(ptemp);
                     asprintf(&ptemp,"8bit%s",nl);
+                }
             }
 
             cmime_part_set_content_transfer_encoding((*part),ptemp);
             free(ptemp);
             
-            asprintf(&ptemp,"attachment; filename=%s%s",basename(filename),nl);
+            asprintf(&ptemp,"attachment;%s\tfilename=%s%s",nl,basename(filename),nl);
             cmime_part_set_content_disposition((*part),ptemp);      
             free(ptemp);
             

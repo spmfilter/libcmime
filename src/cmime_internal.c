@@ -65,7 +65,7 @@ char *_cmime_internal_determine_linebreak_from_file(const char *s) {
 
     if (nl == NULL)
         nl = CRLF;
-
+    
     return(nl);
 }
 
