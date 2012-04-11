@@ -45,7 +45,7 @@ int main(int argc, char *argv[]) {
         i = cmime_message_from_file(&message,in_file);
         if(i == 0) {
 
-            /* normally we would go through all parts like follows   
+            /* normally we would go through all the parts like follows   
             elem = cmime_list_head(message->parts);
             elem = elem->next;
             while(elem != NULL) {
@@ -57,10 +57,9 @@ int main(int argc, char *argv[]) {
             }
             */
 
-            /* for demonstration purpose we just check for the second
+            /* for demonstration purpose we just check for the first
                element in the list */
             elem = cmime_list_head(message->parts);
-            elem = elem->next;
             mp = (CMimePart_T *)cmime_list_data(elem);
             ret = cmime_part_to_file(mp,out_file);
             printf("ret: [%d]\n",ret);
@@ -76,9 +75,6 @@ int main(int argc, char *argv[]) {
         printf("you have to specify an input file with -i and an output file with -o\n");
         retval = -1;
     }
-
-
-   
 
     if(in_file != NULL)
         free(in_file);
