@@ -58,7 +58,7 @@ char *cmime_address_to_string(CMimeAddress_T *ca) {
     if(ca->name != NULL) {
         asprintf(&s,"%s <%s>",ca->name,ca->email);
     } else {
-        asprintf(&s,"<%s>",ca->email);
+        asprintf(&s,"%s",ca->email);
     }
     
     return(s);
@@ -76,7 +76,7 @@ CMimeAddress_T *cmime_address_parse_string(const char *s) {
     char *t1 = NULL;
     char *t2 = NULL;
     int i,size_in;
-    
+
     size_in = strlen(s);
     t1 = strrchr(s,'<');
     if (t1 != NULL) {
