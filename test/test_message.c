@@ -86,6 +86,7 @@ int main (int argc, char const *argv[]) {
             printf("Content Type: [%s]\n",cmime_message_get_content_type(msg));
             printf("Number of message headers: [%d]\n",msg->headers->size);
             printf("Number of mime parts: [%d]\n",cmime_message_part_count(msg));
+            printf("Message boundary: [%s]\n",cmime_message_get_boundary(msg));
             printf("=========================================\n\n");
 
             msg_string = cmime_message_to_string(msg);

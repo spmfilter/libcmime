@@ -22,9 +22,11 @@
 #include <string.h>
 #include <assert.h>
 
+#include "cmime_string.h"
 #include "cmime_flbi.h"
 
 char *cmime_flbi_get_boundary(char *s) {
+    char *t = NULL;
     char *boundary = NULL;  
     char *p = NULL;
     int pos = 0;
@@ -35,17 +37,23 @@ char *cmime_flbi_get_boundary(char *s) {
         if (*++s=='"') 
             s++;
                 
-        boundary = (char *)calloc(strlen(s) + sizeof(char),sizeof(char));
+        t = (char *)calloc(strlen(s) + sizeof(char),sizeof(char));
         while(*s!='\0') {
             if ((*s!=';') && (*s!='"'))
-                boundary[pos++] = *s;
+                t[pos++] = *s;
             else {
-                boundary[pos] = '\0';
+                t[pos] = '\0';
                 break;
             }
             s++;
         }
     }
+
+    if (t != NULL)
+        boundary = cmime_string_strip(t);
+    else
+        boundary = t;
+    
     return boundary;
 }
 
