@@ -26,7 +26,7 @@ extern "C" {
 
 char addr_string1[] = "Foo Bar <foobar@example.com>";
 char addr_string1_name_part[] = "Foo Bar";
-char addr_string1_email_part[] = "foobar@example.com";
+char addr_string1_email_part[] = "<foobar@example.com>";
 
 char addr_string2[] = "Example User <user@example.com>";
 char addr_string2_name_part[] = "Example User";
