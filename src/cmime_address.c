@@ -56,7 +56,7 @@ char *cmime_address_to_string(CMimeAddress_T *ca) {
     
     assert(ca);
     if(ca->name != NULL) {
-        asprintf(&s,"%s <%s>",ca->name,ca->email);
+        asprintf(&s,"%s %s",ca->name,ca->email);
     } else {
         asprintf(&s,"%s",ca->email);
     }
@@ -74,7 +74,6 @@ void cmime_address_set_type(CMimeAddress_T *ca, CMimeAddressType_T t) {
 CMimeAddress_T *cmime_address_parse_string(const char *s) {
     CMimeAddress_T *ca = cmime_address_new();
     char *t1 = NULL;
-    char *t2 = NULL;
     int i,size_in;
 
     size_in = strlen(s);
@@ -83,22 +82,20 @@ CMimeAddress_T *cmime_address_parse_string(const char *s) {
         i = size_in - strlen(t1);
         if (*(s + i - 1) == ' ')
             i--;
-        ca->name = (char *)calloc(i + sizeof(char),sizeof(char));
-        memcpy(ca->name,s,i);
         
-        t2 = strrchr(t1,'>');
-        if (t2 != NULL) {
-            i = strlen(++t1) - strlen(t2);
-        } else {
-            i = strlen(++t1);
+        if (i != -1) {
+            ca->name = (char *)calloc(i + sizeof(char),sizeof(char));
+            strncpy(ca->name,s,i);
         }
-        ca->email = (char *)calloc(i + sizeof(char),sizeof(char));
-        memcpy(ca->email,t1,i);
+
+        ca->email = (char *)calloc(strlen(t1) + sizeof(char),sizeof(char));
+        strcpy(ca->email,t1);
     }   else {
         ca->email = (char *)calloc(size_in + sizeof(char),sizeof(char));
         memcpy(ca->email,s,size_in);
     }
     
+    printf("EMAIL: [%s]\n",ca->email);
     return(ca);
 }
 
