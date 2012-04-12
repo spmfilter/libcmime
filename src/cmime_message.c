@@ -513,6 +513,7 @@ char *cmime_message_to_string(CMimeMessage_T *message) {
     CMimeAddressType_T t = -1;
     char *s = NULL;
     char *s2 = NULL;
+    char *s3 = NULL;
     int len = 0;
 
     assert(message);
@@ -541,8 +542,11 @@ char *cmime_message_to_string(CMimeMessage_T *message) {
             asprintf(&s,"%s: ",h->name);
             if (t == CMIME_ADDRESS_TYPE_FROM) {
                 s2 = cmime_address_to_string(message->sender);
-                s = (char *)realloc(s,strlen(s) + strlen(s2) + sizeof(char));
-                strcat(s,s2);
+                s3 = s2;
+                if (s3[0] == (unsigned char)32)
+                    s3++;
+                s = (char *)realloc(s,strlen(s) + strlen(s3) + sizeof(char));
+                strcat(s,s3);
                 free(s2);    
             } else {
                 r = cmime_list_head(message->recipients);
@@ -550,8 +554,11 @@ char *cmime_message_to_string(CMimeMessage_T *message) {
                     addr = (CMimeAddress_T *)cmime_list_data(r);
                     if (addr->type == t) {
                         s2 = cmime_address_to_string(addr);
-                        s = (char *)realloc(s,strlen(s) + strlen(s2) + sizeof(char));
-                        strcat(s,s2);
+                        s3 = s2;
+                        if (s3[0] == (unsigned char)32)
+                            s3++;
+                        s = (char *)realloc(s,strlen(s) + strlen(s3) + sizeof(char));
+                        strcat(s,s3);
                         free(s2);    
 			
                         if (r->next != NULL) {
