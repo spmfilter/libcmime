@@ -15,7 +15,7 @@
 
 typedef struct {
     char **boundaries;
-    int num_boundaries;
+    int count;
 } CMimeBoundaries_T;
 
 
@@ -29,7 +29,7 @@ CMimeBoundaries_T *_get_boundaries(char *s) {
     char *it = NULL;
 
     boundaries = (CMimeBoundaries_T *)calloc((size_t)1, sizeof(CMimeBoundaries_T));
-    boundaries->num_boundaries = 0;
+    boundaries->count = 0;
     boundaries->boundaries = (char **)calloc((size_t)1, sizeof(char *));
     
     while ((p = strcasestr(s,"content-type:"))!=NULL) {
@@ -68,8 +68,8 @@ CMimeBoundaries_T *_get_boundaries(char *s) {
             }
             t[pos] = '\0';
             pos = 0;
-            boundaries->boundaries = (char **)realloc(boundaries->boundaries, (boundaries->num_boundaries + 1) * sizeof(char *));
-            boundaries->boundaries[boundaries->num_boundaries++] = t;
+            boundaries->boundaries = (char **)realloc(boundaries->boundaries, (boundaries->count + 1) * sizeof(char *));
+            boundaries->boundaries[boundaries->count++] = t;
         }
 
         free(header);
@@ -80,28 +80,56 @@ CMimeBoundaries_T *_get_boundaries(char *s) {
 
 void parse_input(char *buffer) {
     CMimeMessage_T *msg = cmime_message_new();
-    char *nl = NULL;
-    char *dnl;
+    CMimeBoundaries_T *bounds = NULL;
+    char *newline_char = NULL;
+    char *empty_line = NULL;
+    int i, len;
+    char *marker = NULL;
+    char *p = NULL;
+    char *it = NULL;
+
+    char *stripped = NULL;
 
     char *headers = NULL;
     char *begin_body = NULL;
 
     int len_headers;
 
-//    char *search_key = NULL;
-//    char *t = NULL;
-
-    int i;
+    
     char *msg_string = NULL;
-    CMimeBoundaries_T *bounds = NULL;
+    
 
     /* search newline and build header-body seperator */
-    nl = _cmime_internal_determine_linebreak(buffer);
-    asprintf(&dnl,"%s%s",nl,nl);
+    newline_char = _cmime_internal_determine_linebreak(buffer);
+    asprintf(&empty_line,"%s%s",newline_char,newline_char);
 
     bounds = _get_boundaries(buffer);
 
+    if (bounds->count > 0) {
+        stripped = (char *)calloc(sizeof(char),sizeof(char));
+        //asprintf(&marker,"%s--",newline_char);
+        //printf("MARKER [%s]\n",marker);
+        it = buffer;
+        while((it = strstr(it,"--"))!=NULL) {
+            printf("P\n[%s]\n",it);
+            it++;
+        }
+        /*
+        for(i=0; i < bounds->count; i++) {
+            asprintf(&marker,"--%s%s",bounds->boundaries[i],newline_char);
+            printf("MARKER [%s]\n",marker);
+            p = strstr(buffer,marker);
+            len = strlen(buffer) - strlen(p);
+            stripped = (char *)realloc(stripped,strlen(stripped) + len + sizeof(char));
+            strncpy(stripped,buffer,len);
+            printf("STRIPPEND\n[%s]\n",stripped);
+        }*/
+    } else {
+        stripped = strdup(buffer);
+    }
+
     /* copy headers of message */
+    /*
     begin_body = strstr(buffer,dnl);
     free(dnl);
 
@@ -109,11 +137,11 @@ void parse_input(char *buffer) {
     headers = malloc(len_headers + sizeof(char));
     strncpy(headers,buffer,len_headers);
   
-    
+    */
 
-    for(i=0; i < bounds->num_boundaries; i++) {
+    for(i=0; i < bounds->count; i++) {
         if (bounds->boundaries[i]!=NULL) {
-            printf("BOUNDARY: [%s]\n",bounds->boundaries[i]);
+            //printf("BOUNDARY: [%s]\n",bounds->boundaries[i]);
             free(bounds->boundaries[i]);
         }
     }
@@ -136,8 +164,8 @@ void parse_input(char *buffer) {
 
  //   msg_string = cmime_message_to_string(msg);
  //   printf("MESSAGE:\n%s\n",msg_string);
-    free(msg_string);
-    free(headers);
+    //free(msg_string);
+    //free(headers);
 
     cmime_message_free(msg); 
 }
