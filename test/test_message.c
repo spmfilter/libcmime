@@ -90,7 +90,7 @@ int main (int argc, char const *argv[]) {
             printf("=========================================\n\n");
 
             msg_string = cmime_message_to_string(msg);
-            printf("%s\n",msg_string);
+            //printf("%s\n",msg_string);
             free(msg_string);
         } else {
             printf("failed to open file [%s]\n",fname);

@@ -42,7 +42,9 @@
 %%
 
 message:
-    headers gap parts
+    /* testing */
+    headers
+    |headers gap parts
     | headers parts
     | headers BODY_CONTENT {
         CMimePart_T *p = cmime_part_new();
@@ -125,17 +127,27 @@ parts:
         $1 += 2;
         $2->parent_boundary = strdup($1);
         cmime_list_append(msg->parts,$2);
+        //printf("\nBOUNDARY part\n==========================\n");
+        //printf("boundary [%s]\nparent [%s]\n",$2->boundary,$2->parent_boundary);
+        //printf("==========================\n");
     }
     | parts BOUNDARY part {
         $2 += 2;
         $3->parent_boundary = strdup($2);
         cmime_list_append(msg->parts,$3);
+        //printf("\nparts BOUNDARY part\n==========================\n");
+        //printf("boundary [%s]\nparent [%s]\n",$3->boundary,$3->parent_boundary);
+        //printf("==========================\n");
     } 
     | parts BOUNDARY part PART_END {
         $2 += 2;
         $3->parent_boundary = strdup($2);
         $3->last = 1;
         cmime_list_append(msg->parts,$3);
+        //printf("\nparts BOUNDARY part PART_END\n==========================\n");
+        //printf("boundary [%s]\nparent [%s]\n",$3->boundary,$3->parent_boundary);
+        //printf("PART_END [%s]\n",$4);
+        //printf("==========================\n");
     }
     | parts BOUNDARY part PART_END postface {
         $2 += 2;
@@ -144,6 +156,10 @@ parts:
         $3->postface = strdup($5);
         free($5);
         cmime_list_append(msg->parts,$3);
+        //printf("\nparts BOUNDARY part PART_END postface\n==========================\n");
+        //printf("boundary [%s]\nparent [%s]\n",$3->boundary,$3->parent_boundary);
+        //printf("postface [%s]\n",$5);
+        //printf("==========================\n");
     }
 ;
     

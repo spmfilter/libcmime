@@ -18,3 +18,6 @@ target_link_libraries(save_attachment_to_file cmime)
 
 add_executable(append_and_prepend_subject append_and_prepend_subject.c)
 target_link_libraries(append_and_prepend_subject cmime)
+
+add_executable(read_test read_test.c)
+target_link_libraries(read_test cmime)

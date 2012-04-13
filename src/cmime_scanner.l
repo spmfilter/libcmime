@@ -91,25 +91,28 @@ POSTFACE_RE         (.*--{LF_RE})
     if (cmime_flbi_strstr_boundary(yyextra,yytext)==1) {
         BEGIN(POSTFACE);
         yylval->string = cmime_string_chomp(yytext);
+        //printf("POST MATCH [%s]\n",yylval->string);
         return PART_END;
     } else {
         yylval->string = yytext;
+        //printf("POST LINE [%s]\n",yylval->string);
         return LINE;
     }
 }
-    
+
 <MIME_CONTENT>{LINE_RE} {
     if (cmime_flbi_cmp_boundaries(yyextra,yytext)==1) {
         BEGIN(MIME_PART); 
         yylval->string = cmime_string_chomp(yytext);
+        //printf("BEGIN NEW PART [%s]\n",yylval->string);
         return BOUNDARY;
     } else {
         yylval->string = yytext;
-        
+        //printf("LINE [%s]\n",yylval->string);
         return LINE;
     } 
 }
-
+    
 <MIME_PART>{HEADERNAME_RE} {
     BEGIN(MIME_HEADER);
     yylval->string = strsep(&yytext,":");
@@ -164,6 +167,41 @@ int cmime_scanner_scan_file(CMimeMessage_T **message, FILE *fp) {
 
     yyrestart(fp,scanner); 
     yyparse(scanner,(*message));  
+    
+    extra->message = NULL;
+  
+    for(i=0; i < extra->num_parts; i++) {
+        if (extra->sub_part_boundaries[i]!=NULL)
+            free(extra->sub_part_boundaries[i]);
+    }
+    free(extra->sub_part_boundaries);
+    free(extra); 
+
+    yylex_destroy(scanner);
+
+    return(0);
+}
+
+/* TESTING CODE */
+int cmime_scanner_scan_buffer(CMimeMessage_T **message, char *buffer) {
+    yyscan_t scanner;
+    YY_BUFFER_STATE buf;
+    CMimeYYExtra_T *extra;
+    int i;
+
+    extra = (CMimeYYExtra_T *)calloc((size_t)1, sizeof(CMimeYYExtra_T));
+    extra->message = *message;
+    extra->num_parts = 0;
+    extra->sub_part_boundaries = (char **)calloc((size_t)1, sizeof(char *));
+
+    if(yylex_init_extra(extra,&scanner)) { 
+        fprintf(stderr, "error: no scanning today\n"); 
+        return(-4); 
+    }
+
+    buf = yy_scan_string(buffer, scanner );
+    yyparse(scanner,(*message));
+    yy_delete_buffer(buf,scanner);
     
     extra->message = NULL;
   

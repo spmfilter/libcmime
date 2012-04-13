@@ -53,7 +53,7 @@ char *cmime_flbi_get_boundary(char *s) {
         boundary = cmime_string_strip(t);
     else
         boundary = t;
-    
+
     return boundary;
 }
 
@@ -68,8 +68,14 @@ int cmime_flbi_cmp_boundaries(CMimeYYExtra_T *yydata, const char *haystack) {
     char *p = NULL;
     int i;
 
+
     asprintf(&p,"--%s%s",yydata->message->boundary,yydata->message->linebreak);
-    if (strncmp(haystack,p,strlen(p)) == 0) {
+    //printf("\n=======================================\n");
+    //printf("HAYSTACK: [%s]\n",haystack);
+    //printf("P: [%s]\n",p);
+    //printf("\n=======================================\n");
+    
+    if (strcmp(haystack,p) == 0) {
         free(p);
         return(1);
     }   
@@ -77,13 +83,16 @@ int cmime_flbi_cmp_boundaries(CMimeYYExtra_T *yydata, const char *haystack) {
 
     for(i=0;i < yydata->num_parts; i++) {
         asprintf(&p,"--%s%s",yydata->sub_part_boundaries[i],yydata->message->linebreak);
-        if (strncmp(haystack,p,strlen(p)) == 0) {
+        if (strcmp(haystack,p) == 0) {
+//            printf("\n=======================================\n");
+//            printf("HAYSTACK: [%s]\n",haystack);
+//            printf("P-SUB: [%s]\n",p);
+//            printf("\n=======================================\n");
             free(p);
             return(1);
         }
         free(p);
     }
-
     return(0);
 }
 

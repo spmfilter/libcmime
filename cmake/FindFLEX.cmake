@@ -109,7 +109,7 @@ IF(FLEX_EXECUTABLE)
 
     ADD_CUSTOM_COMMAND(OUTPUT ${Output}
       COMMAND ${FLEX_EXECUTABLE}
-      ARGS ${FLEX_EXECUTABLE_opts} -o${Output} ${Input}
+      ARGS ${FLEX_EXECUTABLE_opts} -R -F -o${Output} ${Input}
       DEPENDS ${Input}
       COMMENT "[FLEX][${Name}] Building scanner with flex ${FLEX_VERSION}"
       WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR})
