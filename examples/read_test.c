@@ -2,6 +2,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <unistd.h>
@@ -12,78 +13,110 @@
 #include "../src/cmime_flbi.h"
 #include "../src/cmime_message.h"
 #include "../src/cmime_internal.h"
+#include "../src/cmime_string.h"
 
+/*
 typedef struct {
     char **boundaries;
     int count;
 } CMimeBoundaries_T;
+*/
 
+/* extra header from given string */
+char *_extract_headers(char *s) {
+    char *it = NULL;
+    char *nxt = NULL;
+    char *headers = NULL;
+    int pos = 0;
 
-CMimeBoundaries_T *_get_boundaries(char *s) {
-    CMimeBoundaries_T *boundaries = NULL;   
+    headers = (char *)calloc(sizeof(char),sizeof(char));
+    it = s;
+    while(*it != '\0') {
+        nxt = it;
+        nxt++;
+        if (((*it==(unsigned char)10)||(*it==(unsigned char)13)) && 
+                ((*nxt==(unsigned char)10)||(*nxt==(unsigned char)13))) 
+            break;
+        
+        headers = (char *)realloc(headers,pos + 1 + sizeof(char));
+        headers[pos++] = *it;
+
+        it++;
+    }
+    headers[pos] = '\0';
+
+    return(headers);
+}
+
+/* find all boundaries in string */
+CMimeStringList_T *_get_boundaries(char *s) {
+    CMimeStringList_T *boundaries = NULL;   
     char *t = NULL;
     char *header = NULL;
     char *p = NULL;
-    char *p2 = NULL;
     int pos = 0;
     char *it = NULL;
+    char *nxt = NULL;
 
-    boundaries = (CMimeBoundaries_T *)calloc((size_t)1, sizeof(CMimeBoundaries_T));
-    boundaries->count = 0;
-    boundaries->boundaries = (char **)calloc((size_t)1, sizeof(char *));
-    
-    while ((p = strcasestr(s,"content-type:"))!=NULL) {
+    boundaries = cmime_string_list_new();
+
+    /* search for content-type headers, where new boundaries are defined */    
+    while ((it = strcasestr(s,"content-type:"))!=NULL) {
+        /* get all content-type header line(s) */
         header = (char *)calloc(sizeof(char),sizeof(char));
-        while(*p != '\0') {
-            it = p;
-            it++;
+        while(*it != '\0') {
+            nxt = it;
+            nxt++;
 
             /* break if char is a newline is not followed by a whitespace or tabulator */
-            if (((*p==(unsigned char)10)||(*p==(unsigned char)13)) &&
-                    ((*it!=(unsigned char)9)&&(*it!=(unsigned char)32)))
+            if (((*it==(unsigned char)10)||(*it==(unsigned char)13)) &&
+                    ((*nxt!=(unsigned char)9)&&(*nxt!=(unsigned char)32)))
                 break;
 
             header = (char *)realloc(header,pos + 1 + sizeof(char));
-            header[pos++] = *p;
-            p++;
+            header[pos++] = *it;
+            it++;
         }
         header[pos] = '\0';
         pos = 0;
 
-        s = p;
+        s = it;
         
-        if ((p = strcasestr(header,"boundary="))!=NULL) { 
-            p2 = strstr(p,"=");
-            if (*++p2=='"') 
-                p2++;
+        /* now search for boundary= in content-type header */
+        if ((it = strcasestr(header,"boundary="))!=NULL) { 
+            p = strstr(it,"=");
+            if (*++p=='"') 
+                p++;
                     
             t = (char *)calloc(sizeof(char),sizeof(char));
-            while(*p2 != '\0') {
-                if ((*p2=='"')||(*p2==(unsigned char)10)||(*p2==(unsigned char)13))
+            /* if found, extract boundary and append to list */
+            while(*p != '\0') {
+                if ((*p=='"')||(*p==(unsigned char)10)||(*p==(unsigned char)13))
                     break;
 
                 t = (char *)realloc(t,pos + (2 * sizeof(char)));
-                t[pos++] = *p2;
-                p2++;
+                t[pos++] = *p;
+                p++;
             }
             t[pos] = '\0';
             pos = 0;
-            boundaries->boundaries = (char **)realloc(boundaries->boundaries, (boundaries->count + 1) * sizeof(char *));
-            boundaries->boundaries[boundaries->count++] = t;
+            cmime_string_list_insert(boundaries,t);
         }
 
         free(header);
     }
     
-    return boundaries;
+    return(boundaries);
 }
 
 void parse_input(char *buffer) {
     CMimeMessage_T *msg = cmime_message_new();
-    CMimeBoundaries_T *bounds = NULL;
+    CMimeStringList_T *boundaries = NULL;
     char *newline_char = NULL;
     char *empty_line = NULL;
-    int i, len;
+    int i;
+    int offset;
+    int count = 0;
     char *marker = NULL;
     char *p = NULL;
     char *it = NULL;
@@ -93,7 +126,7 @@ void parse_input(char *buffer) {
     char *headers = NULL;
     char *begin_body = NULL;
 
-    int len_headers;
+    int len_boundary;
 
     
     char *msg_string = NULL;
@@ -103,17 +136,58 @@ void parse_input(char *buffer) {
     newline_char = _cmime_internal_determine_linebreak(buffer);
     asprintf(&empty_line,"%s%s",newline_char,newline_char);
 
-    bounds = _get_boundaries(buffer);
+    boundaries = _get_boundaries(buffer);
+    printf("NUMBER: [%d]\n",cmime_string_list_get_count(boundaries));
+    for(i=0; i < boundaries->count; i++) {
+        printf("BOUNDARY [%s]\n",cmime_string_list_get(boundaries,i));
+    }
 
-    if (bounds->count > 0) {
+    if (cmime_string_list_get_count(boundaries) > 0) {
         stripped = (char *)calloc(sizeof(char),sizeof(char));
         //asprintf(&marker,"%s--",newline_char);
         //printf("MARKER [%s]\n",marker);
         it = buffer;
         while((it = strstr(it,"--"))!=NULL) {
-            printf("P\n[%s]\n",it);
+            for(i=0; i < cmime_string_list_get_count(boundaries); i++) {
+                asprintf(&marker,"--%s",cmime_string_list_get(boundaries,i));
+                if (strncmp(it,marker,strlen(marker))==0) {
+                    
+                    if (count == 0) {
+                        offset = strlen(buffer) - strlen(it);    
+                        stripped = (char *)realloc(stripped,strlen(stripped) + offset + sizeof(char));
+                        strncat(stripped,buffer,offset);
+                    } 
+
+                    headers = _extract_headers(strstr(it,newline_char));
+                    offset = strlen(marker) + strlen(headers);
+                    p = (char *)calloc(offset + sizeof(char),sizeof(char));
+                    //strncat(stripped,it,offset);
+                    strncpy(p,it,offset);
+                    //printf("P:\n[%s]\n",p);
+                    free(p);     
+                    
+                    count++;
+                    //p = (char *)calloc(len + sizeof(char),sizeof(char));
+                    
+                    //strncpy(p,buffer,len);
+                    //printf("BUFFER:\n%s\n",p);
+                    //free(p);
+                    //printf("MATCH [%s]\n",bounds->boundaries[i]);
+
+                    /* jump over matching boundary */
+                    //headers = _extract_headers(strstr(it,newline_char));
+                    //printf("HEADER:\n%s\n",headers);
+                    break;
+                }
+                free(marker);
+            }
+            
             it++;
         }
+
+        printf("STRIPPED:\n=======================================\n[%s]\n",stripped);
+
+
         /*
         for(i=0; i < bounds->count; i++) {
             asprintf(&marker,"--%s%s",bounds->boundaries[i],newline_char);
@@ -139,15 +213,7 @@ void parse_input(char *buffer) {
   
     */
 
-    for(i=0; i < bounds->count; i++) {
-        if (bounds->boundaries[i]!=NULL) {
-            //printf("BOUNDARY: [%s]\n",bounds->boundaries[i]);
-            free(bounds->boundaries[i]);
-        }
-    }
-
-    free(bounds->boundaries);
-    free(bounds); 
+    cmime_string_list_free(boundaries);
   /*
 
     ret = cmime_scanner_scan_buffer(&msg, buffer);
