@@ -189,7 +189,6 @@ void parse_input(char *buffer) {
                     mime_body_start = NULL;
                 }
 
-
                 len_marker = strlen(marker);
                 // check if it's a closing boundary
                 if ((marker[len_marker-2] == '-') && (marker[len_marker-1] == '-')) {
@@ -211,25 +210,24 @@ void parse_input(char *buffer) {
                         offset = strlen(it);                             
                 } else {
                     free(marker);
-                    mime_body_start = it;
                     if (count == 0) {
                         /* this is the first run, so we have to copy the message
                          * headers first */
                         offset = strlen(buffer) - strlen(it);    
                         stripped = (char *)realloc(stripped,strlen(stripped) + offset + sizeof(char));
                         strncat(stripped,buffer,offset);
-                        mime_body_start = it + offset;
                         offset = -1;
                     }
 
                     /* calculate offset for mime part headers */
                     headers = _extract_headers(strstr(it,newline_char));
+                    
                     offset = len_marker + strlen(headers) + len_empty_line;
                     free(headers);
 
                     /* Now it's time to grap the mime part body.
                      * Set a marker where the mime part content begins*/
-                    mime_body_start = mime_body_start + offset;
+                    mime_body_start = it + offset;
                 }
                 
                 count++;
@@ -257,21 +255,21 @@ void parse_input(char *buffer) {
     //printf("ELEMTS: [%d]\n",cmime_string_list_get_count(mime_bodies));
     elem = cmime_list_head(msg->parts);
     while(elem != NULL) {
-    //    printf("COUNT: [%d]\n",count);
+        //printf("COUNT: [%d]\n",count);
         part = (CMimePart_T *)cmime_list_data(elem);
-        mime_body = cmime_string_list_get(mime_bodies,count);
-        if (mime_body!=NULL)
-            part->content = mime_body;
+        //mime_body = cmime_string_list_get(mime_bodies,count);
+        //if (mime_body!=NULL)
+        //    part->content = mime_body;
         count++;
         elem = elem->next;
     }
 
-    msg_string = cmime_message_to_string(msg);
-    printf("%s",msg_string);
-    free(msg_string);
+    //msg_string = cmime_message_to_string(msg);
+    //printf("%s",msg_string);
+    //free(msg_string);
     
 
-    //cmime_string_list_free(mime_bodies);
+    cmime_string_list_free(mime_bodies);
     cmime_string_list_free(boundaries);
     free(stripped);
     cmime_message_free(msg); 
