@@ -91,7 +91,7 @@ CMimeStringList_T *_get_boundaries(char *s) {
             t = (char *)calloc(sizeof(char),sizeof(char));
             /* if found, extract boundary and append to list */
             while(*p != '\0') {
-                if ((*p=='"')||(*p==(unsigned char)10)||(*p==(unsigned char)13))
+                if ((*p=='"')||(*p==';')||(*p==(unsigned char)10)||(*p==(unsigned char)13))
                     break;
 
                 t = (char *)realloc(t,pos + (2 * sizeof(char)));
@@ -242,34 +242,26 @@ void parse_input(char *buffer) {
     } else {
         stripped = strdup(buffer);
     }
-
-    //printf("STRIPPEND:\n=============================\n%s\n",stripped);
-
     
-  
     /* parse the stripped message */
     ret = cmime_scanner_scan_buffer(&msg, stripped);
 
     /* now the wedding between CMimeMessage_T and stripped content */
     count = 0;
-    //printf("ELEMTS: [%d]\n",cmime_string_list_get_count(mime_bodies));
     elem = cmime_list_head(msg->parts);
     while(elem != NULL) {
-        //printf("COUNT: [%d]\n",count);
         part = (CMimePart_T *)cmime_list_data(elem);
-        //mime_body = cmime_string_list_get(mime_bodies,count);
-        //if (mime_body!=NULL)
-        //    part->content = mime_body;
+        mime_body = cmime_string_list_get(mime_bodies,count);
+        if (mime_body!=NULL)
+            part->content = mime_body;
         count++;
         elem = elem->next;
     }
 
-    //msg_string = cmime_message_to_string(msg);
-    //printf("%s",msg_string);
-    //free(msg_string);
-    
+    msg_string = cmime_message_to_string(msg);
+    printf("%s",msg_string);
+    free(msg_string);
 
-    cmime_string_list_free(mime_bodies);
     cmime_string_list_free(boundaries);
     free(stripped);
     cmime_message_free(msg); 
