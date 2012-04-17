@@ -101,6 +101,7 @@ CMimeStringList_T *_get_boundaries(char *s) {
             t[pos] = '\0';
             pos = 0;
             cmime_string_list_insert(boundaries,t);
+            free(t);
         }
 
         free(header);
@@ -123,6 +124,7 @@ char *_match_boundary(CMimeStringList_T *boundaries, char *s) {
             if (strncmp(marker,s,strlen(marker))==0) {
                 return(marker);
             }
+            free(marker);
         }
     }
     return(NULL);
@@ -132,28 +134,18 @@ void parse_input(char *buffer) {
     CMimeMessage_T *msg = cmime_message_new();
     CMimeStringList_T *boundaries = NULL;
     char *newline_char = NULL;
-    //int newline_len;
     char *empty_line = NULL;
     int len_empty_line;
-    //int add_len;
-    
+    char *it = NULL;
     int offset;
     int count = 0;
     char *marker = NULL;
     int len_marker;
+    char *headers = NULL;
     char *nxt = NULL;
-
-    char *to_append = NULL;
-
-    char *p = NULL;
-    char *it = NULL;
-
     char *stripped = NULL;
 
-    char *headers = NULL;
-    char *begin_body = NULL;
-
-    int len_boundary;
+    
 
     
     char *msg_string = NULL;
@@ -161,157 +153,66 @@ void parse_input(char *buffer) {
 
     /* search newline and build header-body seperator */
     newline_char = _cmime_internal_determine_linebreak(buffer);
-    //newline_len = strlen(newline_char);
     asprintf(&empty_line,"%s%s",newline_char,newline_char);
     len_empty_line = strlen(empty_line);
-    
+    free(empty_line);
+
     boundaries = _get_boundaries(buffer);
-    /*
-    printf("NUMBER: [%d]\n",cmime_string_list_get_count(boundaries));
-    for(i=0; i < boundaries->count; i++) {
-        printf("BOUNDARY [%s]\n",cmime_string_list_get(boundaries,i));
-    }
-*/
+
     if (cmime_string_list_get_count(boundaries) > 0) {
         stripped = (char *)calloc(sizeof(char),sizeof(char));
-        //asprintf(&marker,"%s--",newline_char);
-        //printf("MARKER [%s]\n",marker);
         it = buffer;
         while((it = strstr(it,"--"))!=NULL) {
-                marker = _match_boundary(boundaries,it);
-                if (marker != NULL) {
-                    printf("MARKER [%s]\n",marker);
-                    len_marker = strlen(marker);
-                    // check if it's a closing boundary
-                    if ((marker[len_marker-2] == '-') && (marker[len_marker-1] == '-')) {
-                        nxt = it + len_marker;
-                        if ((nxt = strstr(nxt,"--"))!=NULL) {
-                            if (_match_boundary(boundaries,nxt)!=NULL)  
-                                /* we've found another boundary, so it's not the last part. 
-                                 * Offset is the difference between previous found boundary and new one */
-                                offset = strlen(it) - strlen(nxt); 
+            marker = _match_boundary(boundaries,it);
+            if (marker != NULL) {
+                len_marker = strlen(marker);
+                free(marker);
+                // check if it's a closing boundary
+                if ((marker[len_marker-2] == '-') && (marker[len_marker-1] == '-')) {
+                    nxt = it + len_marker;
+                    if ((nxt = strstr(nxt,"--"))!=NULL) {
+                        if ((marker = _match_boundary(boundaries,nxt))!=NULL) {  
+                            /* we've found another boundary, so it's not the last part. 
+                             * Offset is the difference between previous found boundary and new one */
+                            offset = strlen(it) - strlen(nxt); 
+                            free(marker);
                         }
-
-                        if (offset == -1)
-                            /* since _match_boundary has not found another part behind,
-                             * this seems to be the end...my best friend.
-                             * Offset is the difference between previous found boundary and file end */
-                            offset = strlen(it); 
-                            
-                    } else {
-                        if (count == 0) {
-                            /* this is the first run, so we have to copy the message
-                             * headers first */
-                            offset = strlen(buffer) - strlen(it);    
-                            stripped = (char *)realloc(stripped,strlen(stripped) + offset + sizeof(char));
-                            strncat(stripped,buffer,offset);
-                            offset = -1;
-                        }
-
-                        /* calculate offset for mime part headers */
-                        headers = _extract_headers(strstr(it,newline_char));
-                        offset = len_marker + strlen(headers) + len_empty_line;
-                        //to_append = (char *)calloc(offset + sizeof(char),sizeof(char));
-                        //strncpy(to_append,it,offset);
-                        //printf("P:\n[%s]\n",to_append);
-                        
                     }
-                    count++;
-                
-                    /*
-                    if (to_append != NULL) {
-                        stripped = (char *)realloc(stripped,strlen(stripped) + strlen(to_append) + sizeof(char));    
-                        strncat(stripped,it,strlen(to_append));
-                        free(to_append);
-                        to_append = NULL;
-                    }*/
-                    if (offset != -1) {
+
+                    if (offset == -1)
+                        /* since _match_boundary has not found another part behind,
+                         * this seems to be the end...my best friend.
+                         * Offset is the difference between previous found boundary and file end */
+                        offset = strlen(it);                             
+                } else {
+                    if (count == 0) {
+                        /* this is the first run, so we have to copy the message
+                         * headers first */
+                        offset = strlen(buffer) - strlen(it);    
                         stripped = (char *)realloc(stripped,strlen(stripped) + offset + sizeof(char));
-                        strncat(stripped,it,offset);
+                        strncat(stripped,buffer,offset);
                         offset = -1;
                     }
+
+                    /* calculate offset for mime part headers */
+                    headers = _extract_headers(strstr(it,newline_char));
+                    offset = len_marker + strlen(headers) + len_empty_line;
+                    free(headers);
                 }
-             
-            /*
-            for(i=0; i < cmime_string_list_get_count(boundaries); i++) {
-                asprintf(&marker,"--%s--",cmime_string_list_get(boundaries,i));
-                if (strncmp(it,marker,strlen(marker))==0) {
-                    
-                    free(marker);
-                    break;
-                } else {
-                    free(marker);
-                    asprintf(&marker,"--%s",cmime_string_list_get(boundaries,i));
-                    if (strncmp(it,marker,strlen(marker))==0) { 
-                        
-                        
-                        if (count == 0) {
-                            offset = strlen(buffer) - strlen(it);    
-                            stripped = (char *)realloc(stripped,strlen(stripped) + offset + sizeof(char));
-                            strncat(stripped,buffer,offset);
-                        } 
-
-                        headers = _extract_headers(strstr(it,newline_char));
-                        offset = strlen(marker) + strlen(headers) + empty_line_len;
-               
-                        // debugging 
-                        p = (char *)calloc(offset + sizeof(char),sizeof(char));
-                        strncpy(p,it,offset);
-                        printf("P:\n[%s]\n",p);
-                        free(p);     
-                
-                        stripped = (char *)realloc(stripped,strlen(stripped) + offset + sizeof(char));    
-                        strncat(stripped,it,offset);
-
-                        count++;
-                        free(marker);
-                        break;
-                    }
+                count++;
+                if (offset != -1) {
+                    stripped = (char *)realloc(stripped,strlen(stripped) + offset + sizeof(char));
+                    strncat(stripped,it,offset);
+                    offset = -1;
                 }
-                
-                
-                //p = (char *)calloc(len + sizeof(char),sizeof(char));
-                    
-                //strncpy(p,buffer,len);
-                //printf("BUFFER:\n%s\n",p);
-                //free(p);
-                //printf("MATCH [%s]\n",bounds->boundaries[i]);
-
-                
-                //headers = _extract_headers(strstr(it,newline_char));
-                //printf("HEADER:\n%s\n",headers);
             }
-            */
             it++;
         }
-
-        printf("STRIPPED:\n=======================================\n[%s]\n",stripped);
-
-
-        /*
-        for(i=0; i < bounds->count; i++) {
-            asprintf(&marker,"--%s%s",bounds->boundaries[i],newline_char);
-            printf("MARKER [%s]\n",marker);
-            p = strstr(buffer,marker);
-            len = strlen(buffer) - strlen(p);
-            stripped = (char *)realloc(stripped,strlen(stripped) + len + sizeof(char));
-            strncpy(stripped,buffer,len);
-            printf("STRIPPEND\n[%s]\n",stripped);
-        }*/
     } else {
         stripped = strdup(buffer);
     }
 
-    /* copy headers of message */
-    /*
-    begin_body = strstr(buffer,dnl);
-    free(dnl);
-
-    len_headers = strlen(buffer) - strlen(begin_body);
-    headers = malloc(len_headers + sizeof(char));
-    strncpy(headers,buffer,len_headers);
-  
-    */
+    printf("STRIPPEND:\n=============================\n%s\n",stripped);
 
     cmime_string_list_free(boundaries);
   /*
@@ -332,7 +233,7 @@ void parse_input(char *buffer) {
  //   printf("MESSAGE:\n%s\n",msg_string);
     //free(msg_string);
     //free(headers);
-
+    free(stripped);
     cmime_message_free(msg); 
 }
 
