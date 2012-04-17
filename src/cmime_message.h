@@ -52,6 +52,11 @@ extern "C" {
 #include "cmime_part.h"
 #include "cmime_util.h"
 
+typedef enum _BoundaryType {
+    CMIME_BOUNDARY_OPEN, 
+    CMIME_BOUNDARY_CLOSE,
+} CMimeBoundaryType_T;
+
 /*!
  * @struct CMimeMessage_T cmime_message.h
  * @brief Represents an email message

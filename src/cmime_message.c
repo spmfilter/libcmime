@@ -28,11 +28,6 @@
 #include "cmime_qp.h"
 
 
-typedef enum _BoundaryType {
-    BOUNDARY_OPEN, 
-    BOUNDARY_CLOSE,
-} _BoundaryType_T;
-
 void _recipients_destroy(void *data) {
     assert(data);
     CMimeAddress_T *ca = (CMimeAddress_T *)data;
@@ -89,12 +84,12 @@ void _rebuild_first_part(CMimeMessage_T *message) {
     }
 }
 
-void _append_boundary(char **out, const char *boundary,const char *linebreak, _BoundaryType_T type) {
+void _append_boundary(char **out, const char *boundary,const char *linebreak, CMimeBoundaryType_T type) {
     char *s = NULL;
     if(boundary != NULL) {
-        if (type == BOUNDARY_OPEN)
+        if (type == CMIME_BOUNDARY_OPEN)
             asprintf(&s,"--%s%s",boundary,linebreak);
-        else if (type == BOUNDARY_CLOSE)
+        else if (type == CMIME_BOUNDARY_CLOSE)
             asprintf(&s,"--%s--%s",boundary,linebreak);
         
         (*out) = (char *)realloc((*out),strlen((*out)) + strlen(s) + sizeof(char));
@@ -603,7 +598,7 @@ char *cmime_message_to_string(CMimeMessage_T *message) {
         if ((out[len - 1] != '\r') && out[len - 1] != '\n')
             _append_string(&out,message->linebreak);
 
-        _append_boundary(&out, p->parent_boundary, message->linebreak, BOUNDARY_OPEN);
+        _append_boundary(&out, p->parent_boundary, message->linebreak, CMIME_BOUNDARY_OPEN);
         s = cmime_part_to_string(p,message->linebreak);
         if (s)
             _append_string(&out,s);
@@ -613,7 +608,7 @@ char *cmime_message_to_string(CMimeMessage_T *message) {
             if ((s[len - 1] != '\r') && s[len - 1] != '\n')
                 _append_string(&out,message->linebreak);
             
-            _append_boundary(&out, p->parent_boundary, message->linebreak, BOUNDARY_CLOSE);
+            _append_boundary(&out, p->parent_boundary, message->linebreak, CMIME_BOUNDARY_CLOSE);
             if (p->postface != NULL) 
                 _append_string(&out,p->postface);    
         }
