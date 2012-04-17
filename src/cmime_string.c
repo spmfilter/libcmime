@@ -32,7 +32,8 @@ void cmime_string_list_free(CMimeStringList_T *sl) {
     assert(sl);
 
     for(i = 0; i < sl->count; i++) {
-        free(sl->node[i]);
+        if (sl->node[i]!=NULL)
+            free(sl->node[i]);
     } 
     free(sl->node);
     sl->node = NULL;

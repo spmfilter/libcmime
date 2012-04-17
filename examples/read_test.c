@@ -242,7 +242,7 @@ void parse_input(char *buffer) {
     } else {
         stripped = strdup(buffer);
     }
-    
+
     /* parse the stripped message */
     ret = cmime_scanner_scan_buffer(&msg, stripped);
 
@@ -252,8 +252,7 @@ void parse_input(char *buffer) {
     while(elem != NULL) {
         part = (CMimePart_T *)cmime_list_data(elem);
         mime_body = cmime_string_list_get(mime_bodies,count);
-        if (mime_body!=NULL)
-            part->content = mime_body;
+        part->content = mime_body;
         count++;
         elem = elem->next;
     }
@@ -263,8 +262,10 @@ void parse_input(char *buffer) {
     free(msg_string);
 
     cmime_string_list_free(boundaries);
+    cmime_message_free(msg);
     free(stripped);
-    cmime_message_free(msg); 
+    free(mime_bodies->node);
+    free(mime_bodies);
 }
 
 
