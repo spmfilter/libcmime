@@ -133,6 +133,7 @@ char *_match_boundary(CMimeStringList_T *boundaries, char *s) {
 void parse_input(char *buffer) {
     CMimeMessage_T *msg = cmime_message_new();
     CMimeStringList_T *boundaries = NULL;
+    CMimeStringList_T *mime_bodies = NULL;
     char *newline_char = NULL;
     char *empty_line = NULL;
     int len_empty_line;
@@ -143,13 +144,14 @@ void parse_input(char *buffer) {
     int len_marker;
     char *headers = NULL;
     char *nxt = NULL;
+    char *mime_body_start = NULL;
+    char *mime_body = NULL;
     char *stripped = NULL;
-
-    
-
-    
+    int ret;
     char *msg_string = NULL;
-    
+    CMimeListElem_T *elem = NULL;
+    CMimePart_T *part = NULL;
+
 
     /* search newline and build header-body seperator */
     newline_char = _cmime_internal_determine_linebreak(buffer);
@@ -158,6 +160,7 @@ void parse_input(char *buffer) {
     free(empty_line);
 
     boundaries = _get_boundaries(buffer);
+    mime_bodies = cmime_string_list_new();
 
     if (cmime_string_list_get_count(boundaries) > 0) {
         stripped = (char *)calloc(sizeof(char),sizeof(char));
@@ -165,10 +168,32 @@ void parse_input(char *buffer) {
         while((it = strstr(it,"--"))!=NULL) {
             marker = _match_boundary(boundaries,it);
             if (marker != NULL) {
+                /* check existing mime body marker */
+                if (mime_body_start != NULL) {
+                    /* there is a start marker.... */
+                    offset = strlen(mime_body_start) - strlen(it);
+                    if (offset > 0) {
+                        /* calculate offset to next boundary and copy body */
+                        mime_body = (char *)calloc(offset + sizeof(char),sizeof(char));
+                        strncpy(mime_body,mime_body_start,offset);
+                    } else {
+                        /* this part seems to be empty */
+                        mime_body = (char *)calloc(sizeof(char),sizeof(char));
+                        mime_body[0] = '\0';
+                    }
+
+                    cmime_string_list_insert(mime_bodies, mime_body);
+                    free(mime_body);
+
+                    offset = -1;
+                    mime_body_start = NULL;
+                }
+
+
                 len_marker = strlen(marker);
-                free(marker);
                 // check if it's a closing boundary
                 if ((marker[len_marker-2] == '-') && (marker[len_marker-1] == '-')) {
+                    free(marker);
                     nxt = it + len_marker;
                     if ((nxt = strstr(nxt,"--"))!=NULL) {
                         if ((marker = _match_boundary(boundaries,nxt))!=NULL) {  
@@ -185,12 +210,15 @@ void parse_input(char *buffer) {
                          * Offset is the difference between previous found boundary and file end */
                         offset = strlen(it);                             
                 } else {
+                    free(marker);
+                    mime_body_start = it;
                     if (count == 0) {
                         /* this is the first run, so we have to copy the message
                          * headers first */
                         offset = strlen(buffer) - strlen(it);    
                         stripped = (char *)realloc(stripped,strlen(stripped) + offset + sizeof(char));
                         strncat(stripped,buffer,offset);
+                        mime_body_start = it + offset;
                         offset = -1;
                     }
 
@@ -198,41 +226,53 @@ void parse_input(char *buffer) {
                     headers = _extract_headers(strstr(it,newline_char));
                     offset = len_marker + strlen(headers) + len_empty_line;
                     free(headers);
+
+                    /* Now it's time to grap the mime part body.
+                     * Set a marker where the mime part content begins*/
+                    mime_body_start = mime_body_start + offset;
                 }
+                
                 count++;
                 if (offset != -1) {
                     stripped = (char *)realloc(stripped,strlen(stripped) + offset + sizeof(char));
                     strncat(stripped,it,offset);
                     offset = -1;
                 }
-            }
+            }  
             it++;
         }
     } else {
         stripped = strdup(buffer);
     }
 
-    printf("STRIPPEND:\n=============================\n%s\n",stripped);
+    //printf("STRIPPEND:\n=============================\n%s\n",stripped);
 
-    cmime_string_list_free(boundaries);
-  /*
+    
+  
+    /* parse the stripped message */
+    ret = cmime_scanner_scan_buffer(&msg, stripped);
 
-    ret = cmime_scanner_scan_buffer(&msg, buffer);
-
-    if (msg->boundary != NULL) {
-        asprintf(&search_key,"%s--",nl);
-
-        t = strstr(buffer,search_key);
-        printf("%s\n",t);
-        free(search_key);
+    /* now the wedding between CMimeMessage_T and stripped content */
+    count = 0;
+    //printf("ELEMTS: [%d]\n",cmime_string_list_get_count(mime_bodies));
+    elem = cmime_list_head(msg->parts);
+    while(elem != NULL) {
+    //    printf("COUNT: [%d]\n",count);
+        part = (CMimePart_T *)cmime_list_data(elem);
+        mime_body = cmime_string_list_get(mime_bodies,count);
+        if (mime_body!=NULL)
+            part->content = mime_body;
+        count++;
+        elem = elem->next;
     }
-*/
-//    printf("BOUNDARY [%s]\n",msg->boundary);
 
- //   msg_string = cmime_message_to_string(msg);
- //   printf("MESSAGE:\n%s\n",msg_string);
-    //free(msg_string);
-    //free(headers);
+    msg_string = cmime_message_to_string(msg);
+    printf("%s",msg_string);
+    free(msg_string);
+    
+
+    //cmime_string_list_free(mime_bodies);
+    cmime_string_list_free(boundaries);
     free(stripped);
     cmime_message_free(msg); 
 }
