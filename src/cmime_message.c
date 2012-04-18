@@ -29,30 +29,8 @@
 
 typedef struct {
     char *stripped;
-    //CMimeStringList_T *boundaries;
     CMimeStringList_T *mime_bodies;
 } _StrippedData_T;
-
-void _add_stripped_bodies(CMimeMessage_T **message, _StrippedData_T *sd) {
-    int i;
-    CMimeListElem_T *elem = NULL;
-    CMimePart_T *part = NULL;
-    char *mime_body = NULL;
-
-    /* now the wedding between CMimeMessage_T and stripped content */
-    if (cmime_list_size((*message)->parts) >1) {
-        i = 0;
-        elem = cmime_list_head((*message)->parts);
-        while(elem != NULL) {
-            part = (CMimePart_T *)cmime_list_data(elem);
-            mime_body = cmime_string_list_get(sd->mime_bodies,i);
-            part->content = mime_body;
-            i++;
-            elem = elem->next;
-        }
-    } 
-    free(sd->stripped);
-}
 
 /* extra header from given string */
 char *_extract_headers(char *s) {
@@ -162,10 +140,30 @@ char *_match_boundary(CMimeStringList_T *boundaries, char *s) {
     return(NULL);
 }
 
+/* re-add stripped bodies to message */
+void _add_stripped_bodies(CMimeMessage_T **message, _StrippedData_T *sd) {
+    int i;
+    CMimeListElem_T *elem = NULL;
+    CMimePart_T *part = NULL;
+    char *mime_body = NULL;
+
+    /* now the wedding between CMimeMessage_T and stripped content */
+    if (cmime_list_size((*message)->parts) >1) {
+        i = 0;
+        elem = cmime_list_head((*message)->parts);
+        while(elem != NULL) {
+            part = (CMimePart_T *)cmime_list_data(elem);
+            mime_body = cmime_string_list_get(sd->mime_bodies,i);
+            part->content = mime_body;
+            i++;
+            elem = elem->next;
+        }
+    } 
+    free(sd->stripped);
+}
+
 _StrippedData_T *_strip_message(CMimeMessage_T **msg, char *buffer) {
     _StrippedData_T *sd = NULL;
-    //CMimeStringList_T *boundaries = NULL;
-    //CMimeStringList_T *mime_bodies = NULL;
     char *newline_char = NULL;
     char *empty_line = NULL;
     int len_empty_line;
@@ -178,16 +176,6 @@ _StrippedData_T *_strip_message(CMimeMessage_T **msg, char *buffer) {
     char *nxt = NULL;
     char *mime_body_start = NULL;
     char *mime_body = NULL;
-
-    /*
-    CMimeListElem_T *elem = NULL;
-    CMimePart_T *part = NULL;
-    
-
-    char *stripped = NULL;
-
-    int ret;
-    */
 
     sd = (_StrippedData_T *)calloc((size_t)1,sizeof(_StrippedData_T));
     sd->stripped = NULL;
@@ -282,28 +270,6 @@ _StrippedData_T *_strip_message(CMimeMessage_T **msg, char *buffer) {
     } else {
         sd->stripped = buffer;
     }
-
-    /* parse the stripped message */
-    //ret = cmime_scanner_scan_buffer(&(*msg), stripped);
-
-    /* now the wedding between CMimeMessage_T and stripped content */
-    /*
-    if (cmime_list_size((*msg)->parts) >1) {
-        count = 0;
-        elem = cmime_list_head((*msg)->parts);
-        while(elem != NULL) {
-            part = (CMimePart_T *)cmime_list_data(elem);
-            mime_body = cmime_string_list_get(mime_bodies,count);
-            part->content = mime_body;
-            count++;
-            elem = elem->next;
-        }
-    } */
-    //cmime_string_list_free(boundaries);
-    //free(stripped);
-    
-    //free(mime_bodies->node);
-    //free(mime_bodies);
 
     return(sd);
 }
