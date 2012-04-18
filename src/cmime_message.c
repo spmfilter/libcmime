@@ -33,27 +33,15 @@ typedef struct {
 } _StrippedData_T;
 
 /* extra header from given string */
-char *_extract_headers(char *s) {
-    char *it = NULL;
-    char *nxt = NULL;
+char *_extract_headers(char *s, char *empty_line) {
     char *headers = NULL;
-    int pos = 0;
+    char *cp = NULL;
+    int offset;
 
-    headers = (char *)calloc(sizeof(char),sizeof(char));
-    it = s;
-    while(*it != '\0') {
-        nxt = it;
-        nxt++;
-        if (((*it==(unsigned char)10)||(*it==(unsigned char)13)) && 
-                ((*nxt==(unsigned char)10)||(*nxt==(unsigned char)13))) 
-            break;
-        
-        headers = (char *)realloc(headers,pos + 1 + sizeof(char));
-        headers[pos++] = *it;
-
-        it++;
-    }
-    headers[pos] = '\0';
+    cp = strstr(s,empty_line);
+    offset = strlen(s) - strlen(cp);
+    headers = (char *)calloc(offset + sizeof(char),sizeof(char));
+    strncpy(headers,s,offset);
 
     return(headers);
 }
@@ -184,8 +172,7 @@ _StrippedData_T *_strip_message(CMimeMessage_T **msg, char *buffer) {
     newline_char = _cmime_internal_determine_linebreak(buffer);
     asprintf(&empty_line,"%s%s",newline_char,newline_char);
     len_empty_line = strlen(empty_line);
-    free(empty_line);
-
+    
     cmime_string_list_free((*msg)->boundaries);
     (*msg)->boundaries = _get_boundaries(buffer);
     sd->mime_bodies = cmime_string_list_new();
@@ -248,8 +235,7 @@ _StrippedData_T *_strip_message(CMimeMessage_T **msg, char *buffer) {
                     }
 
                     /* calculate offset for mime part headers */
-                    headers = _extract_headers(strstr(it,newline_char));
-                    
+                    headers = _extract_headers(strstr(it,newline_char),empty_line);
                     offset = len_marker + strlen(headers) + len_empty_line;
                     free(headers);
 
@@ -270,7 +256,7 @@ _StrippedData_T *_strip_message(CMimeMessage_T **msg, char *buffer) {
     } else {
         sd->stripped = buffer;
     }
-
+    free(empty_line);
     return(sd);
 }
 
