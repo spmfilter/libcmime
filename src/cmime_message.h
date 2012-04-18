@@ -41,8 +41,11 @@ extern "C" {
 #include <assert.h>
 #include <ctype.h>
 #include <time.h>
+#include <sys/mman.h>
+#include <sys/types.h>
 #include <sys/stat.h>
 #include <unistd.h>
+#include <fcntl.h>
 #include <sys/param.h>
 #include <errno.h>
 
@@ -51,6 +54,7 @@ extern "C" {
 #include "cmime_header.h"
 #include "cmime_part.h"
 #include "cmime_util.h"
+#include "cmime_string.h"
 
 typedef enum _BoundaryType {
     CMIME_BOUNDARY_OPEN, 
@@ -69,6 +73,7 @@ typedef struct {
     char *gap; /**< gap between headers an mime parts */
     CMimeList_T *parts; /**< mime parts */
     char *linebreak; /**< linebreak used by message */
+    CMimeStringList_T *boundaries;
 } CMimeMessage_T;
 
 /*!
@@ -353,7 +358,7 @@ void cmime_message_add_generated_boundary(CMimeMessage_T *message);
  * @brief Parse given file and create a CMimeMessage_T object
  * @param message out param to return the new message object
  * @param filename path to message file
- * @returns 0 on success, -1 on stat error, -2 if not a regular file
+ * @returns 0 on success, -1 on stat error, -2 if not a regular file, -3 if reading fails
  */
 int cmime_message_from_file(CMimeMessage_T **message, const char *filename);
 

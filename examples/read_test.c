@@ -130,7 +130,7 @@ char *_match_boundary(CMimeStringList_T *boundaries, char *s) {
     return(NULL);
 }
 
-void parse_input(char *buffer) {
+char *parse_input(char *buffer) {
     CMimeMessage_T *msg = cmime_message_new();
     CMimeStringList_T *boundaries = NULL;
     CMimeStringList_T *mime_bodies = NULL;
@@ -247,25 +247,27 @@ void parse_input(char *buffer) {
     ret = cmime_scanner_scan_buffer(&msg, stripped);
 
     /* now the wedding between CMimeMessage_T and stripped content */
-    count = 0;
-    elem = cmime_list_head(msg->parts);
-    while(elem != NULL) {
-        part = (CMimePart_T *)cmime_list_data(elem);
-        mime_body = cmime_string_list_get(mime_bodies,count);
-        part->content = mime_body;
-        count++;
-        elem = elem->next;
+    if (cmime_list_size(msg->parts) >1) {
+        count = 0;
+        elem = cmime_list_head(msg->parts);
+        while(elem != NULL) {
+            part = (CMimePart_T *)cmime_list_data(elem);
+            mime_body = cmime_string_list_get(mime_bodies,count);
+            part->content = mime_body;
+            count++;
+            elem = elem->next;
+        }
     }
-
     msg_string = cmime_message_to_string(msg);
     printf("%s",msg_string);
     free(msg_string);
 
     cmime_string_list_free(boundaries);
     cmime_message_free(msg);
-    free(stripped);
     free(mime_bodies->node);
     free(mime_bodies);
+
+    return(stripped);
 }
 
 

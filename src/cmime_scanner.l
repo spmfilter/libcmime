@@ -182,7 +182,7 @@ int cmime_scanner_scan_file(CMimeMessage_T **message, FILE *fp) {
     return(0);
 }
 
-/* TESTING CODE */
+
 int cmime_scanner_scan_buffer(CMimeMessage_T **message, char *buffer) {
     yyscan_t scanner;
     YY_BUFFER_STATE buf;
@@ -199,7 +199,8 @@ int cmime_scanner_scan_buffer(CMimeMessage_T **message, char *buffer) {
         return(-4); 
     }
 
-    buf = yy_scan_string(buffer, scanner );
+    buf = yy_scan_string(buffer, scanner);
+    yy_switch_to_buffer(buf,scanner);
     yyparse(scanner,(*message));
     yy_delete_buffer(buf,scanner);
     
