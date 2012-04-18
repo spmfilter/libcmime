@@ -37,7 +37,6 @@ typedef struct {
 int yyparse (void *scanner, CMimeMessage_T *msg); 
 extern int yylex();
 void yyerror(YYLTYPE *yyllocp, void *scanner, CMimeMessage_T *msg, const char *s, ...);
-int cmime_scanner_scan_file(CMimeMessage_T **message, FILE *fp); 
 int cmime_scanner_scan_buffer(CMimeMessage_T **message, char *buffer);
 
 char *cmime_flbi_get_boundary(char *s);

@@ -33,6 +33,27 @@ typedef struct {
     CMimeStringList_T *mime_bodies;
 } _StrippedData_T;
 
+void _add_stripped_bodies(CMimeMessage_T **message, _StrippedData_T *sd) {
+    int i;
+    CMimeListElem_T *elem = NULL;
+    CMimePart_T *part = NULL;
+    char *mime_body = NULL;
+
+    /* now the wedding between CMimeMessage_T and stripped content */
+    if (cmime_list_size((*message)->parts) >1) {
+        i = 0;
+        elem = cmime_list_head((*message)->parts);
+        while(elem != NULL) {
+            part = (CMimePart_T *)cmime_list_data(elem);
+            mime_body = cmime_string_list_get(sd->mime_bodies,i);
+            part->content = mime_body;
+            i++;
+            elem = elem->next;
+        }
+    } 
+    free(sd->stripped);
+}
+
 /* extra header from given string */
 char *_extract_headers(char *s) {
     char *it = NULL;
@@ -714,11 +735,6 @@ int cmime_message_from_file(CMimeMessage_T **message, const char *filename) {
     int ret = 0;
     _StrippedData_T *sd = NULL;
 
-    int i;
-    CMimeListElem_T *elem = NULL;
-    CMimePart_T *part = NULL;
-    char *mime_body = NULL;
-
     assert((*message));
     assert(filename);
 
@@ -758,19 +774,7 @@ int cmime_message_from_file(CMimeMessage_T **message, const char *filename) {
     ret = cmime_scanner_scan_buffer(message, sd->stripped);
 
     if (sd->stripped != p) {
-        /* now the wedding between CMimeMessage_T and stripped content */
-        if (cmime_list_size((*message)->parts) >1) {
-            i = 0;
-            elem = cmime_list_head((*message)->parts);
-            while(elem != NULL) {
-                part = (CMimePart_T *)cmime_list_data(elem);
-                mime_body = cmime_string_list_get(sd->mime_bodies,i);
-                part->content = mime_body;
-                i++;
-                elem = elem->next;
-            }
-        } 
-        free(sd->stripped);    
+        _add_stripped_bodies(message, sd);
     }
 
     free(sd->mime_bodies->node);
@@ -782,78 +786,6 @@ int cmime_message_from_file(CMimeMessage_T **message, const char *filename) {
         return(-3); 
     }
 
-    /*
-    sd = _strip_message(message,p);
-    if (sd->stripped == p) {
-        if (munmap (p, sb.st_size) == -1) {
-            perror("libcmime: error on munmap");
-            return(-3); 
-        }
-        ret = cmime_scanner_scan_file(message,fp);
-
-        if (fclose(fp)!=0)
-            perror("libcmime: error failed closing file");
-    } else {
-        if (fclose(fp)!=0)
-            perror("libcmime: error failed closing file");
-
-        tmp = tmpfile();
-        if (tmp==NULL) {
-            perror("libcmime: error on creating temporary file");
-            return(-3); 
-        }
-        i = strlen(sd->stripped);
-        if (fwrite(sd->stripped,i,1,tmp)==0)
-            return(-3);
-
-        ret = cmime_scanner_scan_file(message,fp);
-        if (fclose(tmp)!=0)
-            perror("libcmime: error failed closing file");
-
-        
-    //ret = cmime_scanner_scan_buffer(&(*msg), stripped);
-
-        if (cmime_list_size((*message)->parts) >1) {
-            i = 0;
-            elem = cmime_list_head((*message)->parts);
-            while(elem != NULL) {
-                part = (CMimePart_T *)cmime_list_data(elem);
-                mime_body = cmime_string_list_get(sd->mime_bodies,i);
-                part->content = mime_body;
-                i++;
-                elem = elem->next;
-            }
-        }
-    }
-    */
-
-    /*
-    struct stat fileinfo;
-    FILE *fp = NULL;
-    int ret = 0;
-    
-    assert((*message));
-    assert(filename);
-    
-    if (stat(filename,&fileinfo) != 0)
-        return(-1); 
-    
-    if(!S_ISREG(fileinfo.st_mode))
-        return(-2); 
-
-    fp = fopen(filename, "rb");
-    if (fp == NULL) {
-        perror("libcmime: error opening file");
-        return(-3);
-    }
-
-    ret = cmime_scanner_scan_file(message,fp);
-    
-    if (fclose(fp)!=0) {
-        perror("libcmime: error closing file");
-        return(-1);
-    }
-    */
     return(ret);
 }
 
@@ -1005,27 +937,26 @@ char *cmime_message_to_string(CMimeMessage_T *message) {
 }
 
 int cmime_message_from_string(CMimeMessage_T **message, const char *content) {
-    FILE *fp = NULL;
+    _StrippedData_T *sd = NULL;
     int ret = 0;
-    
+    char *p = NULL;
+
     assert((*message));
     assert(content);
+  
+    p = strdup(content);
+    sd = _strip_message(message,p);
+    
+    ret = cmime_scanner_scan_buffer(message, sd->stripped);
 
-    fp = tmpfile();
-    if (fp == NULL) {
-        perror("libcmime: error creating temporary file");
-        return(-2);
+    if (sd->stripped != p) {
+        _add_stripped_bodies(message,sd);    
     }
-    if (fwrite(content,strlen(content),1,fp)==0)
-        return(-3);
-    
-    rewind(fp);
-    ret = cmime_scanner_scan_file(message,fp);  
-    if (fclose(fp)!=0) {
-        perror("libcmime: error closing file");
-        return(-1);
-    }
-    
+
+    free(sd->mime_bodies->node);
+    free(sd->mime_bodies);
+    free(sd);
+
     return(ret);
 }
 
