@@ -75,7 +75,6 @@ void cmime_address_set_type(CMimeAddress_T *ca, CMimeAddressType_T t) {
 CMimeAddress_T *cmime_address_parse_string(const char *s) {
     CMimeAddress_T *ca = cmime_address_new();
     char *t1 = NULL;
-    char *t2 = NULL;
     int i,size_in;
 
     size_in = strlen(s);
@@ -91,13 +90,10 @@ CMimeAddress_T *cmime_address_parse_string(const char *s) {
         }
 
         ca->email = (char *)calloc(strlen(t1) + sizeof(char),sizeof(char));
-        t2 = cmime_string_strip(t1);
-        strcpy(ca->email,t2);
+        strcpy(ca->email,t1);
     }   else {
         ca->email = (char *)calloc(size_in + sizeof(char),sizeof(char));
-        t1 = (char *)s;
-        t2 = cmime_string_strip(t1);
-        strncpy(ca->email,t2,size_in);
+        strncpy(ca->email,s,size_in);
     }
 
     return(ca);

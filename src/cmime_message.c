@@ -392,7 +392,6 @@ void cmime_message_set_sender(CMimeMessage_T *message, const char *sender) {
 
     assert(message);
     assert(sender);
-
     ca = cmime_address_parse_string(sender);
     if (message->sender != NULL) {
         cmime_address_free(message->sender);
@@ -777,6 +776,7 @@ char *cmime_message_to_string(CMimeMessage_T *message) {
     char *s2 = NULL;
     char *s3 = NULL;
     int len = 0;
+    int count = 0;
 
     assert(message);
     out = (char *)calloc(sizeof(char),sizeof(char));
@@ -812,13 +812,16 @@ char *cmime_message_to_string(CMimeMessage_T *message) {
                 free(s2);    
             } else {
                 r = cmime_list_head(message->recipients);
+                count = 0;
                 while(r != NULL) {
                     addr = (CMimeAddress_T *)cmime_list_data(r);
                     if (addr->type == t) {
                         s2 = cmime_address_to_string(addr);
                         s3 = s2;
-                        if (s3[0] == (unsigned char)32)
-                            s3++;
+                        if (count==0) {
+                            if (s3[0] == (unsigned char)32)
+                                s3++;
+                        }
                         s = (char *)realloc(s,strlen(s) + strlen(s3) + sizeof(char));
                         strcat(s,s3);
                         free(s2);    

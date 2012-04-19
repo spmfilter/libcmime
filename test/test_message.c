@@ -69,7 +69,8 @@ int main (int argc, char const *argv[]) {
         if (i == 0) {
             printf("Message summary:\n=========================================\n");
             s = cmime_message_get_sender_string(msg);
-            printf("Sender: [%s]\n",s);
+            s2 = cmime_string_strip(s);
+            printf("Sender: [%s]\n",s2);
             free(s);
             printf("Recipients (%d):\n",msg->recipients->size);
             elem = cmime_list_head(msg->recipients);
@@ -90,7 +91,7 @@ int main (int argc, char const *argv[]) {
             printf("=========================================\n\n");
 
             msg_string = cmime_message_to_string(msg);
-            //printf("%s\n",msg_string);
+            printf("%s\n",msg_string);
             free(msg_string);
         } else {
             printf("failed to open file [%s]\n",fname);
