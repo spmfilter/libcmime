@@ -28,7 +28,7 @@
     #include "cmime_message.h"
     #include "cmime_parser.tab.h"
     
-    #define YY_EXTRA_TYPE CMimeYYExtra_T *
+    #define YY_EXTRA_TYPE CMimeMessage_T *
     #define YY_USER_ACTION yylloc->first_line = yylineno;
 %}
 
@@ -37,7 +37,6 @@ HEADERNAME_RE       ([A-Za-z0-9_-]*:)
 HEADERBODY_RE       (.*({LF_RE}(\t|\ ).*)*{LF_RE}?)
 BODY_RE             ((.*({LF_RE}))*)
 LINE_RE             (.*{LF_RE})
-POSTFACE_RE         (.*--{LF_RE})
 
 %%
 
@@ -50,31 +49,29 @@ POSTFACE_RE         (.*--{LF_RE})
 <HEADER>{HEADERBODY_RE} {
     BEGIN(INITIAL);
 
-    if (yyextra->message->linebreak==NULL)
-        yyextra->message->linebreak = strdup(_cmime_internal_determine_linebreak(yytext));
+    if (yyextra->linebreak==NULL)
+        yyextra->linebreak = strdup(_cmime_internal_determine_linebreak(yytext));
     
-    if (yyextra->message->boundary==NULL) {
-        if (cmime_flbi_match_boundary(yytext)==1) {
-            yyextra->message->boundary = cmime_flbi_get_boundary(yytext);   
-        }
-    }
-
     yylval->string = cmime_string_chomp(yytext);
     return HEADER_CONTENT;   
 }
     
 {LF_RE} {
-    yyextra->message->gap = strdup(yytext); 
-    if (yyextra->message->boundary) 
+    yyextra->gap = strdup(yytext); 
+    
+    if (yyextra->boundaries->count > 0)
         BEGIN(GAP);
     else
         BEGIN(BODY);
 }
 
 <GAP>{LINE_RE} {
-    if (cmime_flbi_cmp_boundaries(yyextra,yytext)==1) {
+    char *marker = NULL;
+    marker = _cmime_internal_match_boundary(yyextra->boundaries,yytext);
+    if (marker!=NULL) {
+        free(marker);
         BEGIN(MIME_PART);
-        yylval->string = cmime_string_chomp(yytext);
+        yylval->string = yytext;
         return BOUNDARY;
     } else {
         yylval->string = yytext;
@@ -86,29 +83,26 @@ POSTFACE_RE         (.*--{LF_RE})
     yylval->string = yytext;
     return BODY_CONTENT;
 }
-    
-<MIME_CONTENT>{POSTFACE_RE} {
-    if (cmime_flbi_strstr_boundary(yyextra,yytext)==1) {
-        BEGIN(POSTFACE);
-        yylval->string = cmime_string_chomp(yytext);
-        //printf("POST MATCH [%s]\n",yylval->string);
-        return PART_END;
-    } else {
-        yylval->string = yytext;
-        //printf("POST LINE [%s]\n",yylval->string);
-        return LINE;
-    }
-}
+
 
 <MIME_CONTENT>{LINE_RE} {
-    if (cmime_flbi_cmp_boundaries(yyextra,yytext)==1) {
-        BEGIN(MIME_PART); 
-        yylval->string = cmime_string_chomp(yytext);
-        //printf("BEGIN NEW PART [%s]\n",yylval->string);
-        return BOUNDARY;
+    char *marker = NULL;
+    int len;
+    marker = _cmime_internal_match_boundary(yyextra->boundaries,yytext);
+    if (marker!=NULL) {
+        yylval->string = yytext;
+        len = strlen(marker);
+        if ((marker[len-2] == '-') && (marker[len-1] == '-')) {
+            free(marker);  
+            BEGIN(POSTFACE);
+            return PART_END;
+        } else {
+            free(marker);
+            BEGIN(MIME_PART); 
+            return BOUNDARY;
+        }
     } else {
         yylval->string = yytext;
-        //printf("LINE [%s]\n",yylval->string);
         return LINE;
     } 
 }
@@ -126,19 +120,18 @@ POSTFACE_RE         (.*--{LF_RE})
 <MIME_HEADER>{HEADERBODY_RE} {
     BEGIN(MIME_PART);
     yylval->string = cmime_string_chomp(yytext);
-    if (cmime_flbi_match_boundary(yytext)==1)  {
-        yyextra->sub_part_boundaries = (char **)realloc(yyextra->sub_part_boundaries, (yyextra->num_parts + 1) * sizeof(char *));
-        yyextra->sub_part_boundaries[yyextra->num_parts] = cmime_flbi_get_boundary(yytext);
-        yyextra->num_parts++;
-    }
-
+    
     return HEADER_CONTENT;
 }
 
 <POSTFACE>{LINE_RE} {
-    if (cmime_flbi_cmp_boundaries(yyextra,yytext)==1) {
+    char *marker = NULL;
+    marker = _cmime_internal_match_boundary(yyextra->boundaries,yytext);
+
+    if (marker!=NULL) {
+        free(marker);
         BEGIN(MIME_PART);
-        yylval->string = cmime_string_chomp(yytext);
+        yylval->string = yytext;
         return BOUNDARY;
     } else {
         yylval->string = yytext;
@@ -153,15 +146,8 @@ POSTFACE_RE         (.*--{LF_RE})
 int cmime_scanner_scan_buffer(CMimeMessage_T **message, char *buffer) {
     yyscan_t scanner;
     YY_BUFFER_STATE buf;
-    CMimeYYExtra_T *extra;
-    int i;
 
-    extra = (CMimeYYExtra_T *)calloc((size_t)1, sizeof(CMimeYYExtra_T));
-    extra->message = *message;
-    extra->num_parts = 0;
-    extra->sub_part_boundaries = (char **)calloc((size_t)1, sizeof(char *));
-
-    if(yylex_init_extra(extra,&scanner)) { 
+    if(yylex_init_extra(*message,&scanner)) { 
         fprintf(stderr, "error: no scanning today\n"); 
         return(-4); 
     }
@@ -170,15 +156,6 @@ int cmime_scanner_scan_buffer(CMimeMessage_T **message, char *buffer) {
     yy_switch_to_buffer(buf,scanner);
     yyparse(scanner,(*message));
     yy_delete_buffer(buf,scanner);
-    
-    extra->message = NULL;
-  
-    for(i=0; i < extra->num_parts; i++) {
-        if (extra->sub_part_boundaries[i]!=NULL)
-            free(extra->sub_part_boundaries[i]);
-    }
-    free(extra->sub_part_boundaries);
-    free(extra); 
 
     yylex_destroy(scanner);
 

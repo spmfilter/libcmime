@@ -42,9 +42,7 @@
 %%
 
 message:
-    /* testing */
-    headers
-    |headers gap parts
+    headers gap parts
     | headers parts
     | headers BODY_CONTENT {
         CMimePart_T *p = cmime_part_new();
@@ -96,6 +94,7 @@ header:
                 }
                 
                 if ((*it == ',') && (in_name == 0)) {
+                    _cmime_internal_set_linked_header_value(msg->headers, $1, NULL);
                     cmime_message_add_recipient(msg,s,t);
                     free(s);
                     s = (char *)calloc((size_t)1,sizeof(char));
@@ -108,7 +107,8 @@ header:
                 }
             }
             s[pos] = '\0';
-
+            
+            _cmime_internal_set_linked_header_value(msg->headers, $1, NULL);
             cmime_message_add_recipient(msg,s,t);
             free(s);
         } else if (t == CMIME_ADDRESS_TYPE_FROM) {
@@ -125,33 +125,44 @@ header:
 parts:
     BOUNDARY part { 
         $1 += 2;
-        $2->parent_boundary = strdup($1);
+        $2->parent_boundary = cmime_flbi_chomp_boundary($1,msg->linebreak);
         cmime_list_append(msg->parts,$2);
         //printf("\nBOUNDARY part\n==========================\n");
         //printf("boundary [%s]\nparent [%s]\n",$2->boundary,$2->parent_boundary);
         //printf("==========================\n");
     }
+    | BOUNDARY part PART_END { 
+        $1 += 2;
+        $2->parent_boundary = cmime_flbi_chomp_boundary($1,msg->linebreak);
+        $2->last = 1;
+        cmime_list_append(msg->parts,$2);
+        //printf("\nBOUNDARY part PART_END\n==========================\n");
+        //printf("boundary [%s]\nparent [%s]\n",$2->boundary,$2->parent_boundary);
+        //printf("==========================\n");
+    }
     | parts BOUNDARY part {
         $2 += 2;
-        $3->parent_boundary = strdup($2);
+        $3->parent_boundary = cmime_flbi_chomp_boundary($2,msg->linebreak);
         cmime_list_append(msg->parts,$3);
         //printf("\nparts BOUNDARY part\n==========================\n");
         //printf("boundary [%s]\nparent [%s]\n",$3->boundary,$3->parent_boundary);
         //printf("==========================\n");
     } 
     | parts BOUNDARY part PART_END {
+        char *p = NULL;
         $2 += 2;
-        $3->parent_boundary = strdup($2);
+        $3->parent_boundary = cmime_flbi_chomp_boundary($2,msg->linebreak);
         $3->last = 1;
+        p = strrchr($4,'-');
+        $3->postface = strdup(++p);
         cmime_list_append(msg->parts,$3);
         //printf("\nparts BOUNDARY part PART_END\n==========================\n");
         //printf("boundary [%s]\nparent [%s]\n",$3->boundary,$3->parent_boundary);
-        //printf("PART_END [%s]\n",$4);
         //printf("==========================\n");
     }
     | parts BOUNDARY part PART_END postface {
         $2 += 2;
-        $3->parent_boundary = strdup($2);
+        $3->parent_boundary = cmime_flbi_chomp_boundary($2,msg->linebreak);
         $3->last = 1;
         $3->postface = strdup($5);
         free($5);
@@ -161,6 +172,7 @@ parts:
         //printf("postface [%s]\n",$5);
         //printf("==========================\n");
     }
+
 ;
     
 part:

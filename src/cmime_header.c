@@ -97,11 +97,14 @@ char *cmime_header_to_string(CMimeHeader_T *header) {
     out = (char *)calloc(sizeof(char),sizeof(char));
     for(i = 0; i < cmime_header_get_count(header); i++) {
         value = cmime_header_get_value(header,i);
-        if (value[0] == (unsigned char)32)
-            asprintf(&ptemp,"%s:%s",cmime_header_get_name(header),value);
-        else
-            asprintf(&ptemp,"%s: %s",cmime_header_get_name(header),value);
-
+        if (strlen(value)>0) {
+            if (value[0] == (unsigned char)32)
+                asprintf(&ptemp,"%s:%s",cmime_header_get_name(header),value);
+            else
+                asprintf(&ptemp,"%s: %s",cmime_header_get_name(header),value);
+        } else {
+            asprintf(&ptemp,"%s:",cmime_header_get_name(header));
+        }
         out = (char *)realloc(out,strlen(out) + strlen(ptemp) + 1);
         strcat(out,ptemp);
         free(ptemp);

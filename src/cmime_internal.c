@@ -147,3 +147,23 @@ void _cmime_internal_parts_destroy(void *data) {
     CMimePart_T *p = (CMimePart_T *)data;
     cmime_part_free(p);
 }
+
+char *_cmime_internal_match_boundary(CMimeStringList_T *boundaries, char *s) {
+    int i;
+    char *marker = NULL;
+
+    for(i=0; i < cmime_string_list_get_count(boundaries); i++) {
+        asprintf(&marker,"--%s--",cmime_string_list_get(boundaries,i));
+        if (strncmp(s,marker,strlen(marker))==0) {
+            return(marker);
+        } else {
+            free(marker);
+            asprintf(&marker,"--%s",cmime_string_list_get(boundaries,i));
+            if (strncmp(marker,s,strlen(marker))==0) {
+                return(marker);
+            }
+            free(marker);
+        }
+    }
+    return(NULL);
+}

@@ -28,22 +28,14 @@ extern "C" {
 #include "cmime_part.h"
 #include "cmime_parser.tab.h"
 
-typedef struct {
-	CMimeMessage_T *message;
-	char **sub_part_boundaries;
-	int num_parts;
-} CMimeYYExtra_T;
-
 int yyparse (void *scanner, CMimeMessage_T *msg); 
 extern int yylex();
 void yyerror(YYLTYPE *yyllocp, void *scanner, CMimeMessage_T *msg, const char *s, ...);
 int cmime_scanner_scan_buffer(CMimeMessage_T **message, char *buffer);
 
 char *cmime_flbi_get_boundary(char *s);
-int cmime_flbi_match_boundary(const char *haystack);
-int cmime_flbi_cmp_boundaries(CMimeYYExtra_T *yydata, const char *haystack);
 void cmime_flbi_check_part_boundary(CMimePart_T *part);
-int cmime_flbi_strstr_boundary(CMimeYYExtra_T *yydata, const char *haystack);
+char *cmime_flbi_chomp_boundary(char *s, char *linebreak);
 
 #ifdef __cplusplus
 }
