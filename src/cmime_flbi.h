@@ -33,6 +33,7 @@ extern int yylex();
 void yyerror(YYLTYPE *yyllocp, void *scanner, CMimeMessage_T *msg, const char *s, ...);
 int cmime_scanner_scan_buffer(CMimeMessage_T **message, char *buffer);
 
+char *cmime_flbi_boundary_linebreak(char *s, char *linebreak);
 char *cmime_flbi_get_boundary(char *s);
 void cmime_flbi_check_part_boundary(CMimePart_T *part);
 char *cmime_flbi_chomp_boundary(char *s, char *linebreak);

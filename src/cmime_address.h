@@ -54,6 +54,7 @@ typedef struct {
 	char *name; /**< display name */
 	char *email; /**< the email address */
 	CMimeAddressType_T type; /**< type of address */
+    int parsed;
 } CMimeAddress_T;
 
 /*!

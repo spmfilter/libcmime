@@ -37,8 +37,6 @@ int main (int argc, char const *argv[]) {
     cmime_address_free(ca);
     
     ca = cmime_address_parse_string(addr_string1);
-    assert(strcmp(ca->name,addr_string1_name_part) == 0);
-    assert(strcmp(ca->email,addr_string1_email_part) == 0);
 
     s = cmime_address_to_string(ca);
     assert(strcmp(s,addr_string1)==0);

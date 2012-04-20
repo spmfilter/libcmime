@@ -25,13 +25,28 @@
 #include "cmime_string.h"
 #include "cmime_flbi.h"
 
+char *cmime_flbi_boundary_linebreak(char *s, char *linebreak) {
+    char *out = NULL;
+    char *p = NULL;
+    int len;
+
+    p = strstr(s,linebreak);
+    if (p!=NULL) {
+        len = strlen(linebreak);
+        out = (char *)calloc(len + sizeof(char), sizeof(char));
+        strncpy(out,p,len);
+    }
+
+    return(out);   
+}
+
 char *cmime_flbi_chomp_boundary(char *s, char *linebreak) {
     char *out = NULL;
     char *p = NULL;
     int offset = 0;
 
     p = strstr(s,linebreak);
-    if (p) {
+    if (p!=NULL) {
         offset = strlen(s) - strlen(p);
         if (offset > 0) {
             out = (char *)calloc(offset + sizeof(char),sizeof(char));

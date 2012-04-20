@@ -90,7 +90,7 @@ LINE_RE             (.*{LF_RE})
     int len;
     marker = _cmime_internal_match_boundary(yyextra->boundaries,yytext);
     if (marker!=NULL) {
-        yylval->string = yytext;
+        yylval->string = yytext; 
         len = strlen(marker);
         if ((marker[len-2] == '-') && (marker[len-1] == '-')) {
             free(marker);  

@@ -117,6 +117,7 @@ header:
             h = cmime_header_new();
             cmime_header_set_name(h,$1);
             cmime_header_set_value(h,$2,0);
+            h->parsed = 1;
         }
         $$ = h;
     }
@@ -149,27 +150,35 @@ parts:
         //printf("==========================\n");
     } 
     | parts BOUNDARY part PART_END {
-        char *p = NULL;
+        //char *p = NULL;
         $2 += 2;
         $3->parent_boundary = cmime_flbi_chomp_boundary($2,msg->linebreak);
         $3->last = 1;
-        p = strrchr($4,'-');
-        $3->postface = strdup(++p);
+        //p = strrchr($4,'-');
+        $3->postface = cmime_flbi_boundary_linebreak($4,msg->linebreak);
         cmime_list_append(msg->parts,$3);
         //printf("\nparts BOUNDARY part PART_END\n==========================\n");
         //printf("boundary [%s]\nparent [%s]\n",$3->boundary,$3->parent_boundary);
         //printf("==========================\n");
     }
     | parts BOUNDARY part PART_END postface {
+        char *l = NULL;
+        char *p = NULL;
         $2 += 2;
         $3->parent_boundary = cmime_flbi_chomp_boundary($2,msg->linebreak);
         $3->last = 1;
-        $3->postface = strdup($5);
+
+        l = cmime_flbi_boundary_linebreak($4,msg->linebreak);
+        if (l!=NULL) 
+            asprintf(&p,"%s%s",l,$5);
+        else
+            p = strdup($5);
+        $3->postface = p;
         free($5);
         cmime_list_append(msg->parts,$3);
         //printf("\nparts BOUNDARY part PART_END postface\n==========================\n");
         //printf("boundary [%s]\nparent [%s]\n",$3->boundary,$3->parent_boundary);
-        //printf("postface [%s]\n",$5);
+        //printf("postface [%s]\n",$3->postface);
         //printf("==========================\n");
     }
 

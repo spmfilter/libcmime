@@ -98,10 +98,14 @@ char *cmime_header_to_string(CMimeHeader_T *header) {
     for(i = 0; i < cmime_header_get_count(header); i++) {
         value = cmime_header_get_value(header,i);
         if (strlen(value)>0) {
-            if (value[0] == (unsigned char)32)
+            if (header->parsed==1) {
                 asprintf(&ptemp,"%s:%s",cmime_header_get_name(header),value);
-            else
-                asprintf(&ptemp,"%s: %s",cmime_header_get_name(header),value);
+            } else {
+                if (value[0] == (unsigned char)32)
+                    asprintf(&ptemp,"%s:%s",cmime_header_get_name(header),value);
+                else
+                    asprintf(&ptemp,"%s: %s",cmime_header_get_name(header),value);
+            }
         } else {
             asprintf(&ptemp,"%s:",cmime_header_get_name(header));
         }

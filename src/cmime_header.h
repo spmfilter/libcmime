@@ -42,6 +42,7 @@ typedef struct {
 	char *name; /**< name of the header */
 	char **value; /**< list with header values */
 	size_t count; /**< count of header appearance */
+    int parsed;
 } CMimeHeader_T;
 
 
