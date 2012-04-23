@@ -122,6 +122,7 @@ char *cmime_flbi_scan_postface(char *s, CMimeMessage_T *msg) {
     int offset = 0;
     CMimeListElem_T *elem = NULL;
     CMimePart_T *part = NULL;
+    int match = 0;
 
     count = 0;
     while((it = strstr(it,"--"))!=NULL) {
@@ -155,19 +156,28 @@ char *cmime_flbi_scan_postface(char *s, CMimeMessage_T *msg) {
                 elem = cmime_list_tail(msg->parts);
                 while(elem!=NULL) {
                     part = (CMimePart_T *)cmime_list_data(elem);
-                    if (part->boundary != NULL) {
-                        /* compare part boundary with token in postface */
-                        if (strncmp(part->parent_boundary,boundary,strlen(part->boundary))==0) {
-                            if (part->postface!=NULL)
-                                free(part->postface);
-
-                            t = (char *)calloc(offset + sizeof(char),sizeof(char));
-                            strncpy(t,it,offset);
-                            part->postface = t;
-                            part->last = 1;
-                            break;
-                       } 
+                    match = 0;
+                    if (part->parent_boundary!=NULL) {
+                        if (strncmp(part->parent_boundary,boundary,strlen(part->parent_boundary))==0) 
+                            match = 1;
                     }
+
+                    if (part->boundary!=NULL) {
+                        if (strncmp(part->boundary,boundary,strlen(part->boundary))==0) 
+                            match = 1;
+                    }
+                    
+                    if (match == 1) {
+                        if (part->postface!=NULL)
+                            free(part->postface);
+
+                        t = (char *)calloc(offset + sizeof(char),sizeof(char));
+                        strncpy(t,it,offset);
+                        part->postface = t;
+                        part->last = 1;
+                        break;
+                   } 
+                    
                     elem = elem->prev;
                 }
             }
