@@ -135,6 +135,7 @@ parts:
     | BOUNDARY part PART_END { 
         $1 += 2;
         $2->parent_boundary = cmime_flbi_chomp_boundary($1,msg->linebreak);
+        $2->postface = cmime_flbi_boundary_linebreak($3,msg->linebreak);
         $2->last = 1;
         cmime_list_append(msg->parts,$2);
         //printf("\nBOUNDARY part PART_END\n==========================\n");
