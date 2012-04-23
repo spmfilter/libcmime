@@ -79,17 +79,12 @@ void cmime_address_set_type(CMimeAddress_T *ca, CMimeAddressType_T t) {
 CMimeAddress_T *cmime_address_parse_string(const char *s) {
     CMimeAddress_T *ca = cmime_address_new();
     char *t1 = NULL;
-//    int i,size_in;
     int size_in;
     int offset;
 
     size_in = strlen(s);
     t1 = strrchr(s,'<');
     if (t1 != NULL) {
-        /*i = size_in - strlen(t1);
-        if (*(s + i - 1) == ' ')
-            i--;
-        */
         offset = size_in - strlen(t1);
 
         if (offset > 0) {

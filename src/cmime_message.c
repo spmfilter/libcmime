@@ -318,6 +318,56 @@ void _append_string(char **out, const char *s) {
     }
 }
 
+void _append_child_parts(char **out, char *parent_boundary, CMimeMessage_T *message) {
+    CMimeListElem_T *e = NULL;
+    CMimePart_T *p = NULL;
+    int len;
+    char *s = NULL;
+    int append = 0;
+
+    e = cmime_list_head(message->parts);
+    while(e != NULL) {
+        p = (CMimePart_T *)cmime_list_data(e);
+
+        if (p->parent_boundary==NULL) {
+            append = 1;
+        } else {
+            if (strcmp(p->parent_boundary,parent_boundary)==0)
+                append = 1;
+        }
+
+        if (append==1) {
+            len = strlen(*out);
+            if (((*out)[len - 1] != '\r') && (*out)[len - 1] != '\n')
+                _append_string(&(*out),message->linebreak);
+
+            _append_boundary(&(*out), p->parent_boundary, message->linebreak, CMIME_BOUNDARY_OPEN);
+            s = cmime_part_to_string(p,message->linebreak);
+            if (s)
+                _append_string(&(*out),s);
+
+            if (p->boundary!=NULL)
+                _append_child_parts(out, p->boundary, message);
+
+            if (p->last == 1) {
+                len = strlen(s);
+                if ((s[len - 1] != '\r') && s[len - 1] != '\n') 
+                    _append_string(&(*out),message->linebreak);
+
+                _append_boundary(&(*out), p->parent_boundary, message->linebreak, CMIME_BOUNDARY_CLOSE);
+                if (p->postface != NULL) 
+                    _append_string(&(*out),p->postface); 
+            }
+
+            if (s)
+                free(s);
+
+            append = 0;
+        }
+        e = e->next;
+    }
+}
+
 CMimeMessage_T *cmime_message_new(void) {
     CMimeMessage_T *message = NULL;
     
@@ -750,13 +800,11 @@ char *cmime_message_to_string(CMimeMessage_T *message) {
     CMimeListElem_T *e = NULL;
     CMimeListElem_T *r = NULL;
     CMimeHeader_T *h = NULL;
-    CMimePart_T *p = NULL;
     CMimeAddress_T *addr = NULL;
     CMimeAddressType_T t = -1;
     char *s = NULL;
     char *s2 = NULL;
     char *s3 = NULL;
-    int len = 0;
     int count = 0;
 
     assert(message);
@@ -842,34 +890,8 @@ char *cmime_message_to_string(CMimeMessage_T *message) {
     }
     _append_string(&out,message->gap);
 
-    e = cmime_list_head(message->parts);
-    while(e != NULL) {
-        p = (CMimePart_T *)cmime_list_data(e);
-
-        len = strlen(out);
-        if ((out[len - 1] != '\r') && out[len - 1] != '\n')
-            _append_string(&out,message->linebreak);
-
-        _append_boundary(&out, p->parent_boundary, message->linebreak, CMIME_BOUNDARY_OPEN);
-        s = cmime_part_to_string(p,message->linebreak);
-        if (s)
-            _append_string(&out,s);
-
-        if (p->last == 1) {
-            len = strlen(s);
-            if ((s[len - 1] != '\r') && s[len - 1] != '\n') 
-                _append_string(&out,message->linebreak);
-
-            _append_boundary(&out, p->parent_boundary, message->linebreak, CMIME_BOUNDARY_CLOSE);
-            if (p->postface != NULL) 
-                _append_string(&out,p->postface); 
-        }
-
-        if (s)
-            free(s);
-        e = e->next;
-    }
-    
+    _append_child_parts(&out, message->boundary, message);
+        
     return(out);
 }
 

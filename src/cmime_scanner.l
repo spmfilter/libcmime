@@ -124,15 +124,25 @@ LINE_RE             (.*{LF_RE})
     return HEADER_CONTENT;
 }
 
+
 <POSTFACE>{LINE_RE} {
     char *marker = NULL;
+    int len;
+    
     marker = _cmime_internal_match_boundary(yyextra->boundaries,yytext);
 
     if (marker!=NULL) {
-        free(marker);
-        BEGIN(MIME_PART);
-        yylval->string = yytext;
-        return BOUNDARY;
+        len = strlen(marker);
+        if ((marker[len-2]!='-')&&(marker[len-1]!='-')) {
+            free(marker);
+            BEGIN(MIME_PART);
+            yylval->string = yytext;
+            return BOUNDARY;
+        } else {
+            free(marker);
+            yylval->string = yytext;
+            return POSTFACE_LINE;
+        }
     } else {
         yylval->string = yytext;
         return POSTFACE_LINE;

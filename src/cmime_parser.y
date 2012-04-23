@@ -150,11 +150,9 @@ parts:
         //printf("==========================\n");
     } 
     | parts BOUNDARY part PART_END {
-        //char *p = NULL;
         $2 += 2;
         $3->parent_boundary = cmime_flbi_chomp_boundary($2,msg->linebreak);
         $3->last = 1;
-        //p = strrchr($4,'-');
         $3->postface = cmime_flbi_boundary_linebreak($4,msg->linebreak);
         cmime_list_append(msg->parts,$3);
         //printf("\nparts BOUNDARY part PART_END\n==========================\n");
@@ -169,19 +167,23 @@ parts:
         $3->last = 1;
 
         l = cmime_flbi_boundary_linebreak($4,msg->linebreak);
-        if (l!=NULL) 
+        if (l!=NULL) {
             asprintf(&p,"%s%s",l,$5);
-        else
+            free(l);
+        } else
             p = strdup($5);
-        $3->postface = p;
+        //$3->postface = p;
+        $3->postface = cmime_flbi_scan_postface(p,msg);
         free($5);
+        free(p);
         cmime_list_append(msg->parts,$3);
         //printf("\nparts BOUNDARY part PART_END postface\n==========================\n");
         //printf("boundary [%s]\nparent [%s]\n",$3->boundary,$3->parent_boundary);
         //printf("postface [%s]\n",$3->postface);
         //printf("==========================\n");
+        
     }
-
+    
 ;
     
 part:
@@ -246,7 +248,7 @@ gap:
 postface:
     POSTFACE_LINE {
         $$ = (char *)calloc((size_t)1,strlen($1) + sizeof(char));
-        strcat($$,$1); 
+        strcat($$,$1);
     }
     | postface POSTFACE_LINE {
         $$ = (char *)realloc($$,strlen($$) + strlen($2) + sizeof(char));

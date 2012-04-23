@@ -22,6 +22,8 @@
 #include <string.h>
 #include <assert.h>
 
+#include "cmime_part.h"
+#include "cmime_internal.h"
 #include "cmime_string.h"
 #include "cmime_flbi.h"
 
@@ -107,4 +109,76 @@ void cmime_flbi_check_part_boundary(CMimePart_T *part) {
         }
         e = e->next;
     }
+}
+
+char *cmime_flbi_scan_postface(char *s, CMimeMessage_T *msg) {
+    char *it = s;
+    char *marker = NULL;
+    char *boundary;
+    char *postface = NULL;
+    char *nxt = NULL;
+    char *t = NULL;
+    int len, count;
+    int offset = 0;
+    CMimeListElem_T *elem = NULL;
+    CMimePart_T *part = NULL;
+
+    count = 0;
+    while((it = strstr(it,"--"))!=NULL) {
+        marker = _cmime_internal_match_boundary(msg->boundaries,it);
+        if (marker!=NULL) {
+            len = strlen(marker);
+            if ((marker[len-2]=='-')&&(marker[len-1]=='-')) {
+                if (count == 0) {
+                    offset = strlen(s) - strlen(it);
+                    postface = (char *)calloc(offset + sizeof(char),sizeof(char));
+                    strncpy(postface,s,offset);
+                    count++;
+                } 
+                nxt = it + len;
+                if ((nxt = strstr(nxt,"--"))!=NULL) { 
+                    if ((t = _cmime_internal_match_boundary(msg->boundaries,nxt))!=NULL) {  
+                        it = it + strlen(t);
+                        offset = strlen(it) - strlen(nxt); 
+                        free(t);
+                    } else
+                        offset = strlen(s) - strlen(it);
+                } else {
+                    it = it + len;
+                    offset = strlen(s) - strlen(it);
+                }
+
+                /* jump over 2 starting - chars for boundary comparsion */
+                boundary = marker;
+                boundary += 2 * sizeof(char);
+                /* find mime part which belongs to this boundary */
+                elem = cmime_list_tail(msg->parts);
+                while(elem!=NULL) {
+                    part = (CMimePart_T *)cmime_list_data(elem);
+                    if (part->boundary != NULL) {
+                        /* compare part boundary with token in postface */
+                        if (strncmp(part->parent_boundary,boundary,strlen(part->boundary))==0) {
+                            if (part->postface!=NULL)
+                                free(part->postface);
+
+                            t = (char *)calloc(offset + sizeof(char),sizeof(char));
+                            strncpy(t,it,offset);
+                            part->postface = t;
+                            part->last = 1;
+                            break;
+                       } 
+                    }
+                    elem = elem->prev;
+                }
+            }
+            count++;
+            free(marker);
+        }
+        
+        it++;
+    }
+    
+    if (postface==NULL)
+        postface = strdup(s);
+    return(postface);
 }
