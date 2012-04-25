@@ -33,11 +33,11 @@ char *_cmime_internal_determine_linebreak(const char *s) {
 
     if (strstr(s,CRLF)!=NULL)
         return(CRLF);
-    else if(strstr(s,LF)!=NULL)
-        return(LF);
     else if(strstr(s,CR)!=NULL)
         return(CR);
-    else
+    else if(strstr(s,LF)!=NULL)
+        return(LF);
+     else
         return(NULL);
 }
 

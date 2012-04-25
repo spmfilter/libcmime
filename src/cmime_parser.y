@@ -142,6 +142,25 @@ parts:
         //printf("boundary [%s]\nparent [%s]\n",$2->boundary,$2->parent_boundary);
         //printf("==========================\n");
     }
+    | BOUNDARY part PART_END postface { 
+        char *l = NULL;
+        char *p = NULL;
+        $1 += 2;
+        $2->parent_boundary = cmime_flbi_chomp_boundary($1,msg->linebreak);
+        l = cmime_flbi_boundary_linebreak($3,msg->linebreak);
+        if (l!=NULL) {
+            asprintf(&p,"%s%s",l,$4);
+            free(l);
+        } else
+            p = strdup($4);
+        free($4);
+        $2->postface = p;
+        $2->last = 1;
+        cmime_list_append(msg->parts,$2);
+        //printf("\nBOUNDARY part PART_END postface\n==========================\n");
+        //printf("boundary [%s]\nparent [%s]\n",$2->boundary,$2->parent_boundary);
+        //printf("==========================\n");
+    }
     | parts BOUNDARY part {
         $2 += 2;
         $3->parent_boundary = cmime_flbi_chomp_boundary($2,msg->linebreak);

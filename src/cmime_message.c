@@ -32,20 +32,6 @@ typedef struct {
     CMimeStringList_T *mime_bodies;
 } _StrippedData_T;
 
-/* extra header from given string */
-char *_extract_headers(char *s, char *empty_line) {
-    char *headers = NULL;
-    char *cp = NULL;
-    int offset;
-
-    cp = strstr(s,empty_line);
-    offset = strlen(s) - strlen(cp);
-    headers = (char *)calloc(offset + sizeof(char),sizeof(char));
-    strncpy(headers,s,offset);
-
-    return(headers);
-}
-
 /* find all boundaries in string */
 CMimeStringList_T *_get_boundaries(char *s) {
     CMimeStringList_T *boundaries = NULL;   
@@ -132,25 +118,28 @@ _StrippedData_T *_strip_message(CMimeMessage_T **msg, char *buffer) {
     _StrippedData_T *sd = NULL;
     char *newline_char = NULL;
     char *empty_line = NULL;
-    int len_empty_line;
+    size_t len_newline;
+    size_t len_empty_line;
     char *it = NULL;
-    int offset;
+    size_t offset;
     int count = 0;
     char *marker = NULL;
-    int len_marker;
-    char *headers = NULL;
+    char *nxt_marker = NULL;
+    size_t len_marker;
     char *nxt = NULL;
     char *mime_body_start = NULL;
     char *mime_body = NULL;
-
+    char *t = NULL;
+    
     sd = (_StrippedData_T *)calloc((size_t)1,sizeof(_StrippedData_T));
     sd->stripped = NULL;
 
     /* search newline and build header-body seperator */
     newline_char = _cmime_internal_determine_linebreak(buffer);
+    len_newline = strlen(newline_char);
     asprintf(&empty_line,"%s%s",newline_char,newline_char);
     len_empty_line = strlen(empty_line);
-    
+
     cmime_string_list_free((*msg)->boundaries);
     (*msg)->boundaries = _get_boundaries(buffer);
     if (cmime_string_list_get_count((*msg)->boundaries)!=0)
@@ -163,6 +152,7 @@ _StrippedData_T *_strip_message(CMimeMessage_T **msg, char *buffer) {
         while((it = strstr(it,"--"))!=NULL) {
             marker = _cmime_internal_match_boundary((*msg)->boundaries,it);
             if (marker != NULL) {
+                len_marker = strlen(marker);
                 /* check existing mime body marker */
                 if (mime_body_start != NULL) {
                     /* there is a start marker.... */
@@ -183,17 +173,15 @@ _StrippedData_T *_strip_message(CMimeMessage_T **msg, char *buffer) {
                     mime_body_start = NULL;
                 }
 
-                len_marker = strlen(marker);
                 // check if it's a closing boundary
                 if ((marker[len_marker-2] == '-') && (marker[len_marker-1] == '-')) {
-                    free(marker);
-                    nxt = it + len_marker;
+                    nxt = strstr(it,newline_char);
                     if ((nxt = strstr(nxt,"--"))!=NULL) {
-                        if ((marker = _cmime_internal_match_boundary((*msg)->boundaries,nxt))!=NULL) {  
+                        if ((nxt_marker = _cmime_internal_match_boundary((*msg)->boundaries,nxt))!=NULL) {  
                             /* we've found another boundary, so it's not the last part. 
                              * Offset is the difference between previous found boundary and new one */
                             offset = strlen(it) - strlen(nxt); 
-                            free(marker);
+                            free(nxt_marker);
                         }
                     }
 
@@ -201,9 +189,8 @@ _StrippedData_T *_strip_message(CMimeMessage_T **msg, char *buffer) {
                         /* since _match_boundary has not found another part behind,
                          * this seems to be the end...my best friend.
                          * Offset is the difference between previous found boundary and file end */
-                        offset = strlen(it);                             
+                        offset = strlen(it);                           
                 } else {
-                    free(marker);
                     if (count == 0) {
                         /* this is the first run, so we have to copy the message
                          * headers first */
@@ -214,13 +201,14 @@ _StrippedData_T *_strip_message(CMimeMessage_T **msg, char *buffer) {
                     }
 
                     /* calculate offset for mime part headers */
-                    headers = _extract_headers(strstr(it,newline_char),empty_line);
-                    offset = len_marker + strlen(headers) + len_empty_line;
-                    free(headers);
+                    t = strstr(it,empty_line);
+                    t = t + strlen(empty_line);
+                    offset = strlen(it) - strlen(t);
 
-                    /* Now it's time to grap the mime part body.
-                     * Set a marker where the mime part content begins*/
-                    mime_body_start = it + offset;
+                    if (offset > 0)
+                        /* Now it's time to grap the mime part body.
+                         * Set a marker where the mime part content begins*/
+                        mime_body_start = t;
                 }
                 
                 count++;
@@ -229,7 +217,9 @@ _StrippedData_T *_strip_message(CMimeMessage_T **msg, char *buffer) {
                     strncat(sd->stripped,it,offset);
                     offset = -1;
                 }
-            }  
+            
+                free(marker);
+            }
             it++;
         }
     } else {
@@ -804,7 +794,6 @@ char *cmime_message_to_string(CMimeMessage_T *message) {
     CMimeAddressType_T t = -1;
     char *s = NULL;
     char *s2 = NULL;
-    char *s3 = NULL;
     int count = 0;
 
     assert(message);
@@ -830,15 +819,20 @@ char *cmime_message_to_string(CMimeMessage_T *message) {
             t = CMIME_ADDRESS_TYPE_FROM;
 
         if (t != -1) {
-            asprintf(&s,"%s: ",h->name);
+            asprintf(&s,"%s:",h->name);
             if (t == CMIME_ADDRESS_TYPE_FROM) {
                 s2 = cmime_address_to_string(message->sender);
-                s3 = s2;
-                if (s3[0] == (unsigned char)32)
-                    s3++;
-                s = (char *)realloc(s,strlen(s) + strlen(s3) + sizeof(char));
-                strcat(s,s3);
+                if (strlen(s2) > 0) {
+                    if (s2[0] != (unsigned char)32) {
+                        s = (char *)realloc(s,2 * sizeof(char));
+                        s[strlen(s)] = ' ';
+                        s[strlen(s) + 1] = '\0';
+                    }
+                    s = (char *)realloc(s,strlen(s) + strlen(s2) + sizeof(char));
+                    strcat(s,s2);
+                }
                 free(s2);    
+                
             } else {
                 r = cmime_list_head(message->recipients);
                 count = 0;
@@ -846,16 +840,20 @@ char *cmime_message_to_string(CMimeMessage_T *message) {
                     addr = (CMimeAddress_T *)cmime_list_data(r);
                     if (addr->type == t) {
                         s2 = cmime_address_to_string(addr);
-                        s3 = s2;
-                        if (count==0) {
-                            if (s3[0] == (unsigned char)32)
-                                s3++;
+                        if (strlen(s2) > 0) {
+                            if (count==0) {
+                                if (s2[0] != (unsigned char)32) {
+                                    s = (char *)realloc(s,2 * sizeof(char));
+                                    s[strlen(s)] = ' ';
+                                    s[strlen(s) + 1] = '\0';
+                                }
+                            }
+                            count++;
+                            s = (char *)realloc(s,strlen(s) + strlen(s2) + sizeof(char));
+                            strcat(s,s2);
                         }
-                        count++;
-                        s = (char *)realloc(s,strlen(s) + strlen(s3) + sizeof(char));
-                        strcat(s,s3);
                         free(s2);    
-			
+			            
                         if (r->next != NULL) {
                             addr = (CMimeAddress_T *)cmime_list_data(r->next);
                             if (addr->type == t) {
