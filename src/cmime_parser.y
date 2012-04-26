@@ -42,7 +42,8 @@
 %%
 
 message:
-    headers gap parts
+    headers
+    |headers gap parts
     | headers parts
     | headers BODY_CONTENT {
         CMimePart_T *p = cmime_part_new();
