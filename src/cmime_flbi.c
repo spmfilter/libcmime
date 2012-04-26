@@ -115,12 +115,13 @@ void cmime_flbi_check_part_boundary(CMimePart_T *part) {
 
 char *cmime_flbi_scan_postface(char *s, CMimeMessage_T *msg) {
     char *it = s;
-    char *marker = NULL;
+    _BoundaryInfo_T *info = NULL;
     char *boundary;
     char *postface = NULL;
     char *nxt = NULL;
+    _BoundaryInfo_T *nxt_info = NULL;
     char *t = NULL;
-    int len, count;
+    int count;
     int offset = 0;
     CMimeListElem_T *elem = NULL;
     CMimePart_T *part = NULL;
@@ -128,10 +129,11 @@ char *cmime_flbi_scan_postface(char *s, CMimeMessage_T *msg) {
 
     count = 0;
     while((it = strstr(it,"--"))!=NULL) {
-        marker = _cmime_internal_match_boundary(msg->boundaries,it,msg->linebreak);
-        if (marker!=NULL) {
-            len = strlen(marker);
-            if ((marker[len-2]=='-')&&(marker[len-1]=='-')) {
+        info = _cmime_internal_get_boundary_info(msg->boundaries,it,msg->linebreak);
+        if (info!=NULL) {
+            //len = strlen(marker);
+            //if ((marker[len-2]=='-')&&(marker[len-1]=='-')) {
+            if (info->type == CMIME_BOUNDARY_CLOSE) {
                 if (count == 0) {
                     offset = strlen(s) - strlen(it);
                     postface = (char *)calloc(offset + sizeof(char),sizeof(char));
@@ -139,21 +141,23 @@ char *cmime_flbi_scan_postface(char *s, CMimeMessage_T *msg) {
                     postface[strlen(postface)] = '\0';
                     count++;
                 } 
-                nxt = it + len;
+                nxt = it + info->len;
                 if ((nxt = strstr(nxt,"--"))!=NULL) { 
-                    if ((t = _cmime_internal_match_boundary(msg->boundaries,nxt,msg->linebreak))!=NULL) {  
-                        it = it + strlen(t);
+                    if ((nxt_info = _cmime_internal_get_boundary_info(msg->boundaries,nxt,msg->linebreak))!=NULL) {  
+                        it = it + nxt_info->len;
                         offset = strlen(it) - strlen(nxt); 
-                        free(t);
+                        free(nxt_info->marker);
+                        free(nxt_info);
+                        nxt_info = NULL;
                     } else
                         offset = strlen(s) - strlen(it);
                 } else {
-                    it = it + len;
+                    it = it + info->len;
                     offset = strlen(s) - strlen(it);
                 }
 
                 /* jump over 2 starting - chars for boundary comparsion */
-                boundary = marker;
+                boundary = info->marker;
                 boundary += 2 * sizeof(char);
                 /* find mime part which belongs to this boundary */
                 elem = cmime_list_tail(msg->parts);
@@ -186,7 +190,9 @@ char *cmime_flbi_scan_postface(char *s, CMimeMessage_T *msg) {
                 }
             }
             count++;
-            free(marker);
+            free(info->marker);
+            free(info);
+            info = NULL;
         }
         
         it++;

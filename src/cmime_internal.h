@@ -46,6 +46,12 @@ extern "C" {
 #define LF "\n"
 #define CR "\r"
 
+typedef struct {
+    CMimeBoundaryType_T type;
+    char *marker;
+    size_t len;
+} _BoundaryInfo_T;
+
 void _cmime_internal_header_destroy(void *data);
 
 char *_cmime_internal_determine_linebreak_from_file(const char *s);
@@ -55,7 +61,8 @@ void _cmime_internal_set_linked_header_value(CMimeList_T *l, const char *key, co
 char *_cmime_internal_get_linked_header_value(CMimeList_T *l, const char *key);
 CMimeHeader_T *_cmime_internal_get_linked_header(CMimeList_T *l, const char *key);
 void _cmime_internal_parts_destroy(void *data);
-char *_cmime_internal_match_boundary(CMimeStringList_T *boundaries, char *s, char *newline);
+_BoundaryInfo_T *_cmime_internal_get_boundary_info(CMimeStringList_T *boundaries, char *s, char *newline);
+
 
 #ifdef __cplusplus
 }

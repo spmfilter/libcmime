@@ -148,11 +148,12 @@ void _cmime_internal_parts_destroy(void *data) {
     cmime_part_free(p);
 }
 
-char *_cmime_internal_match_boundary(CMimeStringList_T *boundaries, char *s, char *newline) {
+_BoundaryInfo_T *_cmime_internal_get_boundary_info(CMimeStringList_T *boundaries, char *s, char *newline) {
+    _BoundaryInfo_T *info = NULL;
     int i;
     char *marker = NULL;
-    char *out = NULL;
     char *t = NULL;
+    char *bound;
     size_t offset;
 
     if (newline != NULL) {
@@ -163,16 +164,23 @@ char *_cmime_internal_match_boundary(CMimeStringList_T *boundaries, char *s, cha
             strncpy(t,s,offset);
             t[strlen(t)] = '\0';
             for(i=0; i < cmime_string_list_get_count(boundaries); i++) {    
-                asprintf(&marker,"--%s--",cmime_string_list_get(boundaries,i));
+                bound = cmime_string_list_get(boundaries,i);
+                asprintf(&marker,"--%s--",bound);
                 if (strcmp(t,marker)==0) {
-                    out = strdup(marker);
+                    info = (_BoundaryInfo_T *)calloc((size_t)1,sizeof(_BoundaryInfo_T));
+                    info->marker = strdup(marker);
+                    info->type = CMIME_BOUNDARY_CLOSE;
+                    info->len = strlen(marker);
                     free(marker);
                     break;
                 } else {
                     free(marker);
-                    asprintf(&marker,"--%s",cmime_string_list_get(boundaries,i));
+                    asprintf(&marker,"--%s",bound);
                     if (strcmp(t,marker)==0) {
-                        out = strdup(marker);
+                        info = (_BoundaryInfo_T *)calloc((size_t)1,sizeof(_BoundaryInfo_T));
+                        info->marker = strdup(marker);
+                        info->type = CMIME_BOUNDARY_OPEN;
+                        info->len = strlen(marker);
                         free(marker);
                         break;
                     }
@@ -183,5 +191,5 @@ char *_cmime_internal_match_boundary(CMimeStringList_T *boundaries, char *s, cha
         }
     }
 
-    return(out);
+    return(info);
 }

@@ -116,6 +116,7 @@ void _add_stripped_bodies(CMimeMessage_T **message, _StrippedData_T *sd) {
 
 _StrippedData_T *_strip_message(CMimeMessage_T **msg, char *buffer) {
     _StrippedData_T *sd = NULL;
+    _BoundaryInfo_T *info = NULL;
     char *newline_char = NULL;
     char *empty_line = NULL;
     size_t len_newline;
@@ -123,9 +124,7 @@ _StrippedData_T *_strip_message(CMimeMessage_T **msg, char *buffer) {
     char *it = NULL;
     size_t offset;
     int count = 0;
-    char *marker = NULL;
-    char *nxt_marker = NULL;
-    size_t len_marker;
+    _BoundaryInfo_T *nxt_info = NULL;
     char *nxt = NULL;
     char *mime_body_start = NULL;
     char *mime_body = NULL;
@@ -151,9 +150,8 @@ _StrippedData_T *_strip_message(CMimeMessage_T **msg, char *buffer) {
         sd->stripped = (char *)calloc(sizeof(char),sizeof(char));
         it = buffer;
         while((it = strstr(it,"--"))!=NULL) {
-            marker = _cmime_internal_match_boundary((*msg)->boundaries,it,newline_char);
-            if (marker != NULL) {
-                len_marker = strlen(marker);
+            info = _cmime_internal_get_boundary_info((*msg)->boundaries,it,newline_char);
+            if (info != NULL) {
                 /* check existing mime body marker */
                 if (mime_body_start != NULL) {
                     /* there is a start marker.... */
@@ -176,14 +174,16 @@ _StrippedData_T *_strip_message(CMimeMessage_T **msg, char *buffer) {
                 }
 
                 // check if it's a closing boundary
-                if ((marker[len_marker-2] == '-') && (marker[len_marker-1] == '-')) {
+                if (info->type == CMIME_BOUNDARY_CLOSE) {
                     nxt = strstr(it,newline_char);
                     if ((nxt = strstr(nxt,"--"))!=NULL) {
-                        if ((nxt_marker = _cmime_internal_match_boundary((*msg)->boundaries,nxt,newline_char))!=NULL) {  
+                        if ((nxt_info = _cmime_internal_get_boundary_info((*msg)->boundaries,nxt,newline_char))!=NULL) {  
                             /* we've found another boundary, so it's not the last part. 
                              * Offset is the difference between previous found boundary and new one */
                             offset = strlen(it) - strlen(nxt); 
-                            free(nxt_marker);
+                            free(nxt_info->marker);
+                            free(nxt_info);
+                            nxt_info = NULL;
                         }
                     }
 
@@ -220,7 +220,9 @@ _StrippedData_T *_strip_message(CMimeMessage_T **msg, char *buffer) {
                     offset = -1;
                 }
             
-                free(marker);
+                free(info->marker);
+                free(info);
+                info = NULL;
             }
             it++;
         }
@@ -228,7 +230,6 @@ _StrippedData_T *_strip_message(CMimeMessage_T **msg, char *buffer) {
         sd->stripped = buffer;
     }
     free(empty_line);
-
 
     //printf("STRIPPED [%s]\n",sd->stripped);
     return(sd);

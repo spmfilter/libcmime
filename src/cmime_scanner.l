@@ -66,18 +66,23 @@ LINE_RE             (.*{LF_RE})
 }
 
 <GAP>{LINE_RE} {
-    char *marker = NULL;
+    _BoundaryInfo_T *info = NULL;
     
-    marker = _cmime_internal_match_boundary(yyextra->boundaries,yytext,yyextra->linebreak);
-    if (marker!=NULL) {
-        free(marker);
-        BEGIN(MIME_PART);
-        yylval->string = yytext;
-        return BOUNDARY;
-    } else {
-        yylval->string = yytext;
-        return GAP_LINE;
-    }
+    info = _cmime_internal_get_boundary_info(yyextra->boundaries,yytext,yyextra->linebreak);
+    if (info!=NULL) {
+        if (info->type == CMIME_BOUNDARY_OPEN) {
+            free(info->marker);
+            free(info);
+            BEGIN(MIME_PART);
+            yylval->string = yytext;
+            return BOUNDARY;
+        }
+        free(info);
+    } 
+ 
+    yylval->string = yytext;
+    return GAP_LINE;
+
 }
 
 <BODY>{BODY_RE} {
@@ -87,23 +92,20 @@ LINE_RE             (.*{LF_RE})
 
 
 <MIME_CONTENT>{LINE_RE} {
-    char *marker = NULL;
-    int len;
+    _BoundaryInfo_T *info = NULL;
     yylval->string = yytext; 
         
-    marker = _cmime_internal_match_boundary(yyextra->boundaries,yytext,yyextra->linebreak);
+    info = _cmime_internal_get_boundary_info(yyextra->boundaries,yytext,yyextra->linebreak);
     
-    if (marker!=NULL) {
-        len = strlen(marker);
-        
-        if ((marker[len-2] == '-') && (marker[len-1] == '-')) {
-            free(marker);  
-            marker = NULL;
+    if (info!=NULL) {
+        if (info->type == CMIME_BOUNDARY_CLOSE) {
+            free(info->marker);
+            free(info);
             BEGIN(POSTFACE);
             return PART_END;
         } else {
-            free(marker);
-            marker = NULL;
+            free(info->marker);
+            free(info);
             BEGIN(MIME_PART); 
             return BOUNDARY;
         }
@@ -131,20 +133,20 @@ LINE_RE             (.*{LF_RE})
 
 
 <POSTFACE>{LINE_RE} {
-    char *marker = NULL;
-    int len;
+    _BoundaryInfo_T *info = NULL;
     
-    marker = _cmime_internal_match_boundary(yyextra->boundaries,yytext,yyextra->linebreak);
+    info = _cmime_internal_get_boundary_info(yyextra->boundaries,yytext,yyextra->linebreak);
     
-    if (marker!=NULL) {
-        len = strlen(marker);
-        if ((marker[len-2]!='-')&&(marker[len-1]!='-')) {
-            free(marker);
+    if (info!=NULL) {
+        if (info->type == CMIME_BOUNDARY_OPEN) {
+            free(info->marker);
+            free(info);
             BEGIN(MIME_PART);
             yylval->string = yytext;
             return BOUNDARY;
         } else {
-            free(marker);
+            free(info->marker);
+            free(info);
             yylval->string = yytext;
             return POSTFACE_LINE;
         }
