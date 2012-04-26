@@ -159,9 +159,9 @@ char *_cmime_internal_match_boundary(CMimeStringList_T *boundaries, char *s, cha
         t = strstr(s,newline);
         if (t!=NULL) {
             offset = strlen(s) - strlen(t);
-            t = (char *)calloc(offset,sizeof(char));
+            t = (char *)calloc(offset + sizeof(char),sizeof(char));
             strncpy(t,s,offset);
-
+            t[strlen(t) + sizeof(char)] = '\0';
             for(i=0; i < cmime_string_list_get_count(boundaries); i++) {    
                 asprintf(&marker,"--%s--",cmime_string_list_get(boundaries,i));
                 if (strcmp(t,marker)==0) {
