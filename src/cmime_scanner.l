@@ -43,6 +43,7 @@ LINE_RE             (.*{LF_RE})
 {HEADERNAME_RE} {
     BEGIN(HEADER);
     yylval->string = strsep(&yytext,":");
+    
     return HEADER_NAME;
 }
 
@@ -161,6 +162,7 @@ LINE_RE             (.*{LF_RE})
 %%
 
 int cmime_scanner_scan_buffer(CMimeMessage_T **message, char *buffer) {
+    int ret;
     yyscan_t scanner;
     YY_BUFFER_STATE buf;
 
@@ -171,10 +173,10 @@ int cmime_scanner_scan_buffer(CMimeMessage_T **message, char *buffer) {
 
     buf = yy_scan_string(buffer, scanner);
     yy_switch_to_buffer(buf,scanner);
-    yyparse(scanner,(*message));
+    ret = yyparse(scanner,(*message));
     yy_delete_buffer(buf,scanner);
 
     yylex_destroy(scanner);
 
-    return(0);
+    return(ret);
 }

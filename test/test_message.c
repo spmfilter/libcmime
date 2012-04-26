@@ -65,7 +65,7 @@ int main (int argc, char const *argv[]) {
         /* use message path from command line argument */
         fname = strdup(argv[1]);
         i = cmime_message_from_file(&msg,fname);
-        free(fname);        
+          
         if (i == 0) {
         /*
             printf("Message summary:\n=========================================\n");
@@ -95,7 +95,8 @@ int main (int argc, char const *argv[]) {
             printf("%s",msg_string);
             free(msg_string);
         } else {
-            printf("failed to open file [%s]\n",fname);
+            printf("failed to parse file [%s] [%d]\n",fname,i);
+            free(fname);      
         } 
 
         cmime_message_free(msg);

@@ -358,7 +358,8 @@ void cmime_message_add_generated_boundary(CMimeMessage_T *message);
  * @brief Parse given file and create a CMimeMessage_T object
  * @param message out param to return the new message object
  * @param filename path to message file
- * @returns 0 on success, -1 on stat error, -2 if not a regular file, -3 if reading fails
+ * @returns 0 on success, -1 on stat error, -2 if not a regular file, -3 if reading fails, 
+ *   1 if parsing failed because of invalid input, 2 if parsing failed due to memory exhaustion
  */
 int cmime_message_from_file(CMimeMessage_T **message, const char *filename);
 
@@ -384,7 +385,8 @@ char *cmime_message_to_string(CMimeMessage_T *message);
  * @brief Parse given string and create a new CMimeMessage_T object
  * @param message out param to return the new message object
  * @param content message string to parse
- * @returns 0 on success or -1 in case of error
+ * @returns 0 on success or -1 in case of error, 1 if parsing failed because of invalid input, 
+ *   2 if parsing failed due to memory exhaustion
  */
 int cmime_message_from_string(CMimeMessage_T **message, const char *content);
 

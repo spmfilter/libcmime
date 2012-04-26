@@ -41,11 +41,18 @@ CMimeStringList_T *_get_boundaries(char *s) {
     int pos = 0;
     char *it = NULL;
     char *nxt = NULL;
+    size_t offset = 0;
 
     boundaries = cmime_string_list_new();
 
     /* search for content-type headers, where new boundaries are defined */    
     while ((it = strcasestr(s,"content-type:"))!=NULL) {
+        offset = strlen(s) - strlen(it);
+
+        /* before the content-type header must not be any char except newline */
+        if ((s[offset-1]!=(unsigned char)10)||(s[offset-1]!=(unsigned char)13))
+            break;
+
         /* get all content-type header line(s) */
         header = (char *)calloc(sizeof(char),sizeof(char));
         while(*it != '\0') {
@@ -65,7 +72,6 @@ CMimeStringList_T *_get_boundaries(char *s) {
         pos = 0;
 
         s = it;
-        
         /* now search for boundary= in content-type header */
         if ((it = strcasestr(header,"boundary="))!=NULL) { 
             p = strstr(it,"=");
@@ -231,7 +237,6 @@ _StrippedData_T *_strip_message(CMimeMessage_T **msg, char *buffer) {
     }
     free(empty_line);
 
-    //printf("STRIPPED [%s]\n",sd->stripped);
     return(sd);
 }
 
