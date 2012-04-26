@@ -112,6 +112,7 @@ header:
             cmime_message_add_recipient(msg,s,t);
             free(s);
         } else if (t == CMIME_ADDRESS_TYPE_FROM) {
+            _cmime_internal_set_linked_header_value(msg->headers, $1, NULL);
             cmime_message_set_sender(msg,$2);
         } else {
             h = cmime_header_new();
