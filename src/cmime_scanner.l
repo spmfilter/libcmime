@@ -49,9 +49,9 @@ LINE_RE             (.*{LF_RE})
 <HEADER>{HEADERBODY_RE} {
     BEGIN(INITIAL);
 
-    if (yyextra->linebreak==NULL)
+    if (yyextra->linebreak==NULL) 
         yyextra->linebreak = strdup(_cmime_internal_determine_linebreak(yytext));
-    
+        
     yylval->string = cmime_string_chomp(yytext);
     return HEADER_CONTENT;   
 }
@@ -67,7 +67,8 @@ LINE_RE             (.*{LF_RE})
 
 <GAP>{LINE_RE} {
     char *marker = NULL;
-    marker = _cmime_internal_match_boundary(yyextra->boundaries,yytext);
+    
+    marker = _cmime_internal_match_boundary(yyextra->boundaries,yytext,yyextra->linebreak);
     if (marker!=NULL) {
         free(marker);
         BEGIN(MIME_PART);
@@ -88,21 +89,25 @@ LINE_RE             (.*{LF_RE})
 <MIME_CONTENT>{LINE_RE} {
     char *marker = NULL;
     int len;
-    marker = _cmime_internal_match_boundary(yyextra->boundaries,yytext);
+    yylval->string = yytext; 
+        
+    marker = _cmime_internal_match_boundary(yyextra->boundaries,yytext,yyextra->linebreak);
+    
     if (marker!=NULL) {
-        yylval->string = yytext; 
         len = strlen(marker);
+        
         if ((marker[len-2] == '-') && (marker[len-1] == '-')) {
             free(marker);  
+            marker = NULL;
             BEGIN(POSTFACE);
             return PART_END;
         } else {
             free(marker);
+            marker = NULL;
             BEGIN(MIME_PART); 
             return BOUNDARY;
         }
     } else {
-        yylval->string = yytext;
         return LINE;
     } 
 }
@@ -129,8 +134,8 @@ LINE_RE             (.*{LF_RE})
     char *marker = NULL;
     int len;
     
-    marker = _cmime_internal_match_boundary(yyextra->boundaries,yytext);
-
+    marker = _cmime_internal_match_boundary(yyextra->boundaries,yytext,yyextra->linebreak);
+    
     if (marker!=NULL) {
         len = strlen(marker);
         if ((marker[len-2]!='-')&&(marker[len-1]!='-')) {

@@ -99,7 +99,7 @@ char *cmime_string_strip(char *s) {
 
 char *cmime_string_chomp(char *s) {
     char *p = NULL;
-
+    
     switch(s[strlen(s)-1]) {
         case '\n':
             if((p = strrchr(s,'\r')) != NULL ) *p = '\0';

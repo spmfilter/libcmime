@@ -126,7 +126,7 @@ char *cmime_flbi_scan_postface(char *s, CMimeMessage_T *msg) {
 
     count = 0;
     while((it = strstr(it,"--"))!=NULL) {
-        marker = _cmime_internal_match_boundary(msg->boundaries,it);
+        marker = _cmime_internal_match_boundary(msg->boundaries,it,msg->linebreak);
         if (marker!=NULL) {
             len = strlen(marker);
             if ((marker[len-2]=='-')&&(marker[len-1]=='-')) {
@@ -138,7 +138,7 @@ char *cmime_flbi_scan_postface(char *s, CMimeMessage_T *msg) {
                 } 
                 nxt = it + len;
                 if ((nxt = strstr(nxt,"--"))!=NULL) { 
-                    if ((t = _cmime_internal_match_boundary(msg->boundaries,nxt))!=NULL) {  
+                    if ((t = _cmime_internal_match_boundary(msg->boundaries,nxt,msg->linebreak))!=NULL) {  
                         it = it + strlen(t);
                         offset = strlen(it) - strlen(nxt); 
                         free(t);

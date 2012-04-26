@@ -148,22 +148,40 @@ void _cmime_internal_parts_destroy(void *data) {
     cmime_part_free(p);
 }
 
-char *_cmime_internal_match_boundary(CMimeStringList_T *boundaries, char *s) {
+char *_cmime_internal_match_boundary(CMimeStringList_T *boundaries, char *s, char *newline) {
     int i;
     char *marker = NULL;
+    char *out = NULL;
+    char *t = NULL;
+    size_t offset;
 
-    for(i=0; i < cmime_string_list_get_count(boundaries); i++) {
-        asprintf(&marker,"--%s--",cmime_string_list_get(boundaries,i));
-        if (strncmp(s,marker,strlen(marker))==0) {
-            return(marker);
-        } else {
-            free(marker);
-            asprintf(&marker,"--%s",cmime_string_list_get(boundaries,i));
-            if (strncmp(marker,s,strlen(marker))==0) {
-                return(marker);
+    if (newline != NULL) {
+        t = strstr(s,newline);
+        if (t!=NULL) {
+            offset = strlen(s) - strlen(t);
+            t = (char *)calloc(offset,sizeof(char));
+            strncpy(t,s,offset);
+
+            for(i=0; i < cmime_string_list_get_count(boundaries); i++) {    
+                asprintf(&marker,"--%s--",cmime_string_list_get(boundaries,i));
+                if (strcmp(t,marker)==0) {
+                    out = strdup(marker);
+                    free(marker);
+                    break;
+                } else {
+                    free(marker);
+                    asprintf(&marker,"--%s",cmime_string_list_get(boundaries,i));
+                    if (strcmp(t,marker)==0) {
+                        out = strdup(marker);
+                        free(marker);
+                        break;
+                    }
+                    free(marker);
+                }
             }
-            free(marker);
+            free(t);
         }
     }
-    return(NULL);
+
+    return(out);
 }

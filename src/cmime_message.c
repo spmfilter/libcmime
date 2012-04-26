@@ -136,6 +136,7 @@ _StrippedData_T *_strip_message(CMimeMessage_T **msg, char *buffer) {
 
     /* search newline and build header-body seperator */
     newline_char = _cmime_internal_determine_linebreak(buffer);
+    (*msg)->linebreak = strdup(newline_char);
     len_newline = strlen(newline_char);
     asprintf(&empty_line,"%s%s",newline_char,newline_char);
     len_empty_line = strlen(empty_line);
@@ -150,7 +151,7 @@ _StrippedData_T *_strip_message(CMimeMessage_T **msg, char *buffer) {
         sd->stripped = (char *)calloc(sizeof(char),sizeof(char));
         it = buffer;
         while((it = strstr(it,"--"))!=NULL) {
-            marker = _cmime_internal_match_boundary((*msg)->boundaries,it);
+            marker = _cmime_internal_match_boundary((*msg)->boundaries,it,newline_char);
             if (marker != NULL) {
                 len_marker = strlen(marker);
                 /* check existing mime body marker */
@@ -177,7 +178,7 @@ _StrippedData_T *_strip_message(CMimeMessage_T **msg, char *buffer) {
                 if ((marker[len_marker-2] == '-') && (marker[len_marker-1] == '-')) {
                     nxt = strstr(it,newline_char);
                     if ((nxt = strstr(nxt,"--"))!=NULL) {
-                        if ((nxt_marker = _cmime_internal_match_boundary((*msg)->boundaries,nxt))!=NULL) {  
+                        if ((nxt_marker = _cmime_internal_match_boundary((*msg)->boundaries,nxt,newline_char))!=NULL) {  
                             /* we've found another boundary, so it's not the last part. 
                              * Offset is the difference between previous found boundary and new one */
                             offset = strlen(it) - strlen(nxt); 
@@ -198,20 +199,20 @@ _StrippedData_T *_strip_message(CMimeMessage_T **msg, char *buffer) {
                         sd->stripped = (char *)realloc(sd->stripped,strlen(sd->stripped) + offset + sizeof(char));
                         strncat(sd->stripped,buffer,offset);
                         offset = -1;
+                        
+                        count++;
                     }
 
                     /* calculate offset for mime part headers */
                     t = strstr(it,empty_line);
                     t = t + strlen(empty_line);
                     offset = strlen(it) - strlen(t);
-
                     if (offset > 0)
                         /* Now it's time to grap the mime part body.
                          * Set a marker where the mime part content begins*/
                         mime_body_start = t;
                 }
                 
-                count++;
                 if (offset != -1) {
                     sd->stripped = (char *)realloc(sd->stripped,strlen(sd->stripped) + offset + sizeof(char));
                     strncat(sd->stripped,it,offset);
