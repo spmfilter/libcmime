@@ -90,7 +90,7 @@ CMimeAddress_T *cmime_address_parse_string(const char *s) {
         if (offset > 0) {
             ca->name = (char *)calloc(offset + sizeof(char),sizeof(char));
             strncpy(ca->name,s,offset);
-            ca->name[strlen(ca->name) + sizeof(char)] = '\0';
+            ca->name[strlen(ca->name)] = '\0';
         }
 
         ca->email = (char *)calloc(strlen(t1) + sizeof(char),sizeof(char));
@@ -98,7 +98,7 @@ CMimeAddress_T *cmime_address_parse_string(const char *s) {
     }   else {
         ca->email = (char *)calloc(size_in + sizeof(char),sizeof(char));
         strncpy(ca->email,s,size_in);
-        ca->email[strlen(ca->email) + sizeof(char)] = '\0';
+        ca->email[strlen(ca->email)] = '\0';
     }
 
     ca->parsed = 1;

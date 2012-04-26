@@ -34,7 +34,7 @@ CMimeInfo_T *_split_combined_info(char *combined) {
     len2 = strlen(t1);
     mi->mime_type = (char *)calloc((len1 - len2) + sizeof(char),sizeof(char));
     strncpy(mi->mime_type,combined,len1 - len2);
-    mi->mime_type[strlen(mi->mime_type) + sizeof(char)] = '\0';
+    mi->mime_type[strlen(mi->mime_type)] = '\0';
 
     t2 = strchr(t1,'=');
     t2++;
@@ -68,7 +68,7 @@ char *cmime_util_get_mimetype(const char *filename) {
         retval =  (char *)calloc(strlen(buf) + sizeof(char), sizeof(char));
         buf = cmime_string_chomp(buf);
         strncpy(retval, buf, strlen(buf));
-        retval[strlen(retval) + sizeof(char)] = '\0';
+        retval[strlen(retval)] = '\0';
         free(buf);
         fclose(fh);
         return(retval);

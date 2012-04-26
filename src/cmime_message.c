@@ -162,7 +162,7 @@ _StrippedData_T *_strip_message(CMimeMessage_T **msg, char *buffer) {
                         /* calculate offset to next boundary and copy body */
                         mime_body = (char *)calloc(offset + sizeof(char),sizeof(char));
                         strncpy(mime_body,mime_body_start,offset);
-                        mime_body[strlen(mime_body) + sizeof(char)] = '\0';
+                        mime_body[strlen(mime_body)] = '\0';
                     } else {
                         /* this part seems to be empty */
                         mime_body = (char *)calloc(sizeof(char),sizeof(char));

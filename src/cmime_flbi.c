@@ -37,7 +37,7 @@ char *cmime_flbi_boundary_linebreak(char *s, char *linebreak) {
         len = strlen(linebreak);
         out = (char *)calloc(len + sizeof(char), sizeof(char));
         strncpy(out,p,len);
-        out[strlen(out) + sizeof(char)] = '\0';
+        out[strlen(out)] = '\0';
     }
 
     return(out);   
@@ -54,7 +54,7 @@ char *cmime_flbi_chomp_boundary(char *s, char *linebreak) {
         if (offset > 0) {
             out = (char *)calloc(offset + sizeof(char),sizeof(char));
             strncpy(out,s,offset);
-            out[strlen(out) + sizeof(char)] = '\0';
+            out[strlen(out)] = '\0';
         }
     } else 
         out = strdup(s);
@@ -136,7 +136,7 @@ char *cmime_flbi_scan_postface(char *s, CMimeMessage_T *msg) {
                     offset = strlen(s) - strlen(it);
                     postface = (char *)calloc(offset + sizeof(char),sizeof(char));
                     strncpy(postface,s,offset);
-                    postface[strlen(postface) + sizeof(char)] = '\0';
+                    postface[strlen(postface)] = '\0';
                     count++;
                 } 
                 nxt = it + len;
@@ -176,7 +176,7 @@ char *cmime_flbi_scan_postface(char *s, CMimeMessage_T *msg) {
 
                         t = (char *)calloc(offset + sizeof(char),sizeof(char));
                         strncpy(t,it,offset);
-                        t[strlen(t) + sizeof(char)] = '\0';
+                        t[strlen(t)] = '\0';
                         part->postface = t;
                         part->last = 1;
                         break;
