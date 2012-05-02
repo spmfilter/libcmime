@@ -57,36 +57,6 @@ char *cmime_string_list_get(CMimeStringList_T *sl,int pos) {
     return(sl->node[pos]);
 }
 
-CMimeStringList_T *cmime_string_split(const char *s, const char *sep, int maxsplit) {
-    CMimeStringList_T *sl;
-    char *cp = NULL;
-    char *tf = NULL;
-    char *tmp = NULL;
-    int size = 0;
-    int count = 0;
-    
-    size = strlen(s);
-    
-    assert(s);
-    assert(size>0);
-    assert(sep);
-
-    sl = cmime_string_list_new();
-    
-    tf = cp = strdup(s);
-    
-    while ((tmp = strsep(&cp, sep)) != NULL) {
-        cmime_string_list_insert(sl,tmp);
-        if ((maxsplit != 0) && (count == maxsplit))
-            break;
-        count++;
-    }
-
-    free(tf);
-    
-    return(sl);
-}
-
 char *cmime_string_strip(char *s) {
     assert(s);
 

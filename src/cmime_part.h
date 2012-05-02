@@ -19,7 +19,6 @@
  * @file cmime_part.h
  * @brief Defines functions and structs for mime part handling
  *
- * @example test_part.c
  * @example save_attachment_to_file.c
  */
 

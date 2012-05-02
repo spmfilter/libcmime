@@ -18,8 +18,6 @@
 /*!
  * @file cmime_header.h
  * @brief Defines functions and structs for header management
- *
- * @example test_header.c
  */
 
 #ifndef _CMIME_HEADER_H

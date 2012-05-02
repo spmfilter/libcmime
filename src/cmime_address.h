@@ -18,8 +18,6 @@
 /*!
  * @file cmime_address.h
  * @brief Defines functions and structs for email address handling
- *
- * @example test_address.c
  */
 
 #ifndef _CMIME_ADDRESS_H

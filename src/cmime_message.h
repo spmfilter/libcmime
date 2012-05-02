@@ -25,6 +25,7 @@
  * @example create_mime_message_skeleton.c
  * @example create_mime_message_skeleton_add_attachment.c
  * @example parse_mime_message.c
+ * @example save_attachment_to_file.c
  *
  */
 

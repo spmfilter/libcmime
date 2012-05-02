@@ -18,10 +18,6 @@
 /*!
  * @file cmime_list.h
  * @brief Defines functions and structs for double linked list
- *
- * This header is intended for use by libcmime only.
- *
- * @example test_list.c
  */
 
 #ifndef _CMIME_LIST_H

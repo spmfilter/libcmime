@@ -18,10 +18,6 @@
 /*!
  * @file cmime_qp.h
  * @brief quoted-printable functions
- *
- * ...
- *
- * @example test_qp.c
  */
 
 

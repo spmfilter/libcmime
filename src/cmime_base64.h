@@ -20,8 +20,6 @@
  * @brief Base64 functions
  *
  * This header is intended for use by any library or application, not only libcmime.
- *
- * @example test_base64.c
  */
 
 #ifndef _CMIME_BASE64_H
