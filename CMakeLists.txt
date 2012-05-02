@@ -76,3 +76,16 @@ set(CPACK_PACKAGE_NAME "libcmime")
 set(CPACK_PACKAGE_VENDOR "Axel Steiner <ast@treibsand.com>")
 set(CPACK_PACKAGE_DESCRIPTION_SUMMARY "libcmime - A C mime library")
 set(CPACK_PACKAGE_VERSION ${CMIME_VERSION})
+
+set(CPACK_SOURCE_PACKAGE_FILE_NAME "${CPACK_PACKAGE_NAME}-${CMIME_VERSION}")
+set(CPACK_SOURCE_GENERATOR TGZ)
+set(CPACK_SOURCE_IGNORE_FILES
+"\\\\.hg"
+"build"
+"build\\\\.properties"
+"ibcmime\\\\.pc\\\\.cmake"
+"doc/html/*"
+"debian"
+)
+
+include(CPack)

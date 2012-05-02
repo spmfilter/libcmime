@@ -58,8 +58,8 @@ extern "C" {
 #include "cmime_string.h"
 
 typedef enum _BoundaryType {
-    CMIME_BOUNDARY_OPEN, 
-    CMIME_BOUNDARY_CLOSE,
+    CMIME_BOUNDARY_OPEN, /**< indicates an opening boundary */
+    CMIME_BOUNDARY_CLOSE, /**< indicates an closing boundary */
 } CMimeBoundaryType_T;
 
 /*!
@@ -74,7 +74,7 @@ typedef struct {
     char *gap; /**< gap between headers an mime parts */
     CMimeList_T *parts; /**< mime parts */
     char *linebreak; /**< linebreak used by message */
-    CMimeStringList_T *boundaries;
+    CMimeStringList_T *boundaries; /**< list with all appearing boundaries */ 
 } CMimeMessage_T;
 
 /*!
