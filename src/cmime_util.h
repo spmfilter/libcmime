@@ -35,7 +35,7 @@ extern "C" {
 #include <errno.h>
 
 /*!
- * @struct CMimeInfo_T cmime_info.h
+ * @struct CMimeInfo_T cmime_util.h
  * @brief Struct with mime informations
  */
 typedef struct {

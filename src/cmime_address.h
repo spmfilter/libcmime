@@ -52,7 +52,7 @@ typedef struct {
 	char *name; /**< display name */
 	char *email; /**< the email address */
 	CMimeAddressType_T type; /**< type of address */
-    int parsed;
+    int parsed; /**< flag which indicates, if the object has been parsed */
 } CMimeAddress_T;
 
 /*!

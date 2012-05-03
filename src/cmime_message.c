@@ -27,10 +27,13 @@
 #include "cmime_flbi.h"
 #include "cmime_qp.h"
 
+
+#ifndef DOXYGEN_SHOULD_SKIP_THIS
 typedef struct {
     char *stripped;
     CMimeStringList_T *mime_bodies;
 } _StrippedData_T;
+#endif /* DOXYGEN_SHOULD_SKIP_THIS */
 
 /* find all boundaries in string */
 CMimeStringList_T *_get_boundaries(char *s) {

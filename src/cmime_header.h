@@ -40,7 +40,7 @@ typedef struct {
 	char *name; /**< name of the header */
 	char **value; /**< list with header values */
 	size_t count; /**< count of header appearance */
-    int parsed;
+    int parsed; /**< flag which indicates, if the object has been parsed */
 } CMimeHeader_T;
 
 

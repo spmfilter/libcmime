@@ -20,7 +20,7 @@
  * @brief Defines functions and structs for message handling
  *
  * @example append_and_prepend_subject.c
- * @example create_message.c
+ * @example create_mime_message.c
  * @example create_mime_message_part_from_file.c
  * @example create_mime_message_skeleton.c
  * @example create_mime_message_skeleton_add_attachment.c
@@ -57,6 +57,10 @@ extern "C" {
 #include "cmime_util.h"
 #include "cmime_string.h"
 
+/*!
+ * @enum CMimeBoundaryType_T 
+ * @brief Possible types of boundaries
+ */
 typedef enum _BoundaryType {
     CMIME_BOUNDARY_OPEN, /**< indicates an opening boundary */
     CMIME_BOUNDARY_CLOSE, /**< indicates an closing boundary */
@@ -477,7 +481,7 @@ CMimeMessage_T *cmime_message_create_skeleton(const char *sender, const char *re
 int cmime_message_part_remove(CMimeMessage_T *message, CMimePart_T *part);
 
 /*! 
- * @fn int cmime_part_add_child_part(CMimeMessage_T *message, CMimePart_T *part, CMimePart_T *child)
+ * @fn int cmime_message_add_child_part(CMimeMessage_T *message, CMimePart_T *part, CMimePart_T *child, CMimeMultipartType_T subtype)
  * @brief Add a child part to given mimepart, set content type and generate a boundary if necessary.
  * @param message a CMimeMessage_T object
  * @param part the parent mime part

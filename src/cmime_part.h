@@ -18,8 +18,6 @@
 /*!
  * @file cmime_part.h
  * @brief Defines functions and structs for mime part handling
- *
- * @example save_attachment_to_file.c
  */
 
 #ifndef _CMIME_PART_H
@@ -171,7 +169,7 @@ void cmime_part_set_postface(CMimePart_T *part, const char *s);
 char *cmime_part_to_string(CMimePart_T *part, const char *nl);
 
 /*!
- * @fn int cmime_part_from_file(CMimePart_T **part, char *filename)
+ * @fn int cmime_part_from_file(CMimePart_T **part, char *filename, const char *nl)
  * @brief Create a CMimePart_T object from file
  * @param part out param to return the new part
  * @param filename path to file
