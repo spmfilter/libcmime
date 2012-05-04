@@ -25,8 +25,7 @@
 #include "test_data.h"
 
 int main (int argc, char const *argv[]) {
-	CMimeStringList_T *sl;
-    CMimeStringList_T *sl2;
+    CMimeStringList_T *sl;
     
     char *s = NULL;
     
@@ -48,24 +47,9 @@ int main (int argc, char const *argv[]) {
     
     cmime_string_list_free(sl);
     
-    // check string split
-    sl2 = cmime_string_split(test_string1," ",3);
-    assert(cmime_string_list_get_count(sl2)==3);
-    
-    s = cmime_string_list_get(sl2,0);
-    assert(strcmp(s,"Test")==0);
-    
-    s = cmime_string_list_get(sl2,1);
-    assert(strcmp(s,"string")==0);
-    
-    s = cmime_string_list_get(sl2,2);
-    assert(strcmp(s,"1")==0);
-    
-    cmime_string_list_free(sl2);
-    
     // check string strip
     s = cmime_string_strip(test_string4);
     assert(strcmp(s,test_string3)==0);
 	
-	return(0);
+    return(0);
 }
