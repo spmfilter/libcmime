@@ -18,7 +18,7 @@ project so the library is still in beta state and there will be early and freque
 You can download the sources at http://libcmime.org/files
 Development is done using <a href="http://mercurial.selenic.com/" target="_blank">Mercurial</a>
 @code
-$ hg clone https://hg.libcmime.org/
+$ hg clone http://libcmime.org/hg/libcmime
 @endcode
 
 

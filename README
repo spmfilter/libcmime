@@ -42,7 +42,7 @@ MERCURIAL REPOSITORY
 If you want to get the very latest version of libcmime direct from the
 source code repository then you can use mercurial:
 
-        hg clone https://hg.libcmime.org/libcmime
+        hg clone http://libcmime.org/hg/libcmime
         
 See the download page for full details on all the ways to grab the
 source web-browsing of the mercurial repository, etc.:
