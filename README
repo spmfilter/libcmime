@@ -24,7 +24,7 @@ WEB SITE
 
 The main libcmime site is here: 
 	
-	http://libcmime.spmfilter.org
+	http://libcmime.org
 
 There you'll find downloads, API documentation, etc.
 
@@ -42,12 +42,12 @@ MERCURIAL REPOSITORY
 If you want to get the very latest version of libcmime direct from the
 source code repository then you can use mercurial:
 
-        hg clone http://www.spmfilter.org/hg/libcmime
+        hg clone https://hg.libcmime.org/libcmime
         
 See the download page for full details on all the ways to grab the
 source web-browsing of the mercurial repository, etc.:
 
-        http://libcmime.spmfilter.org/files
+        http://libcmime.org/files
 
 
 LICENSE INFORMATION
