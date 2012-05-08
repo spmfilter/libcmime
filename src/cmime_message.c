@@ -506,10 +506,6 @@ CMimeHeader_T *cmime_message_get_header(CMimeMessage_T *message, const char *hea
 
 int cmime_message_add_recipient(CMimeMessage_T *message, const char *recipient, CMimeAddressType_T t) {
     CMimeAddress_T * ca = NULL;
-    CMimeListElem_T *elem;
-    CMimeAddress_T *tca = NULL;
-    char *s1 = NULL;
-    char *s2 = NULL;
     int found = 0;
     
     assert(message);
@@ -522,25 +518,6 @@ int cmime_message_add_recipient(CMimeMessage_T *message, const char *recipient, 
         if (cmime_list_new(&message->recipients,_recipients_destroy)!=0) 
                 return(-1);
     }   
-
-    // check if given recipient already exists
-    elem = cmime_list_head(message->recipients);
-    while(elem != NULL) {
-        tca = (CMimeAddress_T *)cmime_list_data(elem);
-        
-        if (cmime_address_get_type(tca) == t) {
-            s1 = cmime_address_to_string(tca);
-            s2 = cmime_address_to_string(ca);
-            if (strcmp(s1,s2)==0) {
-                cmime_list_remove(message->recipients,elem,NULL);
-                found = 1;
-                break;
-            }
-            free(s1);
-            free(s2);
-        }
-        elem = elem->next;
-    }
 
     if (cmime_list_append(message->recipients,ca)!=0)
         return(-1);
