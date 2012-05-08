@@ -836,7 +836,8 @@ char *cmime_message_to_string(CMimeMessage_T *message) {
             if (t == CMIME_ADDRESS_TYPE_FROM) {
                 s2 = cmime_address_to_string(message->sender);
                 if (strlen(s2) > 0) {
-                    if (s2[0] != (unsigned char)32) {
+                    /* if first char is not space or tab append a single space */
+                    if ((s2[0] != (unsigned char)32) && ((s2[0] != (unsigned char)9))) {
                         s = (char *)realloc(s,2 * sizeof(char));
                         s[strlen(s)] = ' ';
                         s[strlen(s) + 1] = '\0';
@@ -855,7 +856,8 @@ char *cmime_message_to_string(CMimeMessage_T *message) {
                         s2 = cmime_address_to_string(addr);
                         if (strlen(s2) > 0) {
                             if (count==0) {
-                                if (s2[0] != (unsigned char)32) {
+                                /* if first char is not space or tab append a single space */
+                                if ((s2[0] != (unsigned char)32) && ((s2[0] != (unsigned char)9))) {
                                     s = (char *)realloc(s,2 * sizeof(char));
                                     s[strlen(s)] = ' ';
                                     s[strlen(s) + 1] = '\0';

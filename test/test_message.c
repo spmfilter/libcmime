@@ -98,7 +98,7 @@ int main (int argc, char const *argv[]) {
             printf("failed to parse file [%s] [%d]\n",fname,i);
             free(fname);      
         } 
-
+        free(fname);
         cmime_message_free(msg);
     } else {
         /* loop test_files */
