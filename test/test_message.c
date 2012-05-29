@@ -64,10 +64,10 @@ int main (int argc, char const *argv[]) {
     if (argc == 2) {
         /* use message path from command line argument */
         fname = strdup(argv[1]);
-        i = cmime_message_from_file(&msg,fname);
+        i = cmime_message_from_file(&msg,fname,1);
           
         if (i == 0) {
-        /*
+        
             printf("Message summary:\n=========================================\n");
             s = cmime_message_get_sender_string(msg);
             s2 = cmime_string_strip(s);
@@ -90,7 +90,7 @@ int main (int argc, char const *argv[]) {
             printf("Number of mime parts: [%d]\n",cmime_message_part_count(msg));
             printf("Message boundary: [%s]\n",cmime_message_get_boundary(msg));
             printf("=========================================\n\n");
-*/
+
             msg_string = cmime_message_to_string(msg);
             printf("%s",msg_string);
             free(msg_string);
@@ -175,7 +175,7 @@ int main (int argc, char const *argv[]) {
             
             msg = cmime_message_new();
             asprintf(&fname,"%s/%s",SAMPLES_DIR,test_files[i]);
-            retval = cmime_message_from_file(&msg,fname);
+            retval = cmime_message_from_file(&msg,fname,0);
             if (retval != 0)
                 return retval;
                 

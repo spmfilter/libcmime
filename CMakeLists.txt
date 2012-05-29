@@ -83,9 +83,12 @@ set(CPACK_SOURCE_IGNORE_FILES
 "\\\\.hg"
 "build"
 "build\\\\.properties"
-"ibcmime\\\\.pc\\\\.cmake"
 "doc/html/*"
 "debian"
+"libcmime\\\\.pc$"
+"src/lex\\\\.yy\\\\.c"
+"src/cmime_config\\\\.h$"
+"src/cmime_parser\\\\.tab*"
 )
 
 include(CPack)

@@ -51,7 +51,7 @@ int main(int argc, char *argv[])
         CMimeListElem_T *elem = NULL;
         CMimeAddress_T *ca = NULL;
 
-        i = cmime_message_from_file(&message,"/home/werner/libcmime/samples/m1006.txt");
+        i = cmime_message_from_file(&message,"/home/werner/libcmime/samples/m1006.txt",0);
         
         if(i == 0) {
             printf("Message summary:\n=========================================\n");

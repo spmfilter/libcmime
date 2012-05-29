@@ -45,7 +45,7 @@ int main(int argc, char *argv[]) {
         CMimePart_T *mp = NULL;
         CMimeListElem_T *elem = NULL;
 
-        i = cmime_message_from_file(&message,in_file);
+        i = cmime_message_from_file(&message,in_file,0);
         if(i == 0) {
 
             /* normally we would go through all the parts like follows */
@@ -89,3 +89,4 @@ int main(int argc, char *argv[]) {
 
 
 }
+

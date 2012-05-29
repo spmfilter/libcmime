@@ -48,3 +48,4 @@ int main (int argc, char const *argv[]) {
     cmime_address_free(ca);
     return(0);
 }
+

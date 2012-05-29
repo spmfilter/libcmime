@@ -53,7 +53,7 @@ CMimeStringList_T *_get_boundaries(char *s) {
         offset = strlen(s) - strlen(it);
 
         /* before the content-type header must not be any char except newline */
-        if ((s[offset-1]!=(unsigned char)10)||(s[offset-1]!=(unsigned char)13))
+        if ((s[offset-1]!=(unsigned char)10)&&(s[offset-1]!=(unsigned char)13))
             break;
 
         /* get all content-type header line(s) */
@@ -63,9 +63,19 @@ CMimeStringList_T *_get_boundaries(char *s) {
             nxt++;
 
             /* break if char is a newline is not followed by a whitespace or tabulator */
-            if (((*it==(unsigned char)10)||(*it==(unsigned char)13)) &&
-                    ((*nxt!=(unsigned char)9)&&(*nxt!=(unsigned char)32)))
+            
+            // we have a CR followed by a LF
+            if((*it==(unsigned char)13)&&(*nxt==(unsigned char)10)){
+                nxt++;
+
+                if((*nxt!=(unsigned char)9)&&(*nxt!=(unsigned char)32))
+                    break;
+            }  
+            
+            if (((*it==(unsigned char)13)||(*it==(unsigned char)10)) &&((*nxt!=(unsigned char)9)&&(*nxt!=(unsigned char)32))) {
                 break;
+            }
+            
 
             header = (char *)realloc(header,pos + 1 + sizeof(char));
             header[pos++] = *it;
@@ -123,7 +133,7 @@ void _add_stripped_bodies(CMimeMessage_T **message, _StrippedData_T *sd) {
     free(sd->stripped);
 }
 
-_StrippedData_T *_strip_message(CMimeMessage_T **msg, char *buffer) {
+_StrippedData_T *_strip_message(CMimeMessage_T **msg, char *buffer, int header_only) {
     _StrippedData_T *sd = NULL;
     _BoundaryInfo_T *info = NULL;
     char *newline_char = NULL;
@@ -155,88 +165,97 @@ _StrippedData_T *_strip_message(CMimeMessage_T **msg, char *buffer) {
         (*msg)->boundary = strdup(cmime_string_list_get((*msg)->boundaries, 0));
     sd->mime_bodies = cmime_string_list_new();
 
-    if (cmime_string_list_get_count((*msg)->boundaries) > 0) {
-        sd->stripped = (char *)calloc(sizeof(char),sizeof(char));
-        it = buffer;
-        while((it = strstr(it,"--"))!=NULL) {
-            info = _cmime_internal_get_boundary_info((*msg)->boundaries,it,newline_char);
-            if (info != NULL) {
-                /* check existing mime body marker */
-                if (mime_body_start != NULL) {
-                    /* there is a start marker.... */
-                    offset = strlen(mime_body_start) - strlen(it);
-                    if (offset > 0) {
-                        /* calculate offset to next boundary and copy body */
-                        mime_body = (char *)calloc(offset + sizeof(char),sizeof(char));
-                        strncpy(mime_body,mime_body_start,offset);
-                        mime_body[strlen(mime_body)] = '\0';
-                    } else {
-                        /* this part seems to be empty */
-                        mime_body = (char *)calloc(sizeof(char),sizeof(char));
-                        mime_body[0] = '\0';
-                    }
-                    cmime_string_list_insert(sd->mime_bodies, mime_body);
-                    free(mime_body);
-
-                    offset = -1;
-                    mime_body_start = NULL;
-                }
-
-                // check if it's a closing boundary
-                if (info->type == CMIME_BOUNDARY_CLOSE) {
-                    nxt = strstr(it,newline_char);
-                    if ((nxt = strstr(nxt,"--"))!=NULL) {
-                        if ((nxt_info = _cmime_internal_get_boundary_info((*msg)->boundaries,nxt,newline_char))!=NULL) {  
-                            /* we've found another boundary, so it's not the last part. 
-                             * Offset is the difference between previous found boundary and new one */
-                            offset = strlen(it) - strlen(nxt); 
-                            free(nxt_info->marker);
-                            free(nxt_info);
-                            nxt_info = NULL;
-                        }
-                    }
-
-                    if (offset == -1)
-                        /* since _match_boundary has not found another part behind,
-                         * this seems to be the end...my best friend.
-                         * Offset is the difference between previous found boundary and file end */
-                        offset = strlen(it);                           
-                } else {
-                    if (count == 0) {
-                        /* this is the first run, so we have to copy the message
-                         * headers first */
-                        offset = strlen(buffer) - strlen(it);    
-                        sd->stripped = (char *)realloc(sd->stripped,strlen(sd->stripped) + offset + sizeof(char));
-                        strncat(sd->stripped,buffer,offset);
-                        offset = -1;
-                        
-                        count++;
-                    }
-
-                    /* calculate offset for mime part headers */
-                    t = strstr(it,empty_line);
-                    t = t + strlen(empty_line);
-                    offset = strlen(it) - strlen(t);
-                    if (offset > 0)
-                        /* Now it's time to grap the mime part body.
-                         * Set a marker where the mime part content begins*/
-                        mime_body_start = t;
-                }
-                
-                if (offset != -1) {
-                    sd->stripped = (char *)realloc(sd->stripped,strlen(sd->stripped) + offset + sizeof(char));
-                    strncat(sd->stripped,it,offset);
-                    offset = -1;
-                }
-            
-                free(info->marker);
-                free(info);
-                info = NULL;
-            }
-            it++;
+    if (header_only == 1) {
+        if((t = strstr(buffer,empty_line)) != NULL) {
+            offset = strlen(buffer) - strlen(t);    
+            sd->stripped = (char *)calloc(offset + sizeof(char),sizeof(char));
+            strncpy(sd->stripped,buffer,offset);
+            sd->stripped[offset] = '\0';
         }
     } else {
-        sd->stripped = buffer;
+        if (cmime_string_list_get_count((*msg)->boundaries) > 0) {
+            sd->stripped = (char *)calloc(sizeof(char),sizeof(char));
+            it = buffer;
+            while((it = strstr(it,"--"))!=NULL) {
+                info = _cmime_internal_get_boundary_info((*msg)->boundaries,it,newline_char);
+                if (info != NULL) {
+                    /* check existing mime body marker */
+                    if (mime_body_start != NULL) {
+                        /* there is a start marker.... */
+                        offset = strlen(mime_body_start) - strlen(it);
+                        if (offset > 0) {
+                            /* calculate offset to next boundary and copy body */
+                            mime_body = (char *)calloc(offset + sizeof(char),sizeof(char));
+                            strncpy(mime_body,mime_body_start,offset);
+                            mime_body[strlen(mime_body)] = '\0';
+                        } else {
+                            /* this part seems to be empty */
+                            mime_body = (char *)calloc(sizeof(char),sizeof(char));
+                            mime_body[0] = '\0';
+                        }
+                        cmime_string_list_insert(sd->mime_bodies, mime_body);
+                        free(mime_body);
+
+                        offset = -1;
+                        mime_body_start = NULL;
+                    }
+
+                    // check if it's a closing boundary
+                    if (info->type == CMIME_BOUNDARY_CLOSE) {
+                        nxt = strstr(it,newline_char);
+                        if ((nxt = strstr(nxt,"--"))!=NULL) {
+                            if ((nxt_info = _cmime_internal_get_boundary_info((*msg)->boundaries,nxt,newline_char))!=NULL) {  
+                                /* we've found another boundary, so it's not the last part. 
+                                 * Offset is the difference between previous found boundary and new one */
+                                offset = strlen(it) - strlen(nxt); 
+                                free(nxt_info->marker);
+                                free(nxt_info);
+                                nxt_info = NULL;
+                            }
+                        }
+
+                        if (offset == -1)
+                            /* since _match_boundary has not found another part behind,
+                             * this seems to be the end...my best friend.
+                             * Offset is the difference between previous found boundary and file end */
+                            offset = strlen(it);                           
+                    } else {
+                        if (count == 0) {
+                            /* this is the first run, so we have to copy the message
+                             * headers first */
+                            offset = strlen(buffer) - strlen(it);    
+                            sd->stripped = (char *)realloc(sd->stripped,strlen(sd->stripped) + offset + sizeof(char));
+                            strncat(sd->stripped,buffer,offset);
+                            offset = -1;
+                            
+                            count++;
+                        }
+
+                        /* calculate offset for mime part headers */
+                        t = strstr(it,empty_line);
+                        t = t + strlen(empty_line);
+                        offset = strlen(it) - strlen(t);
+                        if (offset > 0)
+                            /* Now it's time to grap the mime part body.
+                             * Set a marker where the mime part content begins*/
+                            mime_body_start = t;
+                    }
+                    
+                    if (offset != -1) {
+                        sd->stripped = (char *)realloc(sd->stripped,strlen(sd->stripped) + offset + sizeof(char));
+                        strncat(sd->stripped,it,offset);
+                        offset = -1;
+                    }
+                
+                    free(info->marker);
+                    free(info);
+                    info = NULL;
+                }
+                it++;
+            }
+        } else {
+            sd->stripped = buffer;
+        }
     }
     free(empty_line);
 
@@ -689,7 +708,7 @@ void cmime_message_add_generated_boundary(CMimeMessage_T *message) {
     free(bound);
 }
 
-int cmime_message_from_file(CMimeMessage_T **message, const char *filename) {
+int cmime_message_from_file(CMimeMessage_T **message, const char *filename, int header_only) {
     int fd;
     FILE *fp;
     struct stat sb;
@@ -699,6 +718,7 @@ int cmime_message_from_file(CMimeMessage_T **message, const char *filename) {
 
     assert((*message));
     assert(filename);
+    assert((header_only == 0)||(header_only == 1));
 
     if (stat(filename,&sb) != 0) {
         perror("libcmime: stat failed");
@@ -731,7 +751,7 @@ int cmime_message_from_file(CMimeMessage_T **message, const char *filename) {
     if (fclose(fp)!=0)
         perror("libcmime: error failed closing file");
     
-    sd = _strip_message(message,p);
+    sd = _strip_message(message,p,header_only);
     
     ret = cmime_scanner_scan_buffer(message, sd->stripped);
 
@@ -885,16 +905,17 @@ char *cmime_message_to_string(CMimeMessage_T *message) {
     return(out);
 }
 
-int cmime_message_from_string(CMimeMessage_T **message, const char *content) {
+int cmime_message_from_string(CMimeMessage_T **message, const char *content, int header_only) {
     _StrippedData_T *sd = NULL;
     int ret = 0;
     char *p = NULL;
 
     assert((*message));
     assert(content);
+    assert((header_only == 0)||(header_only == 1));
   
     p = strdup(content);
-    sd = _strip_message(message,p);
+    sd = _strip_message(message,p,header_only);
     
     ret = cmime_scanner_scan_buffer(message, sd->stripped);
 
