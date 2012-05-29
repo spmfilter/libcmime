@@ -359,7 +359,7 @@ char *cmime_message_generate_boundary(void);
 void cmime_message_add_generated_boundary(CMimeMessage_T *message);
 
 /*!
- * @fn int cmime_message_from_file(CMimeMessage_T **message, const char *filename)
+ * @fn int cmime_message_from_file(CMimeMessage_T **message, const char *filename, int header_only)
  * @brief Parse given file and create a CMimeMessage_T object
  * @param message out param to return the new message object
  * @param filename path to message file
@@ -387,7 +387,7 @@ int cmime_message_to_file(CMimeMessage_T *message, const char *filename);
 char *cmime_message_to_string(CMimeMessage_T *message);
 
 /*!
- * @fn int cmime_message_from_string(CMimeMessage_T **message, const char *content)
+ * @fn int cmime_message_from_string(CMimeMessage_T **message, const char *content, int header_only)
  * @brief Parse given string and create a new CMimeMessage_T object
  * @param message out param to return the new message object
  * @param content message string to parse
