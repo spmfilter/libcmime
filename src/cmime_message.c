@@ -1040,19 +1040,20 @@ int cmime_message_append_part(CMimeMessage_T *message, CMimePart_T *part) {
     CMimePart_T *prev = NULL;
     assert(message);
     assert(part);
+    
+    if (message->parts->size == 1) {
+        _rebuild_first_part(message); 
+    }
 
     if (message->parts->size >= 1) {
         elem = cmime_list_tail(message->parts);
         prev = cmime_list_data(elem);
         prev->last = 0;
         part->last = 1;
+        part->parent_boundary = strdup(prev->parent_boundary);
         cmime_list_append(message->parts,part);
         return(0);
-    } else if (message->parts->size == 1) {
-        _rebuild_first_part(message);    
-    }
-
-
+    }  
     return(0);
 }
 

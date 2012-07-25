@@ -61,7 +61,7 @@ void cmime_header_set_value(CMimeHeader_T *header, const char *value, int overwr
     size_t i;
     assert(header);
     assert(value);
-    
+
     if (overwrite==1) {
         for(i = 0; i < header->count; i++) {
             if (header->value[i] != NULL) 
