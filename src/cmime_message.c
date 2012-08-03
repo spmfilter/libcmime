@@ -1082,17 +1082,24 @@ void cmime_message_add_attachment(CMimeMessage_T *message, char *attachment) {
 
 }
 
-CMimeMessage_T *cmime_message_create_skeleton(const char *sender, const char *recipient, const char *subject){
+CMimeMessage_T *cmime_message_create_skeleton(const char *sender, const char *recipient, const char *subject) {
+    CMimeMessage_T *message = NULL;
     assert(sender);
     assert(recipient);
     assert(subject);
 
-    CMimeMessage_T *message = cmime_message_new();
+    message = cmime_message_new();
     // set sender, recipient, date, subject
     cmime_message_set_sender(message, sender);
-    cmime_message_add_recipient_to(message, recipient);
+    if (cmime_message_add_recipient_to(message, recipient) != 0) {
+        cmime_message_free(message);
+        return(NULL);
+    }
     cmime_message_set_subject(message, subject);
-    cmime_message_set_date_now(message);
+    if (cmime_message_set_date_now(message) != 0) {
+        cmime_message_free(message);
+        return(NULL);
+    }
     cmime_message_add_generated_message_id(message);
     return message;
 }
