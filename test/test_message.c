@@ -114,7 +114,6 @@ int main (int argc, char const *argv[]) {
         free(s);
         
         s = cmime_message_to_string(msg);
-        printf("S: [%s]\n",s);
         free(s);
 
         // set message id
