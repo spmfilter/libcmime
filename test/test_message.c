@@ -113,6 +113,10 @@ int main (int argc, char const *argv[]) {
         assert(strcmp(s,addr_string2)==0);
         free(s);
         
+        s = cmime_message_to_string(msg);
+        printf("S: [%s]\n",s);
+        free(s);
+
         // set message id
         cmime_message_set_message_id(msg,message_id_string);
         s = cmime_message_get_message_id(msg);

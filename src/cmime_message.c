@@ -448,13 +448,13 @@ void cmime_message_set_sender(CMimeMessage_T *message, const char *sender) {
     ca = cmime_address_parse_string(sender);
     if (message->sender != NULL) {
         cmime_address_free(message->sender);
-        s = _cmime_internal_get_linked_header_value(message->headers, "From");
+        s = _cmime_internal_get_linked_header_value(message->headers, FROM_HEADER);
         if (s != NULL)
             free(s);
     }
     ca->type = CMIME_ADDRESS_TYPE_FROM;
     message->sender = ca;
-    _cmime_internal_set_linked_header_value(message->headers, "From", NULL);
+    _cmime_internal_set_linked_header_value(message->headers, FROM_HEADER, NULL);
 }
 
 char *cmime_message_get_sender_string(CMimeMessage_T *message) {
@@ -805,10 +805,11 @@ char *cmime_message_to_string(CMimeMessage_T *message) {
     char *s = NULL;
     char *s2 = NULL;
     int count = 0;
+    int pos = 0;
 
     assert(message);
     out = (char *)calloc(sizeof(char),sizeof(char));
-    
+
     if (message->linebreak==NULL)
         message->linebreak = strdup(CRLF);
 
@@ -830,14 +831,16 @@ char *cmime_message_to_string(CMimeMessage_T *message) {
 
         if (t != -1) {
             asprintf(&s,"%s:",h->name);
+            pos = strlen(s);
             if (t == CMIME_ADDRESS_TYPE_FROM) {
                 s2 = cmime_address_to_string(message->sender);
+
                 if (strlen(s2) > 0) {
                     /* if first char is not space or tab append a single space */
                     if ((s2[0] != (unsigned char)32) && ((s2[0] != (unsigned char)9))) {
-                        s = (char *)realloc(s,2 * sizeof(char));
-                        s[strlen(s)] = ' ';
-                        s[strlen(s) + 1] = '\0';
+                        s = (char *)realloc(s,strlen(s) + (3 * sizeof(char)));
+                        s[pos++] = ' ';
+                        s[pos++] = '\0';
                     }
                     s = (char *)realloc(s,strlen(s) + strlen(s2) + sizeof(char));
                     strcat(s,s2);
@@ -855,9 +858,9 @@ char *cmime_message_to_string(CMimeMessage_T *message) {
                             if (count==0) {
                                 /* if first char is not space or tab append a single space */
                                 if ((s2[0] != (unsigned char)32) && ((s2[0] != (unsigned char)9))) {
-                                    s = (char *)realloc(s,2 * sizeof(char));
-                                    s[strlen(s)] = ' ';
-                                    s[strlen(s) + 1] = '\0';
+                                    s = (char *)realloc(s,strlen(s) + (2 * sizeof(char)));
+                                    s[pos++] = ' ';
+                                    s[pos++] = '\0';
                                 }
                             }
                             count++;

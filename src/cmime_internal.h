@@ -40,6 +40,8 @@ extern "C" {
 
 #define LINE_LENGTH 72
 
+#define FROM_HEADER "From"
+
 /** crlf */
 #define CRLF "\r\n"
 #define DCRLF "\r\n\r\n"
