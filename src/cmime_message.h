@@ -180,6 +180,12 @@ int cmime_message_set_header(CMimeMessage_T *message, const char *header);
  */
 CMimeHeader_T *cmime_message_get_header(CMimeMessage_T *message, const char *header);
 
+/*! 
+ * @def cmime_message_get_headers(message)
+ * @returns CMimeList_T with headers
+ */
+#define cmime_message_get_headers(message) (message->headers)
+
 /*!
  * @fn int cmime_message_add_recipient(CMimeMessage_T *message, const char *recipient, CMimeAddressType_T t)
  * @brief Add recipient to message
