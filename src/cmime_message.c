@@ -171,7 +171,8 @@ _StrippedData_T *_strip_message(CMimeMessage_T **msg, char *buffer, int header_o
             sd->stripped = (char *)calloc(offset + sizeof(char),sizeof(char));
             strncpy(sd->stripped,buffer,offset);
             sd->stripped[offset] = '\0';
-        }
+        } else
+            sd->stripped = buffer;
     } else {
         if (cmime_string_list_get_count((*msg)->boundaries) > 0) {
             sd->stripped = (char *)calloc(sizeof(char),sizeof(char));
@@ -752,7 +753,6 @@ int cmime_message_from_file(CMimeMessage_T **message, const char *filename, int 
         perror("libcmime: error failed closing file");
     
     sd = _strip_message(message,p,header_only);
-    
     ret = cmime_scanner_scan_buffer(message, sd->stripped);
 
     if (sd->stripped != p) {
