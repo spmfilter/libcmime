@@ -60,6 +60,7 @@ char *cmime_util_get_mimetype(const char *filename) {
     /* open the pipe and try to read command output */
     fh = popen(command, "r");
     if(fh == NULL) {
+        free(command);
         return(NULL);
     }
     free(command);
@@ -115,6 +116,7 @@ CMimeInfo_T *cmime_util_info_get_from_string(const char *s) {
     fd = mkstemp(tempname);
     if (fd == -1) {
         perror("libcmime: error creating temporary file");
+        free(tempname);
         return(NULL);
     }
 
@@ -140,6 +142,7 @@ CMimeInfo_T *cmime_util_info_get_from_string(const char *s) {
     
     if (remove(tempname) != 0) {
         free(tempname);
+        cmime_util_info_free(mi);
         perror("libcmime: failed to remove temporary file");
         return(NULL);
     }

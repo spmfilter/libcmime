@@ -131,6 +131,7 @@ int cmime_list_insert_next(CMimeList_T *list, CMimeListElem_T *elem, void *data)
     
     /* no null element if list not empty */
     if(elem == NULL && cmime_list_size(list) != 0) {
+        free(new);
         return(-1);
     }
  

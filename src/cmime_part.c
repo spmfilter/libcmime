@@ -64,8 +64,10 @@ CMimePart_T *cmime_part_new(void) {
     
     part = (CMimePart_T *)calloc((size_t)1, sizeof(CMimePart_T));
     
-    if (cmime_list_new(&part->headers,_cmime_internal_header_destroy)!=0)
+    if (cmime_list_new(&part->headers,_cmime_internal_header_destroy)!=0) {
+        free(part);
         return(NULL);
+    }
 
     part->content = NULL;
     part->boundary = NULL;

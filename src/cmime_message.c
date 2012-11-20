@@ -396,19 +396,25 @@ CMimeMessage_T *cmime_message_new(void) {
     
     message = (CMimeMessage_T *)calloc((size_t)1, sizeof(CMimeMessage_T));
 
-    if (cmime_list_new(&message->headers,_cmime_internal_header_destroy)!=0)
+    if (cmime_list_new(&message->headers,_cmime_internal_header_destroy)!=0) {
+        free(message);
         return(NULL);
+    }
     
     message->sender = NULL;
-    if (cmime_list_new(&message->recipients,_recipients_destroy)!=0) 
+    if (cmime_list_new(&message->recipients,_recipients_destroy)!=0) {
+        free(message);
         return(NULL);
+    }
 
     message->boundary = NULL;
     message->gap = NULL;
     message->linebreak = NULL;
 
-    if (cmime_list_new(&message->parts,_cmime_internal_parts_destroy)!=0) 
+    if (cmime_list_new(&message->parts,_cmime_internal_parts_destroy)!=0)  {
+        free(message);
         return(NULL);
+    }
 
 
     message->boundaries = cmime_string_list_new();
@@ -929,6 +935,7 @@ int cmime_message_from_string(CMimeMessage_T **message, const char *content, int
     free(sd->mime_bodies->node);
     free(sd->mime_bodies);
     free(sd);
+    free(p);
 
     return(ret);
 }
