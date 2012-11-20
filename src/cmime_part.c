@@ -45,8 +45,10 @@ char *_parse_header(char *p) {
             asprintf(&out,"%s%s",token,nl);
         } else {
             if (isspace(token[0])!=0) {
-                out = (char *)realloc(out,strlen(out) + strlen(token) + strlen(nl) + 1);
-                sprintf(out,"%s%s%s",out,token,nl);
+                char *new_out;
+                asprintf(&new_out, "%s%s%s", out, token, nl);
+                free(out);
+                out = new_out;
             } else
                 break;
         }
