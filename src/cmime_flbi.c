@@ -87,9 +87,14 @@ char *cmime_flbi_get_boundary(char *s) {
         }
     }
 
-    if (t != NULL)
-        boundary = cmime_string_strip(t);
-    else
+    if (t != NULL) {
+        char *stripped = cmime_string_strip(t);
+        if (stripped != t) {
+            boundary = strdup(stripped);
+            free(t);
+        } else
+            boundary = stripped;
+    } else
         boundary = t;
 
     return boundary;
