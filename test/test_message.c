@@ -120,6 +120,10 @@ int main (int argc, char const *argv[]) {
         s = cmime_message_get_message_id(msg);
         assert(strcmp(s,message_id_string_out)==0);
         
+        cmime_message_set_subject(msg, "A subject  "); // IMPORTANT: with whitespaces!
+        s = cmime_message_get_subject(msg);
+        assert(strcmp(s, "A subject") == 0);
+        
         // set a test header
         if (cmime_message_set_header(msg, header_string1)!=0) 
             return(-1);
