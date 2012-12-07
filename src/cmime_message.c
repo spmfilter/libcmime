@@ -527,7 +527,7 @@ CMimeHeader_T *cmime_message_get_header(CMimeMessage_T *message, const char *hea
         e = e->next;
     }
     
-    return(h);
+    return(NULL);
 }
 
 int cmime_message_add_recipient(CMimeMessage_T *message, const char *recipient, CMimeAddressType_T t) {
