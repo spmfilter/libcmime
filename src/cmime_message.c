@@ -545,7 +545,7 @@ int cmime_message_add_recipient(CMimeMessage_T *message, const char *recipient, 
                 return(-1);
     }   
 
-    if (cmime_list_append(message->recipients,ca)!=0)
+    if (t != CMIME_ADDRESS_TYPE_FROM && cmime_list_append(message->recipients,ca)!=0)
         return(-1);
 
     if (found == 0) {
