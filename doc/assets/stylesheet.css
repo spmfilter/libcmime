@@ -913,17 +913,18 @@ tbody:last-child tr:last-child td:last-child {
     -webkit-border-radius: 0 0 4px 0;
     -moz-border-radius: 0 0 4px 0;
     border-radius: 0 0 4px 0;
-    background: transparent;
+/*    background: transparent; */
 }
 tbody tr:nth-child(odd) td,
 tbody tr:nth-child(odd) th {
     background-color: #f9f9f9;
 }
+/*
 tr:hover td,
 tr:hover th {
     background-color: #f5f5f5;
 }
-
+*/
 div.summary {
     float: right;
     font-size: 8pt;
@@ -1187,7 +1188,95 @@ dl.citelist dd {
 #navrow4 a:hover { color: #555555; text-decoration: underline; }
 
 h2 {
-    border-bottom: 1px solid #DDDDDD;
+    /*border-bottom: 1px solid #DDDDDD; */
     line-height: 24px;
-    margin-bottom: 10px;
+/*    margin-bottom: 10px;*/
 }
+
+.fragment {
+  padding: 10px;
+}
+
+.memberdecls {
+  margin-bottom: 20px;
+}
+
+.memberdecls  tbody > tr:nth-child(odd) > td,
+.memberdecls  tbody > tr:nth-child(odd) > th {
+  background-color: #FFFFFF;
+}
+
+
+.memberdecls thead:first-child tr:first-child th,
+.memberdecls tbody:first-child tr:first-child th,
+.memberdecls tbody:first-child tr:first-child td {
+  background-color: #f9f9f9;
+  border-bottom: 1px solid #dddddd;
+}
+
+
+.memSeparator {
+  height: 10px;
+  line-height: 10px;
+  padding: 0px;
+  background-color: #f9f9f9;
+  border-top: 1px solid #dddddd; 
+  border-bottom: 1px solid #dddddd;
+}
+
+.memberdecls tbody:last-child tr:last-child td.memSeparator {
+  border-bottom: 0px;
+}
+
+.memberdecls  tbody > tr:nth-child(odd) > td.memSeparator,
+.memberdecls  tbody > tr:nth-child(odd) > th.memSeparator {
+  background-color: #f9f9f9;
+}
+
+.mdescLeft, .mdescRight {
+  border-top: 1px solid #dddddd;
+}
+
+.memItemLeft {
+  border-right:0;
+  /*border-right: 1px solid #dddddd;*/
+}
+
+.memItemRight {
+  border-left: 1px solid #dddddd;
+}
+
+/*
+.memname, .params {
+  border: 0px;
+}
+
+.memitem {
+  border: 1px solid #dddddd;
+  border-collapse: separate;
+  *border-collapse: collapsed;
+  -webkit-border-radius: 4px;
+  -moz-border-radius: 4px;
+  border-radius: 4px;
+  margin-bottom: 20px;
+}
+
+.memproto {
+  border-bottom: 1px solid #dddddd;
+  background-color: #f9f9f9;
+}
+
+.memdoc {
+  padding: 10px;
+}
+*/
+/*
+table.params {
+  border: 1px solid #dddddd;
+  border-collapse: separate;
+  *border-collapse: collapsed;
+  -webkit-border-radius: 4px;
+  -moz-border-radius: 4px;
+  border-radius: 4px;
+  margin-bottom: 20px;
+}*/

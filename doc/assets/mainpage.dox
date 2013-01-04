@@ -30,7 +30,6 @@ For proper compilation and functionality of libcmime, the following packages are
 
 @section install Install from source
 libcmime uses cmake instead of the autotools "configure" script. Cmake normally uses a separate build directory - follow these steps to configure, build and install this package from source:
-
 @code 
 tar xvfz libcmime-<VERSION>.tar.gz
 cd libcmime-<VERSION>
