@@ -16,9 +16,9 @@ project so the library is still in beta state and there will be early and freque
 @section download Getting libcmime
 
 You can download the sources at http://libcmime.org/files
-Development is done using <a href="http://mercurial.selenic.com/" target="_blank">Mercurial</a>
+Development is done using <a href="http://git-scm.com" target="_blank">Git</a>
 @code
-$ hg clone http://libcmime.org/hg/libcmime
+$ git clone git://github.com/spmfilter/libcmime.git
 @endcode
 
 

@@ -1,11 +1,11 @@
 WHAT IS LIBCMIME?
 -------------------------------------------------------------------------------
 
-libcmime is a lightweight mime library, written in C.  It attempts to be a 
-general library for parsing and creating mime email messages and is designed to 
-provide an easy to use and easy to integrate interface for developers. libcmime 
-is a pretty fresh project so the library is still in beta state and there will 
-be early and frequent releases. 
+A lightweight mime library, written in C.  It attempts to be a general library 
+for parsing and creating mime email messages and is designed to provide an easy 
+to use and easy to integrate interface for developers. libcmime is a pretty fresh 
+project so the library is still in beta state and there will be early and frequent 
+releases. 
 
 
 REQUIREMENTS
@@ -36,16 +36,16 @@ The developers mailing list (http://groups.google.com/group/libcmime-devel) is
 used for discussions and questions about development with libcmime.
 
         
-MERCURIAL REPOSITORY
+GIT REPOSITORY
 -------------------------------------------------------------------------------
 
 If you want to get the very latest version of libcmime direct from the
-source code repository then you can use mercurial:
+source code repository then you can use git:
 
-        hg clone http://libcmime.org/hg/libcmime
+        git clone git://github.com/spmfilter/libcmime.git 
         
 See the download page for full details on all the ways to grab the
-source web-browsing of the mercurial repository, etc.:
+source web-browsing of the git repository, etc.:
 
         http://libcmime.org/files
 
