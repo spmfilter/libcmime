@@ -289,3 +289,4 @@ void yyerror(YYLTYPE *yyllocp, void *scanner, CMimeMessage_T *msg, const char *s
     vfprintf(stderr, s, ap);
     fprintf(stderr, "\n");
 }
+

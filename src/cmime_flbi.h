@@ -44,3 +44,4 @@ char *cmime_flbi_scan_postface(char *s, CMimeMessage_T *msg);
 #endif
 
 #endif /* _CMIME_FLBI_H */
+

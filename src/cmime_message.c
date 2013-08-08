@@ -1211,3 +1211,4 @@ int cmime_message_add_child_part(CMimeMessage_T *message, CMimePart_T *part, CMi
 
     return(-1);
 }
+
