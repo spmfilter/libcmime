@@ -80,7 +80,7 @@ set(CPACK_PACKAGE_VERSION ${CMIME_VERSION})
 set(CPACK_SOURCE_PACKAGE_FILE_NAME "${CPACK_PACKAGE_NAME}-${CMIME_VERSION}")
 set(CPACK_SOURCE_GENERATOR TGZ)
 set(CPACK_SOURCE_IGNORE_FILES
-"\\\\.hg"
+"\\\\.git"
 "build"
 "build\\\\.properties"
 "doc/html/*"
