@@ -52,6 +52,5 @@ source web-browsing of the git repository, etc.:
 
 LICENSE INFORMATION
 -------------------------------------------------------------------------------
-libcmime is released under the LGPL. This means (in short..) that you are free 
-to use, change and distribute it.
+libcmime  is released under the MIT license.
 

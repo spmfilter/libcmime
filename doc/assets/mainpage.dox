@@ -63,6 +63,6 @@ The developers mailing list (http://groups.google.com/group/libcmime-devel) is u
 and questions about development with libcmime.
 
 @section license License
-libcmime is released under the <a href="http://www.gnu.org/licenses/lgpl.txt" target="_blank">LGPL</a>. This means (in short..) that you are free to use, change and distribute it.
+libcmime  is released under the <a href="http://www.opensource.org/licenses/mit-license.php" target="_blank">MIT license</a>.
 
 */

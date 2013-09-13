@@ -1,3 +1,6 @@
+2013-09-13 Axel Steiner <ast@treibsand.com>
+    * switched to MIT license
+
 2013-08-09 Axel Steiner <ast@treibsand.com>
     * some small fixes
     * changed version numbering for shared libraries
