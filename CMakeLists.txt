@@ -14,17 +14,6 @@ if(PREFIX)
     set(CMAKE_INSTALL_PREFIX ${PREFIX})
 endif(PREFIX)
 
-# check libdir
-if(NOT LIBDIR)
-    set(LIBDIR "lib")
-endif(NOT LIBDIR)
-
-message(status "CMAKE_MODULE_PATH:" ${CMAKE_MODULE_PATH})
-message(status "CMAKE_INSTALL_PREFIX:" ${CMAKE_INSTALL_PREFIX})
-message(status "CMAKE_INSTALL_LIBDIR:" ${CMAKE_INSTALL_LIBDIR})
-message(status "CMAKE_INSTALL_SHAREDSTATEDIR:" ${CMAKE_INSTALL_SHAREDSTATEDIR})
-
-
 # check out current version
 set(THREE_PART_VERSION_REGEX "[0-9]+\\.[0-9]+\\.[0-9]+")
 file(READ ${CMAKE_CURRENT_SOURCE_DIR}/VERSION CMIME_VERSION)

@@ -1,3 +1,7 @@
+2013-10-15 Werner Detter <werner@aloah-from-hell.de>
+    * added cmake module GNUInstallDirs.cmake, 
+      changes for GNUInstallDirs.cmake
+
 2013-09-13 Axel Steiner <ast@treibsand.com>
     * switched to MIT license
 
