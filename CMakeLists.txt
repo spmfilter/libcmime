@@ -2,6 +2,10 @@ cmake_minimum_required(VERSION 2.6)
 
 project(libcmime)
 
+# include modules
+set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake/")
+include(${CMAKE_MODULE_PATH}/GNUInstallDirs.cmake)
+
 # check for build.properties
 include("${CMAKE_SOURCE_DIR}/build.properties" OPTIONAL)
 
@@ -15,7 +19,11 @@ if(NOT LIBDIR)
     set(LIBDIR "lib")
 endif(NOT LIBDIR)
 
-set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake/")
+message(status "CMAKE_MODULE_PATH:" ${CMAKE_MODULE_PATH})
+message(status "CMAKE_INSTALL_PREFIX:" ${CMAKE_INSTALL_PREFIX})
+message(status "CMAKE_INSTALL_LIBDIR:" ${CMAKE_INSTALL_LIBDIR})
+message(status "CMAKE_INSTALL_SHAREDSTATEDIR:" ${CMAKE_INSTALL_SHAREDSTATEDIR})
+
 
 # check out current version
 set(THREE_PART_VERSION_REGEX "[0-9]+\\.[0-9]+\\.[0-9]+")
@@ -69,7 +77,7 @@ add_subdirectory(test)
 add_subdirectory(examples)
 
 install(FILES ${CMAKE_CURRENT_SOURCE_DIR}/libcmime.pc
-    DESTINATION ${LIBDIR}/pkgconfig
+    DESTINATION ${CMAKE_INSTALL_LIBDIR}/pkgconfig
 )
 
 set(ARCHIVE_NAME "${CMAKE_PROJECT_NAME}-${CMIME_VERSION}")
