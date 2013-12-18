@@ -1,3 +1,6 @@
+2013-12-18 Axel Steiner <ast@treibsand.com>
+    * fixed bug with null value headers
+
 2013-10-15 Werner Detter <werner@aloah-from-hell.de>
     * added cmake module GNUInstallDirs.cmake, 
       changes for GNUInstallDirs.cmake
