@@ -66,7 +66,6 @@ void cmime_header_set_value(CMimeHeader_T *header, const char *value, int overwr
     char **tmp = NULL;
     size_t i;
     assert(header);
-    assert(value);
 
     if (overwrite==1) {
         for(i = 0; i < header->count; i++) {
@@ -77,8 +76,12 @@ void cmime_header_set_value(CMimeHeader_T *header, const char *value, int overwr
     }
 
     tmp = realloc(header->value, (sizeof( *tmp) * (header->count+1)));
-    tmp[header->count] = strdup(value);
+    if (value != NULL)
+        tmp[header->count] = strdup(value);
+    else 
+        tmp[header->count] = NULL;
     header->value = tmp;
+    
     header->count++;
 }
 
@@ -103,7 +106,7 @@ char *cmime_header_to_string(CMimeHeader_T *header) {
     out = (char *)calloc(sizeof(char),sizeof(char));
     for(i = 0; i < cmime_header_get_count(header); i++) {
         value = cmime_header_get_value(header,i);
-        if (strlen(value)>0) {
+        if ((value !=NULL) && (strlen(value)>0)) {
             if (header->parsed==1) {
                 asprintf(&ptemp,"%s:%s",cmime_header_get_name(header),value);
             } else {

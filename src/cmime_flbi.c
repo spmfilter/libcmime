@@ -214,3 +214,63 @@ char *cmime_flbi_scan_postface(char *s, CMimeMessage_T *msg) {
     return(postface);
 }
 
+CMimeHeader_T *cmime_flbi_get_header(CMimeMessage_T *msg, char *s1, char *s2) {
+    CMimeAddressType_T t = -1;
+    char *s = NULL;
+    char *it = NULL;
+    int in_name = 0;
+    int pos = 0;
+    CMimeHeader_T *h = NULL;
+
+    /* got a header with message recipients? */
+    if (strcasecmp(s1,"from")==0) {
+        t = CMIME_ADDRESS_TYPE_FROM;
+    } else if (strcasecmp(s1,"to")==0) {
+        t = CMIME_ADDRESS_TYPE_TO;
+    } else if (strcasecmp(s1,"cc")==0) {
+        t = CMIME_ADDRESS_TYPE_CC;
+    } else if (strcasecmp(s1,"bcc")==0) {
+        t = CMIME_ADDRESS_TYPE_BCC;
+    }
+        
+    if ((t != -1) && (t != CMIME_ADDRESS_TYPE_FROM)) {
+        it = s2;
+        s = (char *)calloc((size_t)1,sizeof(char));
+        while(*it != '\0') {
+            if ((*it == '"')||(*it == '\'')) {
+                if (in_name == 0)
+                    in_name = 1;
+                else 
+                    in_name = 0;
+            }
+                
+            if ((*it == ',') && (in_name == 0)) {
+                _cmime_internal_set_linked_header_value(msg->headers, s1, NULL);
+                cmime_message_add_recipient(msg,s,t);
+                free(s);
+                s = (char *)calloc((size_t)1,sizeof(char));
+                pos = 0;
+                *it++;
+            } else {
+                s = (char *)realloc(s,strlen(s) + sizeof(char) + sizeof(char));
+                s[pos++] = *it++;
+                s[pos] = '\0';
+            }
+        }
+        s[pos] = '\0';
+            
+        _cmime_internal_set_linked_header_value(msg->headers, s1, NULL);
+        cmime_message_add_recipient(msg,s,t);
+        free(s);
+    } else if (t == CMIME_ADDRESS_TYPE_FROM) {
+        _cmime_internal_set_linked_header_value(msg->headers, s1, NULL);
+        cmime_message_set_sender(msg,s2);
+    } else {
+        h = cmime_header_new();
+        cmime_header_set_name(h,s1);
+        cmime_header_set_value(h,s2,0);
+        h->parsed = 1;
+    }
+
+    return h;
+}

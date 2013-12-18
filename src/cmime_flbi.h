@@ -44,6 +44,7 @@ char *cmime_flbi_get_boundary(char *s);
 void cmime_flbi_check_part_boundary(CMimePart_T *part);
 char *cmime_flbi_chomp_boundary(char *s, char *linebreak);
 char *cmime_flbi_scan_postface(char *s, CMimeMessage_T *msg);
+CMimeHeader_T *cmime_flbi_get_header(CMimeMessage_T *msg, char *s1, char *s2);
 
 #ifdef __cplusplus
 }
