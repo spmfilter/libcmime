@@ -1,3 +1,6 @@
+2014-06-25 Axel Steiner <ast@treibsand.com>
+    * fixed random() bug in message-id generator. 
+
 2013-12-18 Axel Steiner <ast@treibsand.com>
     * fixed bug with null value headers
 

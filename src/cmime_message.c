@@ -987,7 +987,7 @@ char *cmime_message_generate_message_id(void) {
     gethostname(hostname,MAXHOSTNAMELEN);
         
     mid = (char *)malloc(20 + strlen(hostname));
-    srandom(time(NULL));
+    srandom(getpid() ^ time((time_t *) 0));
     for(i=0; i < 2; i++) {
         for (i2=0; i2<8; i2++) 
             mid[pos++] = base36[random() % 36];
