@@ -1,3 +1,6 @@
+2014-07-23 Axel Steiner <ast@treibsand.com>
+    * fixed bug in cmime_message_from_file() which caused a segfault.
+
 2014-06-25 Axel Steiner <ast@treibsand.com>
     * fixed random() bug in message-id generator. 
 
