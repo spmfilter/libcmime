@@ -725,6 +725,7 @@ int cmime_message_from_file(CMimeMessage_T **message, const char *filename, int 
     int fd;
     FILE *fp;
     struct stat sb;
+    char *addr;
     char *p = NULL;
     int ret = 0;
     _StrippedData_T *sd = NULL;
@@ -754,31 +755,36 @@ int cmime_message_from_file(CMimeMessage_T **message, const char *filename, int 
     }
 
     /* map file to memory */
-    p = mmap (0, sb.st_size, PROT_READ, MAP_SHARED, fd, 0);
-    if (p == MAP_FAILED) {
+    addr = mmap (NULL, sb.st_size, PROT_READ, MAP_PRIVATE, fd, 0);
+
+    if (addr == MAP_FAILED) {
         fclose(fp);
         perror("libcmime: error mmapping the file");
         return(-3);
     }
-    
+    p = (char *)calloc(sb.st_size + 1,sizeof(char));
+    memcpy(p, addr, sb.st_size);
+    p[strlen(p)] =  '\0';
+
     if (fclose(fp)!=0)
         perror("libcmime: error failed closing file");
-    
+
+    if (munmap (addr, sb.st_size) == -1) {
+        perror("libcmime: error on munmap");
+        return(-3); 
+    }
+
     sd = _strip_message(message,p,header_only);
     ret = cmime_scanner_scan_buffer(message, sd->stripped);
 
     if (sd->stripped != p) {
         _add_stripped_bodies(message, sd);
     }
-
+    
     free(sd->mime_bodies->node);
     free(sd->mime_bodies);
     free(sd);
-
-    if (munmap (p, sb.st_size) == -1) {
-        perror("libcmime: error on munmap");
-        return(-3); 
-    }
+    free(p);  
 
     return(ret);
 }
