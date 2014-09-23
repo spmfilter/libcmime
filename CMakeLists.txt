@@ -37,6 +37,37 @@ if(ENABLE_DEBUG)
     ENABLE_TESTING()
 endif(ENABLE_DEBUG)
 
+# check for doxygen
+if(ENABLE_DOC)
+    include(${CMAKE_MODULE_PATH}/FindDoxygen.cmake)
+    if(NOT DOXYGEN_FOUND)
+        message(FATAL_ERROR "Doxygen is needed to build the documentation.")
+    endif()
+
+    if(NOT DOXYGEN_VERSION MATCHES "1\\.8")
+        message(FATAL_ERROR "Doxygen >= 1.8 is needed to build the documentation.")
+    endif()
+    
+    if(NOT DOXYGEN_DOT_FOUND)
+        message(FATAL_ERROR "Graphviz is needed to build the documentation.")
+    endif()
+
+
+    set(doxyfile_in ${CMAKE_CURRENT_SOURCE_DIR}/Doxyfile.cmake)
+    set(doxyfile ${CMAKE_CURRENT_SOURCE_DIR}/Doxyfile)
+    configure_file(${doxyfile_in} ${doxyfile} @ONLY)
+    
+    add_custom_target(doc
+        COMMAND ${DOXYGEN_EXECUTABLE} ${doxyfile}
+        WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
+        COMMENT "Generating API documentation with Doxygen"
+        VERBATIM)
+
+    install(DIRECTORY 
+        ${CMAKE_CURRENT_BINARY_DIR}/html 
+        DESTINATION share/doc/libcmime-${CMIME_MAJOR_VERSION}.${CMIME_MINOR_VERSION}.${CMIME_MICRO_VERSION})
+endif(ENABLE_DOC)
+
 find_package(FLEX REQUIRED)
 find_package(BISON REQUIRED)
 

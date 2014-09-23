@@ -233,7 +233,7 @@ CMimeHeader_T *cmime_flbi_get_header(CMimeMessage_T *msg, char *s1, char *s2) {
         t = CMIME_ADDRESS_TYPE_BCC;
     }
         
-    if ((t != -1) && (t != CMIME_ADDRESS_TYPE_FROM)) {
+    if ((t != -1) && (t != CMIME_ADDRESS_TYPE_FROM) && (s2 != NULL)) {
         it = s2;
         s = (char *)calloc((size_t)1,sizeof(char));
         while(*it != '\0') {
