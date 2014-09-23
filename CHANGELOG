@@ -1,5 +1,6 @@
 2014-09-23 Axel Steiner <ast@treibsand.com>
     * fixed bug in message parser
+    * added doxygen support to cmake configuration
 
 2014-07-23 Axel Steiner <ast@treibsand.com>
     * fixed segfault bug in cmime_message_from_file().
