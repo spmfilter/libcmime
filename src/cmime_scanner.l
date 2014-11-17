@@ -30,6 +30,7 @@
     
     #define YY_EXTRA_TYPE CMimeMessage_T *
     #define YY_USER_ACTION yylloc->first_line = yylineno;
+    #define YY_FATAL_ERROR(msg) fprintf(stderr, "%s\n", msg);
 %}
 
 LF_RE               (\r\n)|(\r)|(\n)|(\x0c)
