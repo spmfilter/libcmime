@@ -141,7 +141,14 @@ CMimeInfo_T *cmime_util_info_get_from_string(const char *s) {
 
     combined = cmime_util_get_mimetype(tempname);
     if (combined != NULL) {
-        mi = _split_combined_info(combined);
+        if (strchr(combined,";") != NULL) {
+            mi = _split_combined_info(combined);
+        } else {
+            mi = cmime_util_info_new();
+            mi->combined = strdup(combined);
+            
+        }
+        printf("MI: [%s] [%s] [%s]\n",mi->combined, mi->mime_type, mi->mime_encoding);
         free(combined);
     }
     
