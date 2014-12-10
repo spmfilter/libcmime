@@ -1,3 +1,10 @@
+2014-12-10 Axel Steiner <ast@treibsand.com>
+    * removed timestamp in footer from generated api documentation (#3)
+    * changed doxygen configuration to work better with cmake
+
+2014-11-17 Axel Steiner <ast@treibsand.com>
+    * Fixed #4 - avoid exit() call within flex.
+
 2014-09-23 Axel Steiner <ast@treibsand.com>
     * fixed bug in message parser
     * added doxygen support to cmake configuration
