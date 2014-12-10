@@ -53,6 +53,7 @@ Instead of defining parameters on the command line you can also create a "build.
 @code
 set(PREFIX /opt)
 set(ENABLE_DEBUG TRUE)
+set(ENABLE_DOC TRUE)
 @endcode
 
 By default, 'make install' installs the library under '/usr/local/lib' and the include files under 
