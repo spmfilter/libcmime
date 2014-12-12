@@ -29,7 +29,7 @@
  */
 
 #ifndef _CMIME_BASE64_H
-#define _CMIME_bASE64_H
+#define _CMIME_BASE64_H
 
 #ifdef __cplusplus
 extern "C" {
