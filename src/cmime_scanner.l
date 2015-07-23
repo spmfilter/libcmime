@@ -34,7 +34,7 @@
 %}
 
 LF_RE               (\r\n)|(\r)|(\n)|(\x0c)
-HEADERNAME_RE       ([A-Za-z0-9\._-]*:)
+HEADERNAME_RE       ([^ \n\t\r]+:)
 HEADERBODY_RE       (.*({LF_RE}(\t|\ ).*)*{LF_RE}?)
 BODY_RE             ((.*({LF_RE}))*)
 LINE_RE             (.*{LF_RE})
