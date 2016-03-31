@@ -30,14 +30,13 @@
 
 #include "test_data.h"
 
-#define EXPECTED_MIMETYPE "text/x-c; charset=utf-8"
-#define EXPECTED_MIMETYPE2 "text/plain; charset=utf-8"
+#define EXPECTED_MIMETYPE "message/rfc822; charset=iso-8859-1"
 
 int main (int argc, char const *argv[]) {
 	char *out = NULL;
 	
-	out = cmime_util_get_mimetype("../../test/test_data.h");
-	assert((strcmp(EXPECTED_MIMETYPE,out)==0)||(strcmp(EXPECTED_MIMETYPE2,out)==0));
+	out = cmime_util_get_mimetype("out_m0001.txt");
+	assert((strcmp(EXPECTED_MIMETYPE,out)==0));
 	free(out);
 	
 	return(0);
