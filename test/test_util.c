@@ -34,11 +34,15 @@
 
 int main (int argc, char const *argv[]) {
 	char *out = NULL;
+  char *fname = NULL;
+
+  asprintf(&fname,"%s/%s",SAMPLES_DIR,"m0001.txt");
 	
-	out = cmime_util_get_mimetype("out_m0001.txt");
+	out = cmime_util_get_mimetype(fname);
 	assert((strcmp(EXPECTED_MIMETYPE,out)==0));
 	free(out);
-	
+	free(fname);
+
 	return(0);
 }	
 
