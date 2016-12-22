@@ -28,7 +28,7 @@
 extern "C" {
 #endif
 
-#define SAMPLES_DIR "${CMAKE_CURRENT_SOURCE_DIR}/test/samples"
+#define SAMPLES_DIR "samples"
 
 char addr_string1[] = "Foo Bar <foobar@example.com>";
 char addr_string1_name_part[] = "Foo Bar";

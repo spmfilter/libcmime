@@ -35,6 +35,7 @@ if(ENABLE_DEBUG)
     set(CMAKE_VERBOSE_MAKEFILE TRUE)
     add_definitions(-DDEBUG -g -O0 -Wall)
     ENABLE_TESTING()
+    file(COPY "${CMAKE_SOURCE_DIR}/test/samples" DESTINATION "${CMAKE_CURRENT_BINARY_DIR}/test")
 endif(ENABLE_DEBUG)
 
 # check for doxygen
@@ -79,11 +80,6 @@ endif(NOT FILE_EXECUTABLE)
 configure_file(
     ${CMAKE_CURRENT_SOURCE_DIR}/src/cmime_config.h.cmake
     ${CMAKE_CURRENT_SOURCE_DIR}/src/cmime_config.h
-)
-
-configure_file(
-    ${CMAKE_CURRENT_SOURCE_DIR}/test/test_data.h.cmake
-    ${CMAKE_CURRENT_SOURCE_DIR}/test/test_data.h
 )
 
 configure_file(
