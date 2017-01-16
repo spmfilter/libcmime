@@ -61,7 +61,7 @@ char *cmime_util_get_mimetype(const char *filename) {
     assert(filename);
     
     /* build up the command string */
-    asprintf(&command,"%s %s",FILE_EXECUTABLE,filename);
+    asprintf(&command,"%s '%s'",FILE_EXECUTABLE,filename);
 
     /* open the pipe and try to read command output */
     fh = popen(command, "r");
@@ -77,10 +77,10 @@ char *cmime_util_get_mimetype(const char *filename) {
         strncpy(retval, buf, strlen(buf));
         retval[strlen(retval)] = '\0';
         free(buf);
-        fclose(fh);
+        pclose(fh);
         return(retval);
     } else {
-        fclose(fh);
+        pclose(fh);
         return(NULL);
     }
 }
