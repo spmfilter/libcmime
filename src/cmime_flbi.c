@@ -250,7 +250,8 @@ CMimeHeader_T *cmime_flbi_get_header(CMimeMessage_T *msg, char *s1, char *s2) {
                 free(s);
                 s = (char *)calloc((size_t)1,sizeof(char));
                 pos = 0;
-                *it++;
+                
+                ++it;
             } else {
                 s = (char *)realloc(s,strlen(s) + sizeof(char) + sizeof(char));
                 s[pos++] = *it++;

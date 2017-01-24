@@ -113,6 +113,7 @@ CMimeInfo_T *cmime_util_info_get_from_string(const char *s) {
     CMimeInfo_T *mi = NULL;
     char *tempname = NULL;
     char *combined = NULL;
+    char wanted = ';';
     FILE *fp = NULL;
     int fd;
     
@@ -141,7 +142,7 @@ CMimeInfo_T *cmime_util_info_get_from_string(const char *s) {
 
     combined = cmime_util_get_mimetype(tempname);
     if (combined != NULL) {
-        if (strchr(combined,";") != NULL) {
+        if (strchr(combined,wanted) != NULL) {
             mi = _split_combined_info(combined);
         } else {
             mi = cmime_util_info_new();

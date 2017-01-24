@@ -144,8 +144,6 @@ _StrippedData_T *_strip_message(CMimeMessage_T **msg, char *buffer, int header_o
     _BoundaryInfo_T *info = NULL;
     char *newline_char = NULL;
     char *empty_line = NULL;
-    size_t len_newline;
-    size_t len_empty_line;
     char *it = NULL;
     size_t offset;
     int count = 0;
@@ -161,9 +159,7 @@ _StrippedData_T *_strip_message(CMimeMessage_T **msg, char *buffer, int header_o
     /* search newline and build header-body seperator */
     newline_char = _cmime_internal_determine_linebreak(buffer);
     (*msg)->linebreak = strdup(newline_char);
-    len_newline = strlen(newline_char);
     asprintf(&empty_line,"%s%s",newline_char,newline_char);
-    len_empty_line = strlen(empty_line);
 
     cmime_string_list_free((*msg)->boundaries);
     (*msg)->boundaries = _get_boundaries(buffer);

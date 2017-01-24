@@ -19,7 +19,7 @@ int main(int argc, char *argv[]) {
     int retval = 0;
     char *in_file = NULL;
     char *out_file = NULL;
-    int ret;
+    //int ret;
     int i=0;
 
     // check command line parameters
@@ -65,7 +65,7 @@ int main(int argc, char *argv[]) {
                element in the list */
             elem = cmime_list_head(message->parts);
             mp = (CMimePart_T *)cmime_list_data(elem);
-            ret = cmime_part_to_file(mp,out_file);
+            cmime_part_to_file(mp,out_file);
 
         } else {
             printf("failed opening file [%s]\n", in_file);
