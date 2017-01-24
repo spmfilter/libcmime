@@ -291,10 +291,13 @@ void _rebuild_first_part(CMimeMessage_T *message) {
             p->parent_boundary = strdup(message->boundary);
             s = cmime_part_get_content(p);
 
-            s2 = cmime_message_get_content_type(message);
-            if (s2 != NULL) 
-                cmime_part_set_content_type(p,s2);
-            else {
+            mi = cmime_util_info_get_from_string(s);
+            if (mi!=NULL) {
+                if (mi->combined != NULL)
+                    cmime_part_set_content_type(p, mi->combined);
+
+                cmime_util_info_free(mi);
+            } else {
                 if (message->linebreak == NULL) {
                     nl = _cmime_internal_determine_linebreak(s);
                     if (nl == NULL)
