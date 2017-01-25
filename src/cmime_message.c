@@ -699,10 +699,8 @@ char *cmime_message_generate_boundary(void) {
                                "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
                                "0123456789._-=";
 
-    srand(time(NULL));
-
     for ( i = 0; i < 20; ++i ) {
-        str[i] = text[rand() % (sizeof text - 1)];
+        str[i] = text[cmime_util_rand() % (sizeof text - 1)];
     }
     str[20] = '\0';
     
@@ -992,10 +990,9 @@ char *cmime_message_generate_message_id(void) {
     gethostname(hostname,MAXHOSTNAMELEN);
         
     mid = (char *)malloc(20 + strlen(hostname));
-    srandom(getpid() ^ time((time_t *) 0));
     for(i=0; i < 2; i++) {
         for (i2=0; i2<8; i2++) 
-            mid[pos++] = base36[random() % 36];
+            mid[pos++] = base36[cmime_util_rand() % 36];
         
         if (i==0)
             mid[pos++] = '.';
