@@ -39,6 +39,8 @@ extern "C" {
 #include <string.h>
 #include <assert.h>
 #include <errno.h>
+#include <time.h>
+#include <unistd.h>
 
 /*!
  * @struct CMimeInfo_T cmime_util.h
@@ -87,6 +89,13 @@ CMimeInfo_T *cmime_util_info_get_from_string(const char *s);
  * @returns a newly allocated CMimeInfo_T object, or NULL on failure
  */
 CMimeInfo_T *cmime_util_info_get_from_file(const char *filename);
+
+/*!
+ * @fn int cmime_util_rand()
+ * @brief Generate a random number from 0 to RAND_MAX
+ * @returns a random integer from 0 to RAND_MAX
+ */
+int cmime_util_rand();
 
 #ifdef __cplusplus
 }
