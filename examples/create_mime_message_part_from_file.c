@@ -64,24 +64,19 @@ int main(int argc, char *argv[]) {
         cmime_message_set_date_now(message);
 
         // generate a message id and add it to our message
-        msgid = cmime_message_generate_boundary();
+        msgid = cmime_message_generate_message_id();
         cmime_message_set_message_id(message, msgid);
     
         // add content to the body
         cmime_message_set_body(message,"This is the message body");
 
         // add the attachment
-        /* check if there is a previous part */
-        if (message->parts->size >= 1) {
-            elem = cmime_list_tail(message->parts);
-            prev = cmime_list_data(elem);
-            prev->last = 0;
-        }
         cmime_message_add_generated_boundary(message);
         cmime_part_from_file(&part, attachment,message->linebreak);
-        part->parent_boundary = strdup(message->boundary);
-        part->last = 1;
-        cmime_list_append(message->parts,part);
+
+        if (cmime_message_append_part(message, part) != 0) {
+            printf("failed to add mimepart\n");
+        }
 
         // assign the email to out or write it to file (depending on cli options)
         if(file != NULL) {
