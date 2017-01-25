@@ -48,8 +48,6 @@ int main(int argc, char *argv[]) {
 
         CMimeMessage_T *message = cmime_message_new();
         CMimePart_T *part = cmime_part_new();
-        CMimeListElem_T *elem = NULL;
-        CMimePart_T *prev = NULL;
         
         // set the sender of the message
         cmime_message_set_sender(message,from);
