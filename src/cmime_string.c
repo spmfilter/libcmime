@@ -24,6 +24,9 @@
 #define _GNU_SOURCE
 
 #include "cmime_string.h"
+#include "cmime_util.h"
+#include "cmime_base64.h"
+#include "cmime_qp.h"
 
 CMimeStringList_T *cmime_string_list_new(void) {
     CMimeStringList_T *sl;
@@ -119,3 +122,36 @@ int cmime_string_is_8bit(const char *s) {
     return(-1);
 }
 
+char *cmime_string_encode_to_7bit(const char *s, CMimeStringEncodingType_T t) {
+    CMimeInfo_T *mi = NULL;
+    char *out = NULL;
+    char *ptemp = NULL;
+    char *enc = NULL;
+
+    assert(s);
+
+    // =?charset?encoding?text?=
+    mi = cmime_util_info_get_from_string(s);
+
+    if (strcmp(mi->mime_encoding,"us-ascii")!=0) {
+        if (t == CMIME_STRING_ENCODING_B64) {
+            ptemp = cmime_base64_encode_string(s); 
+            enc = strdup("b");
+        } else if (t == CMIME_STRING_ENCODING_QP) {
+            ptemp = cmime_qp_encode((char *)s,NULL); 
+            ptemp = cmime_string_chomp(ptemp);
+            enc = strdup("q");
+        } else {
+            ptemp = strdup(s);
+        }
+
+        asprintf(&out,"=?%s?%s?%s?=",mi->mime_encoding,enc,ptemp);
+        free(ptemp);
+        free(enc);
+    } else {
+        out = strdup(s);
+    }
+
+    cmime_util_info_free(mi);
+    return out;
+}

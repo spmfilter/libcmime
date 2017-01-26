@@ -34,6 +34,7 @@ int main (int argc, char const *argv[]) {
     CMimeStringList_T *sl;
     
     char *s = NULL;
+    char *out = NULL;
     
     sl = cmime_string_list_new();
     
@@ -57,5 +58,14 @@ int main (int argc, char const *argv[]) {
     s = cmime_string_strip(test_string4);
     assert(strcmp(s,test_string3)==0);
 	
+    // check mime encoding
+    out = cmime_string_encode_to_7bit(mime_header_string1,CMIME_STRING_ENCODING_B64);
+    assert(strcmp(out,mime_header_string1_b64_encoded)==0);
+    free(out);
+
+    out = cmime_string_encode_to_7bit(mime_header_string1,CMIME_STRING_ENCODING_QP);
+    assert(strcmp(out,mime_header_string1_qp_encoded)==0);
+    free(out);
+
     return(0);
 }

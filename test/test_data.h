@@ -77,8 +77,9 @@ Nullam dictum felis eu pede mollis pretium.";
 
 char test_boundary[] = "--Part_5-743799170";
 
-char quoted_printable_string1[] = "ü";
-char quoted_printable_string1_encoded[] = "ü";
+char mime_header_string1[] = "Test string äöüß ø é";
+char mime_header_string1_b64_encoded[] = "=?utf-8?b?VGVzdCBzdHJpbmcgw6TDtsO8w58gw7ggw6k=?=";
+char mime_header_string1_qp_encoded[] = "=?utf-8?q?Test string =C3=A4=C3=B6=C3=BC=C3=9F =C3=B8 =C3=A9?=";
 
 #ifdef __cplusplus
 }

@@ -49,6 +49,16 @@ typedef struct {
 } CMimeStringList_T;
 
 /*!
+ * @enum CMimeStringEncodingType_T
+ * @brief Possible string encoding types
+ */
+typedef enum _CMimeStringEncodingType_T {
+  CMIME_STRING_ENCODING_B64, /**< Base64 encoding */
+  CMIME_STRING_ENCODING_QP, /**< Quoted-Printable encoding */
+} CMimeStringEncodingType_T;
+
+
+/*!
  * @fn CMimeStringList_T *cmime_string_list_new(void)
  * @brief Creates a new CMimeStringList_T object
  * @returns CMimeStringList_T pointer, or NULL on failure
@@ -120,6 +130,15 @@ int cmime_string_is_7bit(const char *s);
  * @returns 0 if string contains 8bit characters, otherwise -1
  */
 int cmime_string_is_8bit(const char *s);
+
+/*!
+ * char 
+ * @brief Convert given string to 7 bit mime encoded string based on RFC 2047
+ * @param s string to encode
+ * @param t CMimeStringEncodingType_T encoding
+ * @returns a newly allocated encoded string
+ */ 
+char *cmime_string_encode_to_7bit(const char *s, CMimeStringEncodingType_T t);
 
 #ifdef __cplusplus
 }
