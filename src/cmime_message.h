@@ -123,6 +123,15 @@ void cmime_message_free(CMimeMessage_T *message);
 void cmime_message_set_sender(CMimeMessage_T *message, const char *sender);
 
 /*!
+ * @fn void cmime_message_set_sender_encode(CMimeMessage_T *message, const char *sender)
+ * @brief Add sender to CMimeMessage_T object and convert to 7 bit mime encoded string 
+ *   based on RFC 2047. If sender already exists, it will be overwritten.
+ * @param message a CMimeMessage_T obect
+ * @param sender sender string
+ */
+void cmime_message_set_sender_encode(CMimeMessage_T *message, const char *sender);
+
+/*!
  * @fn char *cmime_message_get_sender_string(CMimeMessage_T *message)
  * @brief Get sender of a CMimeMessage_T object as string
  * @param message a CMimeMessage_T object
@@ -201,6 +210,16 @@ CMimeHeader_T *cmime_message_get_header(CMimeMessage_T *message, const char *hea
  * @returns 0 on success or -1 in case of error
  */
 int cmime_message_add_recipient(CMimeMessage_T *message, const char *recipient, CMimeAddressType_T t);
+
+/*!
+ * @fn int cmime_message_add_recipient_encode(CMimeMessage_T *message, const char *recipient, CMimeAddressType_T t)
+ * @brief Add recipient to message and convert to 7 bit mime encoded string based on RFC 2047.
+ * @param message a CMimeMessage_T object
+ * @param recipient a recipient string
+ * @param t CMimeAddressType_T recipient type
+ * @returns 0 on success or -1 in case of error
+ */
+int cmime_message_add_recipient_encode(CMimeMessage_T *message, const char *recipient, CMimeAddressType_T t);
 
 /*!
  * @fn int cmime_message_add_recipient_to(CMimeMessage_T *message, const char *recipient)
@@ -424,6 +443,14 @@ int cmime_message_from_string(CMimeMessage_T **message, const char *content, int
  * @param s the subject string
  */
 void cmime_message_set_subject(CMimeMessage_T *message, const char *s);
+
+/*!
+ * @fn void cmime_message_set_subject_encode(CMimeMessage_T *message, const char *subject)
+ * @brief Set message subject and convert to 7 bit mime encoded string based on RFC 2047.
+ * @param message a CMimeMessage_T object
+ * @param s the subject string
+ */
+void cmime_message_set_subject_encode(CMimeMessage_T *message, const char *s);
 
 /*!
  * @fn char *cmime_message_get_subject(CMimeMessage_T *message)

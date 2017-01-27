@@ -38,6 +38,9 @@ char addr_string2[] = "Example User <user@example.com>";
 char addr_string2_name_part[] = "Example User";
 char addr_string2_email_part[] = "user@example.com";
 
+char addr_string3[] = "\"Exämple Üser\" <user@example.com>";
+char addr_string3_full_encoded[] = "=?utf-8?b?IkV4w6RtcGxlIMOcc2VyIiA=?= <user@example.com>";
+
 char test_string1[] = "Test string 1";
 char test_string1_base64[] = "VGVzdCBzdHJpbmcgMQ==";
 char test_string2[] = "Test string 2";

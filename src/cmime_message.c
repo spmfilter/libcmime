@@ -31,7 +31,6 @@
 #include "cmime_part.h"
 #include "cmime_internal.h"
 #include "cmime_flbi.h"
-#include "cmime_qp.h"
 
 
 #ifndef DOXYGEN_SHOULD_SKIP_THIS
@@ -469,6 +468,29 @@ void cmime_message_set_sender(CMimeMessage_T *message, const char *sender) {
     _cmime_internal_set_linked_header_value(message->headers, FROM_HEADER, NULL);
 }
 
+void cmime_message_set_sender_encode(CMimeMessage_T *message, const char *sender) {
+    CMimeAddress_T *ca = NULL;
+    char *name_encoded = NULL;
+    char *encoded = NULL;
+
+    assert(message);
+    assert(sender);
+
+    ca = cmime_address_parse_string(sender);
+    // encode sender name, if necessary
+    if (ca->name != NULL) {
+        name_encoded = cmime_string_encode_to_7bit(ca->name,CMIME_STRING_ENCODING_B64);
+        cmime_address_set_name(ca,name_encoded);
+        ca->parsed = 0;
+        free(name_encoded);
+    }
+
+    encoded = cmime_address_to_string(ca);
+    cmime_message_set_sender(message, encoded);
+    free(encoded);
+    cmime_address_free(ca);
+}
+
 char *cmime_message_get_sender_string(CMimeMessage_T *message) {
     char *s = NULL;
 
@@ -570,6 +592,32 @@ int cmime_message_add_recipient(CMimeMessage_T *message, const char *recipient, 
     }
 
     return(0);
+}
+
+int cmime_message_add_recipient_encode(CMimeMessage_T *message, const char *recipient, CMimeAddressType_T t) {
+    CMimeAddress_T * ca = NULL;
+    char *name_encoded = NULL;
+    char *encoded = NULL;
+    int ret = -1;
+
+    assert(message);
+    assert(recipient);
+
+    ca = cmime_address_parse_string(recipient);
+
+    // encode recipient name, if necessary
+    if (ca->name != NULL) {
+        name_encoded = cmime_string_encode_to_7bit(ca->name,CMIME_STRING_ENCODING_B64);
+        cmime_address_set_name(ca,name_encoded);
+        ca->parsed = 0;
+        free(name_encoded);
+    }
+    encoded = cmime_address_to_string(ca);
+    ret = cmime_message_add_recipient(message,encoded,t);
+    free(encoded);
+    cmime_address_free(ca);
+
+    return ret;
 }
 
 int cmime_message_add_recipient_to(CMimeMessage_T *message, const char *recipient) {
@@ -951,6 +999,18 @@ int cmime_message_from_string(CMimeMessage_T **message, const char *content, int
 
 void cmime_message_set_subject(CMimeMessage_T *message, const char *s) {
     _cmime_internal_set_linked_header_value(message->headers,"Subject",s);
+}
+
+void cmime_message_set_subject_encode(CMimeMessage_T *message, const char *s) {
+    char *encoded = NULL;
+
+    assert(message);
+    assert(s);
+
+    encoded = cmime_string_encode_to_7bit(s,CMIME_STRING_ENCODING_B64);
+
+    cmime_message_set_subject(message, encoded);
+    free(encoded);
 }
 
 char *cmime_message_get_subject(CMimeMessage_T *message) {

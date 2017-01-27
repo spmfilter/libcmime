@@ -118,7 +118,10 @@ int main (int argc, char const *argv[]) {
         assert(strcmp(s,addr_string2)==0);
         free(s);
         
-        s = cmime_message_to_string(msg);
+        // check mime sender header
+        cmime_message_set_sender_encode(msg,addr_string3);
+        s = cmime_message_get_sender_string(msg);
+        assert(strcmp(s,addr_string3_full_encoded)==0);
         free(s);
 
         // set message id
@@ -130,6 +133,10 @@ int main (int argc, char const *argv[]) {
         s = cmime_message_get_subject(msg);
         assert(strcmp(s, "A subject") == 0);
         
+        cmime_message_set_subject_encode(msg,mime_header_string1);
+        s = cmime_message_get_subject(msg);
+        assert(strcmp(s,mime_header_string1_b64_encoded)==0);
+
         // set a test header
         if (cmime_message_set_header(msg, header_string1)!=0) 
             return(-1);
@@ -154,8 +161,18 @@ int main (int argc, char const *argv[]) {
         if (cmime_message_add_recipient(msg,addr_string2,CMIME_ADDRESS_TYPE_CC)!=0)
             return(-1);
             
+        if (cmime_message_add_recipient_encode(msg,addr_string3,CMIME_ADDRESS_TYPE_TO)!=0)
+            return(-1);
+
         recipient_list = cmime_message_get_recipients(msg);
         assert(recipient_list);
+
+        elem = cmime_list_tail(recipient_list);
+        if (elem != NULL) {
+            s = cmime_address_to_string((CMimeAddress_T *)cmime_list_data(elem));
+            assert(strcmp(s,addr_string3_full_encoded)==0);
+            free(s);
+        }
 
         elem = cmime_list_head(recipient_list);
         while(elem != NULL) {
@@ -213,7 +230,6 @@ int main (int argc, char const *argv[]) {
             fwrite(msg_string,strlen(msg_string),1,fp2);
             fclose(fp2);
             free(s2);
-        
             assert(strcmp(msg_string,s)==0);
             free(s);
             free(msg_string);
