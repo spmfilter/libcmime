@@ -233,21 +233,21 @@ void cmime_list_map(CMimeList_T *list, void(*func)(CMimeListElem_T *elem,void *a
     }
 }
 
-int cmime_list_map_new(CMimeList_T *list, CMimeList_T **new, void *(*func)(CMimeListElem_T *elem,
+int cmime_list_map_new(CMimeList_T *list, CMimeList_T **new_list, void *(*func)(CMimeListElem_T *elem,
         void *args), void *args) {
     CMimeListElem_T *elem;
     int ret;
  
     assert(list);
 
-    ret = cmime_list_new(new, NULL);
+    ret = cmime_list_new(new_list, NULL);
     if(ret != 0) {
         return(-1);
     }
  
     elem = cmime_list_head(list);
     while(elem != NULL) {
-        cmime_list_append(*new,func(elem,args));
+        cmime_list_append(*new_list,func(elem,args));
         elem = elem->next;
     }
  

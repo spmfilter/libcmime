@@ -151,13 +151,13 @@ void cmime_list_map(CMimeList_T *list, void(*func)(CMimeListElem_T *elem,void *a
 
 /*! 
  * @fn cmime_list_map_new(CMimeList_T *list, CMimeList_T **new, void *(*func)(CMimeListElem_T *elem, void *args), void *args)
- * @brief Iterates over list and calls function func with every element, return value of func will be saved in new list **new
+ * @brief Iterates over list and calls function func with every element, return value of func will be saved in new list **new_list
  * @param list a CMimeList_T list
- * @param new out param to return the new list
+ * @param new_list out param to return the new list
  * @param func function to call for each element
  * @param args optional arguments for function pointer
  */
-int cmime_list_map_new(CMimeList_T *list, CMimeList_T **new, void *(*func)(CMimeListElem_T *elem, void *args), void *args);
+int cmime_list_map_new(CMimeList_T *list, CMimeList_T **new_list, void *(*func)(CMimeListElem_T *elem, void *args), void *args);
 
 /*!
  * @def cmime_list_size(list)
