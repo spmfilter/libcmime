@@ -1,5 +1,5 @@
 /* libcmime - A C mime library
- * Copyright (C) 2013 SpaceNet AG and Axel Steiner <ast@treibsand.com>
+ * Copyright (C) 2021 SpaceNet AG and Axel Steiner <ast@treibsand.com>
  *
  * Permission is hereby granted, free of charge, to any person obtaining
  * a copy of this software and associated documentation files (the
@@ -455,7 +455,11 @@ void cmime_message_set_sender(CMimeMessage_T *message, const char *sender) {
     char *s = NULL;
 
     assert(message);
-    assert(sender);
+    // fallback if sender is empty
+    if (sender == NULL) {
+        asprintf(&sender, "");
+    } 
+
     ca = cmime_address_parse_string(sender);
     if (message->sender != NULL) {
         cmime_address_free(message->sender);
