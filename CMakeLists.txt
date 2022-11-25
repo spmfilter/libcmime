@@ -46,7 +46,7 @@ if(ENABLE_DOC)
         message(FATAL_ERROR "Doxygen is needed to build the documentation.")
     endif()
 
-    if(NOT DOXYGEN_VERSION MATCHES "1\\.8")
+    if(NOT DOXYGEN_VERSION GREATER "1\\.8")
         message(FATAL_ERROR "Doxygen >= 1.8 is needed to build the documentation.")
     endif()
     
