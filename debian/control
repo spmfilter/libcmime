@@ -6,7 +6,7 @@ Build-Depends: debhelper (>= 7), cmake, cdbs, flex, bison
 Homepage: http://libcmime.spmfilter.org/
 Standards-Version: 3.9.3
 
-Package: libcmime0.1.0
+Package: libcmime
 Architecture: any
 Section: libs 
 Depends: ${shlibs:Depends}, ${misc:Depends}, cmake, bison, libbison-dev, flex
