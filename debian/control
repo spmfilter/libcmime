@@ -2,7 +2,7 @@ Source: libcmime
 Section: mail
 Priority: optional
 Maintainer: Werner Detter <werner@aloah-from-hell.de>
-Build-Depends: debhelper (>= 7), cmake, cdbs, flex, bison
+Build-Depends: debhelper (>= 7), cmake, cdbs, flex, bison, doxygen
 Homepage: http://libcmime.spmfilter.org/
 Standards-Version: 3.9.3
 
