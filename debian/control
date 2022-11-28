@@ -2,11 +2,11 @@ Source: libcmime
 Section: mail
 Priority: optional
 Maintainer: Werner Detter <werner@aloah-from-hell.de>
-Build-Depends: debhelper (>= 7), cmake, cdbs, flex, bison
+Build-Depends: debhelper (>= 7), cmake, cdbs, flex, bison, doxygen
 Homepage: http://libcmime.spmfilter.org/
 Standards-Version: 3.9.3
 
-Package: libcmime0.1.0
+Package: libcmime
 Architecture: any
 Section: libs 
 Depends: ${shlibs:Depends}, ${misc:Depends}, cmake, bison, libbison-dev, flex
