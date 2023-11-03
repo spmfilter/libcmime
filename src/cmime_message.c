@@ -59,7 +59,16 @@ CMimeStringList_T *_get_boundaries(char *s) {
 
         /* before the content-type header must not be any char except newline */
         if ((s[offset-1]!=(unsigned char)10)&&(s[offset-1]!=(unsigned char)13))
-            break;
+        {
+            /* Change from RJW. My test email contains:
+             * ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+             *    s=arcselector9901;
+             *    h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-M
+             * and that triggers this. Don't give up, just skip over it.
+             */
+            s = &s[offset+1];
+            continue;
+        }
 
         /* get all content-type header line(s) */
         header = (char *)calloc(sizeof(char),sizeof(char));
