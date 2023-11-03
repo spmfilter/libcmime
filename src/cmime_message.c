@@ -55,7 +55,7 @@ CMimeStringList_T *_get_boundaries(char *s) {
 
     /* search for content-type headers, where new boundaries are defined */    
     while ((it = strcasestr(s,"content-type:"))!=NULL) {
-        offset = strlen(s) - strlen(it);
+        offset = it-s;
 
         /* before the content-type header must not be any char except newline */
         if ((s[offset-1]!=(unsigned char)10)&&(s[offset-1]!=(unsigned char)13))
