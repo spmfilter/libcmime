@@ -369,10 +369,10 @@ int cmime_part_to_file(CMimePart_T *part, char *filename) {
         perror("libcmime: error opening file");
         retval = -3; /* failed to open file */ 
     }
-
     // some cleanup
-    if(encoding!=NULL)
-        free(encoding);
+    // RJW: Do NOT free encoding! It's a header and will be freed later.
+    // if(encoding!=NULL)
+    //    free(encoding);
     if(decoded_str!=NULL)
         free(decoded_str);
 
