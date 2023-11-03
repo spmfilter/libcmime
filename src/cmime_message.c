@@ -812,6 +812,19 @@ int cmime_message_from_file(CMimeMessage_T **message, const char *filename, int 
         return(-3);
     }
 
+#ifdef _WIN32
+    p = (char *)calloc(sb.st_size + 1,sizeof(char));
+    {
+        char *q = p;
+        size_t left = sb.st_size;
+        do
+        {
+            size_t z = fread(q, 1, left, fp);
+            left -= z;
+        }
+        while (left > 0);
+    }
+#else
     /* map file to memory */
     addr = mmap (NULL, sb.st_size, PROT_READ, MAP_PRIVATE, fd, 0);
 
@@ -822,15 +835,18 @@ int cmime_message_from_file(CMimeMessage_T **message, const char *filename, int 
     }
     p = (char *)calloc(sb.st_size + 1,sizeof(char));
     memcpy(p, addr, sb.st_size);
+#endif
     p[strlen(p)] =  '\0';
 
     if (fclose(fp)!=0)
         perror("libcmime: error failed closing file");
 
+#ifndef _WIN32
     if (munmap (addr, sb.st_size) == -1) {
         perror("libcmime: error on munmap");
         return(-3); 
     }
+#endif
 
     sd = _strip_message(message,p,header_only);
     ret = cmime_scanner_scan_buffer(message, sd->stripped);
