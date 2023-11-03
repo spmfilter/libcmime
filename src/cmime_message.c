@@ -274,8 +274,8 @@ _StrippedData_T *_strip_message(CMimeMessage_T **msg, char *buffer, int header_o
 }
 
 void _recipients_destroy(void *data) {
-    assert(data);
     CMimeAddress_T *ca = (CMimeAddress_T *)data;
+    assert(data);
     cmime_address_free(ca);
 }
 

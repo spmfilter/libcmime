@@ -180,11 +180,12 @@ CMimeInfo_T *cmime_util_info_get_from_file(const char *filename) {
 int cmime_util_rand()
 {
     static unsigned seed = 0;
+    int result;
     
     if(seed == 0)
         seed = time((time_t*)0) ^ getpid();
 
-    int result = rand_r(&seed);
+    result = rand_r(&seed);
     return result;
 }
 
