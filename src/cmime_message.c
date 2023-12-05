@@ -55,11 +55,20 @@ CMimeStringList_T *_get_boundaries(char *s) {
 
     /* search for content-type headers, where new boundaries are defined */    
     while ((it = strcasestr(s,"content-type:"))!=NULL) {
-        offset = strlen(s) - strlen(it);
+        offset = it-s;
 
         /* before the content-type header must not be any char except newline */
         if ((s[offset-1]!=(unsigned char)10)&&(s[offset-1]!=(unsigned char)13))
-            break;
+        {
+            /* Change from RJW. My test email contains:
+             * ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+             *    s=arcselector9901;
+             *    h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-M
+             * and that triggers this. Don't give up, just skip over it.
+             */
+            s = &s[offset+1];
+            continue;
+        }
 
         /* get all content-type header line(s) */
         header = (char *)calloc(sizeof(char),sizeof(char));
@@ -265,8 +274,8 @@ _StrippedData_T *_strip_message(CMimeMessage_T **msg, char *buffer, int header_o
 }
 
 void _recipients_destroy(void *data) {
-    assert(data);
     CMimeAddress_T *ca = (CMimeAddress_T *)data;
+    assert(data);
     cmime_address_free(ca);
 }
 
@@ -803,6 +812,19 @@ int cmime_message_from_file(CMimeMessage_T **message, const char *filename, int 
         return(-3);
     }
 
+#ifdef _WIN32
+    p = (char *)calloc(sb.st_size + 1,sizeof(char));
+    {
+        char *q = p;
+        size_t left = sb.st_size;
+        do
+        {
+            size_t z = fread(q, 1, left, fp);
+            left -= z;
+        }
+        while (left > 0);
+    }
+#else
     /* map file to memory */
     addr = mmap (NULL, sb.st_size, PROT_READ, MAP_PRIVATE, fd, 0);
 
@@ -813,15 +835,18 @@ int cmime_message_from_file(CMimeMessage_T **message, const char *filename, int 
     }
     p = (char *)calloc(sb.st_size + 1,sizeof(char));
     memcpy(p, addr, sb.st_size);
+#endif
     p[strlen(p)] =  '\0';
 
     if (fclose(fp)!=0)
         perror("libcmime: error failed closing file");
 
+#ifndef _WIN32
     if (munmap (addr, sb.st_size) == -1) {
         perror("libcmime: error on munmap");
         return(-3); 
     }
+#endif
 
     sd = _strip_message(message,p,header_only);
     ret = cmime_scanner_scan_buffer(message, sd->stripped);

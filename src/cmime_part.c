@@ -335,6 +335,24 @@ int cmime_part_from_file(CMimePart_T **part, char *filename, const char *nl) {
     return(0);
 }
 
+static int
+my_strmatch(const char *big, const char *little)
+{
+    size_t z = strlen(little);
+
+    while (isspace(*big))
+        big++;
+
+    if (strncmp(big, little, z))
+        return 1; /* No match */
+
+    big += z;
+    while (isspace(*big))
+        big++;
+
+    return *big != 0;
+}
+
 int cmime_part_to_file(CMimePart_T *part, char *filename) {
     int retval = 0;
     FILE *fp = NULL;
@@ -350,12 +368,12 @@ int cmime_part_to_file(CMimePart_T *part, char *filename) {
 
     // check for encodings
     encoding = cmime_part_get_content_transfer_encoding(part);
-    
+
     if(encoding == NULL) {
         asprintf(&decoded_str,"%s",part->content);
-    } else if (strcmp(encoding,qp)==0) {
+    } else if (my_strmatch(encoding,qp)==0) {
         decoded_str = cmime_qp_decode_text(part->content);
-    } else if (strcmp(encoding,base64)==0) {
+    } else if (my_strmatch(encoding,base64)==0) {
         decoded_str = cmime_base64_decode_string(part->content);  
     } else {
         asprintf(&decoded_str,"%s",part->content);
@@ -369,10 +387,10 @@ int cmime_part_to_file(CMimePart_T *part, char *filename) {
         perror("libcmime: error opening file");
         retval = -3; /* failed to open file */ 
     }
-
     // some cleanup
-    if(encoding!=NULL)
-        free(encoding);
+    // RJW: Do NOT free encoding! It's a header and will be freed later.
+    // if(encoding!=NULL)
+    //    free(encoding);
     if(decoded_str!=NULL)
         free(decoded_str);
 
